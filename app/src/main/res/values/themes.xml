@@ -1,5 +1,10 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
+    <style name="Theme.HomeOfHope" parent="android:Theme.Material.Light.NoActionBar" />
 
-    <style name="Theme.HomeOfHopeApp" parent="android:Theme.Material.Light.NoActionBar" />
+    <style name="Theme.HomeOfHope.Starting" parent="Theme.SplashScreen">
+        <item name="windowSplashScreenBackground">@color/hope_dark</item>
+        <item name="windowSplashScreenAnimatedIcon">@drawable/ic_logo</item>
+        <item name="postSplashScreenTheme">@style/Theme.HomeOfHope</item>
+    </style>
 </resources>

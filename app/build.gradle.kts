@@ -5,16 +5,12 @@ plugins {
 }
 
 android {
-    namespace = "com.example.homeofhopeapp"
-    compileSdk {
-        version = release(36) {
-            minorApiLevel = 1
-        }
-    }
+    namespace = "com.homeofhope.app"
+    compileSdk = 36
 
     defaultConfig {
-        applicationId = "com.example.homeofhopeapp"
-        minSdk = 24
+        applicationId = "com.homeofhope.app"
+        minSdk = 26
         targetSdk = 36
         versionCode = 1
         versionName = "1.0"
@@ -45,13 +41,36 @@ dependencies {
     implementation(libs.androidx.compose.ui)
     implementation(libs.androidx.compose.ui.graphics)
     implementation(libs.androidx.compose.ui.tooling.preview)
+    implementation(libs.androidx.compose.material.icons.extended)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.lifecycle.viewmodel.compose)
     implementation(libs.androidx.navigation.compose)
-    implementation(libs.androidx.room.runtime)
-    implementation(libs.androidx.room.ktx)
-    ksp(libs.androidx.room.compiler)
+    
+    // Retrofit + OkHttp
+    implementation(libs.retrofit)
+    implementation(libs.retrofit.gson)
+    implementation(libs.okhttp.logging)
+
+    // Coil
+    implementation(libs.coil.compose)
+
+    // DataStore
+    implementation(libs.datastore.preferences)
+
+    // Accompanist Pager
+    implementation(libs.accompanist.pager)
+    implementation(libs.accompanist.pager.indicators)
+
+    // Lottie
+    implementation(libs.lottie.compose)
+
+    // Splash Screen
+    implementation(libs.androidx.core.splashscreen)
+
+    // Coroutines
+    implementation(libs.kotlinx.coroutines.android)
+
     testImplementation(libs.junit)
     androidTestImplementation(platform(libs.androidx.compose.bom))
     androidTestImplementation(libs.androidx.compose.ui.test.junit4)
