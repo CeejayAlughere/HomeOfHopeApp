@@ -42,7 +42,6 @@ fun HomeScreen(
         HomeCarousel()
         QuickActionButtons(onDonateClick, onVolunteerClick, onContactClick)
         NewsletterSection()
-        FooterSection()
     }
 }
 

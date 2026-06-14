@@ -39,7 +39,6 @@ fun BlogScreen() {
         }
         
         NewsletterSection()
-        FooterSection()
     }
 }
 

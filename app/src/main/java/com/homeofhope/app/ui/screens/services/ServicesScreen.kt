@@ -53,9 +53,6 @@ fun ServicesScreen() {
                 Spacer(modifier = Modifier.height(16.dp))
             }
         }
-        
-        NewsletterSection()
-        FooterSection()
     }
 }
 

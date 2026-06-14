@@ -41,7 +41,6 @@ fun CausesScreen(onDonateClick: () -> Unit) {
         }
         
         NewsletterSection()
-        FooterSection()
     }
 }
 

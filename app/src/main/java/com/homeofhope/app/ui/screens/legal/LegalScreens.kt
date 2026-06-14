@@ -93,8 +93,5 @@ fun LegalScreenTemplate(title: String, content: String) {
             Spacer(modifier = Modifier.height(16.dp))
             Text(text = content, fontSize = 14.sp, lineHeight = 22.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
         }
-        
-        NewsletterSection()
-        FooterSection()
     }
 }

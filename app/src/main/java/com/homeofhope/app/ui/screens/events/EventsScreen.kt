@@ -47,7 +47,6 @@ fun EventsScreen(onVolunteerClick: () -> Unit) {
         }
         
         NewsletterSection()
-        FooterSection()
     }
 }
 

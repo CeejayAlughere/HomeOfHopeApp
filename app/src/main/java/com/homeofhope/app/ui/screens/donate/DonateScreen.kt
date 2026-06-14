@@ -134,7 +134,6 @@ fun DonateScreen(viewModel: DonateViewModel) {
             }
             
             NewsletterSection()
-            FooterSection()
         }
     }
 }

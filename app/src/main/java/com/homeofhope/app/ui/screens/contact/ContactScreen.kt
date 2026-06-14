@@ -112,7 +112,6 @@ fun ContactScreen(viewModel: ContactViewModel) {
             }
             
             NewsletterSection()
-            FooterSection()
         }
     }
 }

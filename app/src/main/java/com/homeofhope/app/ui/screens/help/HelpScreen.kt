@@ -61,9 +61,6 @@ fun HelpScreen(onContactClick: () -> Unit, onFaqClick: () -> Unit) {
                 }
             }
         }
-        
-        NewsletterSection()
-        FooterSection()
     }
 }
 

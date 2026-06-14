@@ -43,7 +43,6 @@ fun AboutScreen() {
         StatsSection()
         TestimonialsSection()
         NewsletterSection()
-        FooterSection()
     }
 }
 
@@ -115,7 +114,7 @@ fun StatItem(label: String, value: Int, modifier: Modifier, prefix: String = "",
     var startAnimate by remember { mutableStateOf(false) }
     val animatedValue by animateIntAsState(
         targetValue = if (startAnimate) value else 0,
-        animationSpec = tween(durationMillis = 2000)
+        animationSpec = tween(durationMillis = 8000)
     )
     
     LaunchedEffect(Unit) {
