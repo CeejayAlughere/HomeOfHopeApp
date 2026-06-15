@@ -4,7 +4,15 @@ import androidx.compose.animation.core.animateIntAsState
 import androidx.compose.animation.core.tween
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -13,28 +21,35 @@ import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material.icons.filled.Groups
 import androidx.compose.material.icons.filled.Public
 import androidx.compose.material.icons.filled.Restaurant
-import androidx.compose.material3.*
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Tab
+import androidx.compose.material3.TabRow
+import androidx.compose.material3.TabRowDefaults
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
-import androidx.compose.runtime.*
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.AsyncImage
-import com.google.accompanist.pager.ExperimentalPagerApi
-import com.google.accompanist.pager.HorizontalPager
-import com.google.accompanist.pager.HorizontalPagerIndicator
-import com.google.accompanist.pager.rememberPagerState
-import com.homeofhope.app.ui.components.FooterSection
-import com.homeofhope.app.ui.components.NewsletterSection
 import com.homeofhope.app.ui.components.PageHeader
 import com.homeofhope.app.ui.components.SectionHeader
-import com.homeofhope.app.ui.theme.*
+import com.homeofhope.app.ui.theme.HopeDark
+import com.homeofhope.app.ui.theme.HopeGreen
+import com.homeofhope.app.ui.theme.HopeWhite
 
 @Composable
 fun AboutScreen() {
@@ -161,84 +176,3 @@ fun AboutStatCard(label: String, value: Int, icon: ImageVector, modifier: Modifi
         }
     }
 }
-
-@OptIn(ExperimentalPagerApi::class)
-@Composable
-fun TestimonialsSection() {
-    val pagerState = rememberPagerState()
-    val testimonials = listOf(
-        Testimonial(
-            name = "Micheal Van nie Kerk",
-            role = "Community Member",
-            text = "Home Of Hope gave my children and me a safe place to stay when we had nowhere else to go. The warmth and care we received here restored my faith in humanity. I am forever grateful."
-        ),
-        Testimonial(
-            name = "Elizabeth Johnson",
-            role = "Volunteer",
-            text = "Volunteering at Siyazigabisa has been one of the most rewarding experiences of my life. Seeing the smiles on people's faces when you show up to help is something words cannot describe."
-        ),
-        Testimonial(
-            name = "Xander Smith",
-            role = "Donor",
-            text = "I have been donating to Home Of Hope for over a year now and I can see exactly where my money goes. This organisation is transparent, passionate and truly committed to uplifting our community."
-        ),
-    )
-
-    Column(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        SectionHeader(subtitle = "Testimonials", title = "What People Say")
-        
-        HorizontalPager(
-            count = testimonials.size,
-            state = pagerState,
-            modifier = Modifier.height(200.dp)
-        ) { page ->
-            TestimonialCard(testimonials[page])
-        }
-        
-        HorizontalPagerIndicator(
-            pagerState = pagerState,
-            activeColor = HopeGreen,
-            inactiveColor = Color.Gray.copy(alpha = 0.5f)
-        )
-    }
-}
-
-@Composable
-fun TestimonialCard(testimonial: Testimonial) {
-    Card(
-        modifier = Modifier.fillMaxWidth().padding(8.dp),
-        shape = RoundedCornerShape(28.dp),
-        colors = CardDefaults.cardColors(containerColor = HopeLight),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
-    ) {
-        Column(
-            modifier = Modifier.padding(24.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Icon(
-                imageVector = Icons.Default.Favorite, // Fallback for quote icon
-                contentDescription = null,
-                tint = HopeGreen.copy(alpha = 0.2f),
-                modifier = Modifier.size(32.dp)
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text = testimonial.text,
-                style = MaterialTheme.typography.bodyLarge,
-                fontStyle = androidx.compose.ui.text.font.FontStyle.Italic,
-                textAlign = TextAlign.Center,
-                lineHeight = 24.sp
-            )
-            Spacer(modifier = Modifier.height(20.dp))
-            Text(text = testimonial.name, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-            Text(text = testimonial.role, style = MaterialTheme.typography.labelMedium, color = HopeGreen)
-        }
-    }
-}
-
-data class Testimonial(val name: String, val role: String, val text: String)
