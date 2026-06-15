@@ -41,7 +41,8 @@ import kotlinx.coroutines.delay
 fun HomeScreen(
     onDonateClick: () -> Unit,
     onVolunteerClick: () -> Unit,
-    onContactClick: () -> Unit
+    onContactClick: () -> Unit,
+    onViewAllCausesClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -61,7 +62,7 @@ fun HomeScreen(
         
         Spacer(modifier = Modifier.height(24.dp))
         
-        FeaturedCausesSection(onDonateClick)
+        FeaturedCausesSection(onDonateClick, onViewAllCausesClick)
         
         Spacer(modifier = Modifier.height(24.dp))
         
@@ -143,7 +144,7 @@ fun ImpactCard(count: String, label: String, icon: ImageVector, modifier: Modifi
 }
 
 @Composable
-fun FeaturedCausesSection(onDonateClick: () -> Unit) {
+fun FeaturedCausesSection(onDonateClick: () -> Unit, onViewAllCausesClick: () -> Unit) {
     val featuredCauses = listOf(
         HomeCause("Feed A Hungry Child", 6000.0, 10000.0, "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=2070"),
         HomeCause("Clean Water For All", 8500.0, 10000.0, "https://images.unsplash.com/photo-1594708767771-a7502209ff51?q=80&w=2070"),
@@ -162,7 +163,7 @@ fun FeaturedCausesSection(onDonateClick: () -> Unit) {
                     style = MaterialTheme.typography.headlineSmall,
                     fontWeight = FontWeight.Bold
                 )
-                TextButton(onClick = { /* Navigate to Causes */ }) {
+                TextButton(onClick = onViewAllCausesClick) {
                     Text("View All", color = HopeGreen)
                 }
             }
@@ -271,12 +272,6 @@ fun UpcomingEventsSection(onVolunteerClick: () -> Unit) {
                 Column(modifier = Modifier.weight(1f)) {
                     Text("Community Food Drive", color = HopeWhite, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
                     Text("08:00 AM • Thembisa", color = HopeWhite.copy(alpha = 0.7f), style = MaterialTheme.typography.bodySmall)
-                }
-                IconButton(
-                    onClick = onVolunteerClick,
-                    colors = IconButtonDefaults.iconButtonColors(containerColor = HopeGreen)
-                ) {
-                    Icon(Icons.Default.ArrowForward, contentDescription = "Join", tint = HopeWhite)
                 }
             }
         }
