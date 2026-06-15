@@ -20,12 +20,15 @@ import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavController
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.homeofhope.app.R
 import com.homeofhope.app.ui.navigation.Screen
 import com.homeofhope.app.ui.theme.HopeDark
 import com.homeofhope.app.ui.theme.HopeGreen
@@ -138,7 +141,12 @@ fun PageHeader(title: String, imageUrl: String) {
             .height(200.dp)
     ) {
         AsyncImage(
-            model = imageUrl,
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(imageUrl)
+                .crossfade(true)
+                .build(),
+            placeholder = painterResource(R.drawable.ic_logo),
+            error = painterResource(R.drawable.ic_logo),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop

@@ -13,10 +13,14 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.homeofhope.app.R
 import com.homeofhope.app.ui.components.FooterSection
 import com.homeofhope.app.ui.components.NewsletterSection
 import com.homeofhope.app.ui.components.PageHeader
@@ -46,7 +50,6 @@ fun EventsScreen(onVolunteerClick: () -> Unit) {
             }
         }
         
-        NewsletterSection()
     }
 }
 
@@ -58,7 +61,12 @@ fun EventCard(event: Event, onVolunteerClick: () -> Unit) {
     ) {
         Column {
             AsyncImage(
-                model = event.imageUrl,
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(event.imageUrl)
+                    .crossfade(true)
+                    .build(),
+                placeholder = painterResource(R.drawable.ic_logo),
+                error = painterResource(R.drawable.ic_logo),
                 contentDescription = null,
                 modifier = Modifier.fillMaxWidth().height(180.dp),
                 contentScale = ContentScale.Crop

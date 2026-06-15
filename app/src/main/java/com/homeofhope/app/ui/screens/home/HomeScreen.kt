@@ -12,15 +12,19 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.google.accompanist.pager.ExperimentalPagerApi
 import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
+import com.homeofhope.app.R
 import com.homeofhope.app.ui.components.FooterSection
 import com.homeofhope.app.ui.components.NewsletterSection
 import com.homeofhope.app.ui.theme.HopeDark
@@ -69,7 +73,7 @@ fun HomeCarousel() {
 
     LaunchedEffect(pagerState) {
         while (true) {
-            delay(3000)
+            delay(9000)
             val nextPage = (pagerState.currentPage + 1) % carouselItems.size
             pagerState.animateScrollToPage(nextPage)
         }
@@ -98,7 +102,12 @@ fun HomeCarousel() {
 fun CarouselSlide(item: CarouselItem) {
     Box(modifier = Modifier.fillMaxSize()) {
         AsyncImage(
-            model = item.imageUrl,
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(item.imageUrl)
+                .crossfade(true)
+                .build(),
+            placeholder = painterResource(R.drawable.ic_logo),
+            error = painterResource(R.drawable.ic_logo),
             contentDescription = null,
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop

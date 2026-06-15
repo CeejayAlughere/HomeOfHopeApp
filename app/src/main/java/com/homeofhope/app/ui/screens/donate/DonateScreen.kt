@@ -133,7 +133,6 @@ fun DonateScreen(viewModel: DonateViewModel) {
                 }
             }
             
-            NewsletterSection()
         }
     }
 }

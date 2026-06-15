@@ -58,7 +58,7 @@ class MainActivity : ComponentActivity() {
                             drawerContainerColor = HopeDark,
                             drawerContentColor = HopeWhite
                         ) {
-                            Text("More Options", modifier = Modifier.padding(16.dp), style = MaterialTheme.typography.titleLarge, color = HopeGreen)
+                            Text("Navigation Drawer", modifier = Modifier.padding(16.dp), style = MaterialTheme.typography.titleLarge, color = HopeGreen)
                             HorizontalDivider(color = HopeWhite.copy(alpha = 0.1f))
                             moreScreens.forEach { screen ->
                                 NavigationDrawerItem(

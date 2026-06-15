@@ -48,7 +48,7 @@ fun VolunteerScreen(viewModel: VolunteerViewModel) {
                 .padding(padding)
                 .verticalScroll(rememberScrollState())
         ) {
-            PageHeader(title = "Become A Volunteer", imageUrl = "https://images.unsplash.com/photo-1559027615-cd26736f5df8?q=80&w=2070")
+            PageHeader(title = "Become A Volunteer", imageUrl = "https://images.unsplash.com/photo-1531206715517-5c0ba140b2b8?q=80&w=2070")
             
             Column(modifier = Modifier.padding(16.dp)) {
                 OutlinedTextField(
@@ -105,9 +105,6 @@ fun VolunteerScreen(viewModel: VolunteerViewModel) {
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
             }
-            
-            NewsletterSection()
-            FooterSection()
         }
     }
 }

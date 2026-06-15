@@ -7,10 +7,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.homeofhope.app.R
 import com.homeofhope.app.ui.components.FooterSection
 import com.homeofhope.app.ui.components.NewsletterSection
 import com.homeofhope.app.ui.components.PageHeader
@@ -29,9 +33,9 @@ fun CausesScreen(onDonateClick: () -> Unit) {
         Column(modifier = Modifier.padding(16.dp)) {
             val causes = listOf(
                 Cause("Feed A Hungry Child", 6000.0, 10000.0, "Thousands of children in our community go to school on an empty stomach. Help us provide daily nutritious meals to keep them focused and healthy.", "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=2070"),
-                Cause("Clean Water For All", 8500.0, 10000.0, "Many families still lack access to safe drinking water. Your donation brings us closer to installing clean water facilities in communities that need them most.", "https://images.unsplash.com/photo-1541544741938-0af808b41e47?q=80&w=2069"),
+                Cause("Clean Water For All", 8500.0, 10000.0, "Many families still lack access to safe drinking water. Your donation brings us closer to installing clean water facilities in communities that need them most.", "https://images.unsplash.com/photo-1594708767771-a7502209ff51?q=80&w=2070"),
                 Cause("Education For Every Child", 14000.0, 20000.0, "A lack of school supplies and resources should never stand between a child and their future. Help us equip learners with the tools they need to succeed.", "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?q=80&w=2073"),
-                Cause("Safe Shelter For Families", 4500.0, 15000.0, "No family should sleep without a roof over their heads. We are raising funds to expand our shelter facilities and offer more families a safe place to stay.", "https://images.unsplash.com/photo-1464936416041-0d3211f5d6f6?q=80&w=2070")
+                Cause("Safe Shelter For Families", 4500.0, 15000.0, "No family should sleep without a roof over their heads. We are raising funds to expand our shelter facilities and offer more families a safe place to stay.", "https://images.unsplash.com/photo-1460317442991-0ec209397118?q=80&w=2070")
             )
             
             causes.forEach { cause ->
@@ -40,7 +44,6 @@ fun CausesScreen(onDonateClick: () -> Unit) {
             }
         }
         
-        NewsletterSection()
     }
 }
 
@@ -50,11 +53,16 @@ fun CauseCard(cause: Cause, onDonateClick: () -> Unit) {
     
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
     ) {
         Column {
             AsyncImage(
-                model = cause.imageUrl,
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(cause.imageUrl)
+                    .crossfade(true)
+                    .build(),
+                placeholder = painterResource(R.drawable.ic_logo),
+                error = painterResource(R.drawable.ic_logo),
                 contentDescription = null,
                 modifier = Modifier.fillMaxWidth().height(180.dp),
                 contentScale = ContentScale.Crop

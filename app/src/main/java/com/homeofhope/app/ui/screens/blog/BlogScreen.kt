@@ -7,10 +7,14 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
+import coil.request.ImageRequest
+import com.homeofhope.app.R
 import com.homeofhope.app.ui.components.FooterSection
 import com.homeofhope.app.ui.components.NewsletterSection
 import com.homeofhope.app.ui.components.PageHeader
@@ -28,7 +32,7 @@ fun BlogScreen() {
         Column(modifier = Modifier.padding(16.dp)) {
             val blogs = listOf(
                 BlogPost("How Our Feeding Programme Is Changing Lives in Thembisa", "Every morning, dozens of children arrive at our centre knowing they will receive a warm, nutritious meal. We share the stories of the families whose lives have been transformed by your support.", "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=2070"),
-                BlogPost("Meet the Volunteers Who Show Up Every Single Week", "Behind every meal served and every child supported is a team of dedicated volunteers. We sat down with some of our longest serving volunteers to hear why they keep coming back.", "https://images.unsplash.com/photo-1559027615-cd26736f5df8?q=80&w=2070"),
+                BlogPost("Meet the Volunteers Who Show Up Every Single Week", "Behind every meal served and every child supported is a team of dedicated volunteers. We sat down with some of our longest serving volunteers to hear why they keep coming back.", "https://images.unsplash.com/photo-1531206715517-5c0ba140b2b8?q=80&w=2070"),
                 BlogPost("Why Safe Shelter Is About More Than Just a Roof", "For many of the families we support, having a safe place to sleep is just the beginning. We explore how stable shelter opens the door to education, health and a hopeful future.", "https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?q=80&w=2070")
             )
             
@@ -37,8 +41,6 @@ fun BlogScreen() {
                 Spacer(modifier = Modifier.height(24.dp))
             }
         }
-        
-        NewsletterSection()
     }
 }
 
@@ -50,7 +52,12 @@ fun BlogCard(blog: BlogPost) {
     ) {
         Column {
             AsyncImage(
-                model = blog.imageUrl,
+                model = ImageRequest.Builder(LocalContext.current)
+                    .data(blog.imageUrl)
+                    .crossfade(true)
+                    .build(),
+                placeholder = painterResource(R.drawable.ic_logo),
+                error = painterResource(R.drawable.ic_logo),
                 contentDescription = null,
                 modifier = Modifier.fillMaxWidth().height(180.dp),
                 contentScale = ContentScale.Crop

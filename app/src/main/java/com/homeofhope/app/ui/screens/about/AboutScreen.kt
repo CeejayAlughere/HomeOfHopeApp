@@ -42,7 +42,6 @@ fun AboutScreen() {
         AboutTabSection()
         StatsSection()
         TestimonialsSection()
-        NewsletterSection()
     }
 }
 
@@ -146,7 +145,12 @@ fun TestimonialsSection() {
             name = "Elizabeth Johnson",
             role = "Volunteer",
             text = "Volunteering at Siyazigabisa has been one of the most rewarding experiences of my life. Seeing the smiles on people's faces when you show up to help is something words cannot describe."
-        )
+        ),
+        Testimonial(
+            name = "Xander Smith",
+            role = "Donor",
+            text = "I have been donating to Home Of Hope for over a year now and I can see exactly where my money goes. This organisation is transparent, passionate and truly committed to uplifting our community."
+        ),
     )
 
     Column(
