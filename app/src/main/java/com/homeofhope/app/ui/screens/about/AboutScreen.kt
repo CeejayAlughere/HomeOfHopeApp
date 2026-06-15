@@ -132,7 +132,7 @@ fun AboutStatCard(label: String, value: Int, icon: ImageVector, modifier: Modifi
     var startAnimate by remember { mutableStateOf(false) }
     val animatedValue by animateIntAsState(
         targetValue = if (startAnimate) value else 0,
-        animationSpec = tween(durationMillis = 3000)
+        animationSpec = tween(durationMillis = 6000)
     )
     
     LaunchedEffect(Unit) {
