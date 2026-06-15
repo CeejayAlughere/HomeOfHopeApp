@@ -13,11 +13,28 @@ class DonateViewModel(private val repository: HomeRepository) : ViewModel() {
     var uiState by mutableStateOf<UiState>(UiState.Idle)
         private set
 
-    fun submitDonation(name: String, email: String, amount: Double) {
+    fun submitDonation(
+        name: String,
+        email: String,
+        phoneNumber: String,
+        amount: Double,
+        frequency: String,
+        paymentMethod: String,
+        message: String?
+    ) {
         viewModelScope.launch {
             uiState = UiState.Loading
             uiState = try {
-                val response = repository.submitDonation(Donation(name = name, email = email, amount = amount))
+                val donation = Donation(
+                    name = name,
+                    email = email,
+                    phoneNumber = phoneNumber,
+                    amount = amount,
+                    frequency = frequency,
+                    paymentMethod = paymentMethod,
+                    message = message
+                )
+                val response = repository.submitDonation(donation)
                 if (response.success) UiState.Success else UiState.Error(response.message)
             } catch (e: Exception) {
                 UiState.Error(e.message ?: "Unknown error")

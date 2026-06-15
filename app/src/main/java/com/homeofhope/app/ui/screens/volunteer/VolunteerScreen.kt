@@ -2,6 +2,7 @@ package com.homeofhope.app.ui.screens.volunteer
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
@@ -51,48 +52,67 @@ fun VolunteerScreen(viewModel: VolunteerViewModel) {
             PageHeader(title = "Become A Volunteer", imageUrl = "https://images.unsplash.com/photo-1531206715517-5c0ba140b2b8?q=80&w=2070")
             
             Column(modifier = Modifier.padding(16.dp)) {
-                OutlinedTextField(
-                    value = name,
-                    onValueChange = { name = it },
-                    label = { Text("Your Full Name") },
+                Card(
                     modifier = Modifier.fillMaxWidth(),
-                    singleLine = true
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                OutlinedTextField(
-                    value = email,
-                    onValueChange = { email = it },
-                    label = { Text("Your Email Address") },
-                    modifier = Modifier.fillMaxWidth(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
-                    singleLine = true
-                )
-                Spacer(modifier = Modifier.height(16.dp))
-                OutlinedTextField(
-                    value = reason,
-                    onValueChange = { reason = it },
-                    label = { Text("Tell us why you'd like to volunteer with us…") },
-                    modifier = Modifier.fillMaxWidth(),
-                    minLines = 4
-                )
-                
-                Spacer(modifier = Modifier.height(24.dp))
-                
-                Button(
-                    onClick = {
-                        if (Validator.isNotBlank(name) && Validator.isValidEmail(email) && Validator.isNotBlank(reason)) {
-                            viewModel.submitVolunteer(name, email, reason)
-                        }
-                    },
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(containerColor = HopeGreen),
-                    shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp),
-                    enabled = uiState !is UiState.Loading
+                    shape = RoundedCornerShape(24.dp),
+                    colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+                    elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
                 ) {
-                    if (uiState is UiState.Loading) {
-                        CircularProgressIndicator(modifier = Modifier.size(24.dp), color = HopeWhite)
-                    } else {
-                        Text("Become A Volunteer", color = HopeWhite)
+                    Column(modifier = Modifier.padding(24.dp)) {
+                        Text(
+                            text = "Volunteer Registration",
+                            style = MaterialTheme.typography.headlineSmall,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        
+                        OutlinedTextField(
+                            value = name,
+                            onValueChange = { name = it },
+                            label = { Text("Your Full Name") },
+                            modifier = Modifier.fillMaxWidth(),
+                            singleLine = true,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        OutlinedTextField(
+                            value = email,
+                            onValueChange = { email = it },
+                            label = { Text("Your Email Address") },
+                            modifier = Modifier.fillMaxWidth(),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email),
+                            singleLine = true,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        Spacer(modifier = Modifier.height(16.dp))
+                        OutlinedTextField(
+                            value = reason,
+                            onValueChange = { reason = it },
+                            label = { Text("Why do you want to join us?") },
+                            modifier = Modifier.fillMaxWidth(),
+                            minLines = 4,
+                            shape = RoundedCornerShape(12.dp)
+                        )
+                        
+                        Spacer(modifier = Modifier.height(24.dp))
+                        
+                        Button(
+                            onClick = {
+                                if (Validator.isNotBlank(name) && Validator.isValidEmail(email) && Validator.isNotBlank(reason)) {
+                                    viewModel.submitVolunteer(name, email, reason)
+                                }
+                            },
+                            modifier = Modifier.fillMaxWidth().height(56.dp),
+                            colors = ButtonDefaults.buttonColors(containerColor = HopeGreen),
+                            shape = RoundedCornerShape(12.dp),
+                            enabled = uiState !is UiState.Loading
+                        ) {
+                            if (uiState is UiState.Loading) {
+                                CircularProgressIndicator(modifier = Modifier.size(24.dp), color = HopeWhite)
+                            } else {
+                                Text("Become A Volunteer", color = HopeWhite, fontWeight = FontWeight.Bold)
+                            }
+                        }
                     }
                 }
                 
@@ -100,7 +120,7 @@ fun VolunteerScreen(viewModel: VolunteerViewModel) {
                 
                 Text(
                     text = "At Siyazigabisa Home Of Hope, our volunteers are the heartbeat of everything we do. Whether you help serve meals, assist with educational programmes, support our shelter residents or simply show up with a kind heart, your time and effort means the world to the people we serve. No special skills are required, only a willingness to give back to your community. Fill in the form and take the first step towards making a lasting impact.",
-                    fontSize = 14.sp,
+                    style = MaterialTheme.typography.bodyMedium,
                     lineHeight = 22.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

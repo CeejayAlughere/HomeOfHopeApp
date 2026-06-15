@@ -2,10 +2,13 @@ package com.homeofhope.app.ui.screens.causes
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
@@ -18,6 +21,7 @@ import com.homeofhope.app.R
 import com.homeofhope.app.ui.components.FooterSection
 import com.homeofhope.app.ui.components.NewsletterSection
 import com.homeofhope.app.ui.components.PageHeader
+import com.homeofhope.app.ui.theme.HopeDark
 import com.homeofhope.app.ui.theme.HopeGreen
 import com.homeofhope.app.ui.theme.HopeWhite
 
@@ -53,7 +57,9 @@ fun CauseCard(cause: Cause, onDonateClick: () -> Unit) {
     
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        shape = RoundedCornerShape(28.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column {
             AsyncImage(
@@ -64,46 +70,61 @@ fun CauseCard(cause: Cause, onDonateClick: () -> Unit) {
                 placeholder = painterResource(R.drawable.ic_logo),
                 error = painterResource(R.drawable.ic_logo),
                 contentDescription = null,
-                modifier = Modifier.fillMaxWidth().height(180.dp),
+                modifier = Modifier.fillMaxWidth().height(220.dp),
                 contentScale = ContentScale.Crop
             )
             
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(text = cause.title, fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.height(8.dp))
+            Column(modifier = Modifier.padding(24.dp)) {
+                Text(
+                    text = cause.title,
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold
+                )
+                Spacer(modifier = Modifier.height(16.dp))
                 
                 LinearProgressIndicator(
                     progress = { progress },
-                    modifier = Modifier.fillMaxWidth().height(8.dp),
+                    modifier = Modifier.fillMaxWidth().height(10.dp).clip(CircleShape),
                     color = HopeGreen,
-                    trackColor = HopeGreen.copy(alpha = 0.2f)
+                    trackColor = HopeGreen.copy(alpha = 0.1f)
                 )
                 
                 Row(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 8.dp),
+                    modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
                     horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Text(text = "Raised: R${cause.raised.toInt()}", fontSize = 12.sp, fontWeight = FontWeight.Bold, color = HopeGreen)
-                    Text(text = "Goal: R${cause.goal.toInt()}", fontSize = 12.sp, fontWeight = FontWeight.Bold)
+                    Column {
+                        Text(text = "Raised", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.outline)
+                        Text(text = "R${cause.raised.toInt()}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold, color = HopeGreen)
+                    }
+                    Column(horizontalAlignment = androidx.compose.ui.Alignment.End) {
+                        Text(text = "Goal", style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.outline)
+                        Text(text = "R${cause.goal.toInt()}", style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
+                    }
                 }
                 
-                Text(text = cause.description, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+                Text(
+                    text = cause.description,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    lineHeight = 22.sp
+                )
                 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(24.dp))
                 
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(8.dp)) {
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     OutlinedButton(
                         onClick = { /* Learn More */ },
-                        modifier = Modifier.weight(1f),
-                        shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp)
+                        modifier = Modifier.weight(1f).height(48.dp),
+                        shape = RoundedCornerShape(12.dp)
                     ) {
                         Text("Learn More")
                     }
                     Button(
                         onClick = onDonateClick,
-                        modifier = Modifier.weight(1f),
+                        modifier = Modifier.weight(1f).height(48.dp),
                         colors = ButtonDefaults.buttonColors(containerColor = HopeGreen),
-                        shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp)
+                        shape = RoundedCornerShape(12.dp)
                     ) {
                         Text("Donate Now", color = HopeWhite)
                     }

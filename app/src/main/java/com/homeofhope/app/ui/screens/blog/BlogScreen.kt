@@ -2,6 +2,7 @@ package com.homeofhope.app.ui.screens.blog
 
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -19,6 +20,7 @@ import com.homeofhope.app.ui.components.FooterSection
 import com.homeofhope.app.ui.components.NewsletterSection
 import com.homeofhope.app.ui.components.PageHeader
 import com.homeofhope.app.ui.theme.HopeGreen
+import com.homeofhope.app.ui.theme.HopeWhite
 
 @Composable
 fun BlogScreen() {
@@ -48,7 +50,9 @@ fun BlogScreen() {
 fun BlogCard(blog: BlogPost) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        shape = RoundedCornerShape(28.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column {
             AsyncImage(
@@ -59,17 +63,34 @@ fun BlogCard(blog: BlogPost) {
                 placeholder = painterResource(R.drawable.ic_logo),
                 error = painterResource(R.drawable.ic_logo),
                 contentDescription = null,
-                modifier = Modifier.fillMaxWidth().height(180.dp),
+                modifier = Modifier.fillMaxWidth().height(200.dp),
                 contentScale = ContentScale.Crop
             )
             
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(text = blog.title, fontSize = 18.sp, fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.height(8.dp))
-                Text(text = blog.preview, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            Column(modifier = Modifier.padding(24.dp)) {
+                Text(
+                    text = blog.title,
+                    style = MaterialTheme.typography.titleLarge,
+                    fontWeight = FontWeight.Bold
+                )
                 Spacer(modifier = Modifier.height(12.dp))
-                TextButton(onClick = { /* Read More */ }, contentPadding = PaddingValues(0.dp)) {
-                    Text("Read More", color = HopeGreen, fontWeight = FontWeight.Bold)
+                Text(
+                    text = blog.preview,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    lineHeight = 22.sp
+                )
+                Spacer(modifier = Modifier.height(20.dp))
+                TextButton(
+                    onClick = { /* Read More */ },
+                    contentPadding = PaddingValues(0.dp)
+                ) {
+                    Text(
+                        text = "Read Article →",
+                        style = MaterialTheme.typography.labelLarge,
+                        color = HopeGreen,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
         }

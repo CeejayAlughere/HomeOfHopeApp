@@ -4,9 +4,12 @@ import android.os.Bundle
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.currentBackStackEntryAsState
@@ -58,11 +61,21 @@ class MainActivity : ComponentActivity() {
                             drawerContainerColor = HopeDark,
                             drawerContentColor = HopeWhite
                         ) {
-                            Text("Navigation Drawer", modifier = Modifier.padding(16.dp), style = MaterialTheme.typography.titleLarge, color = HopeGreen)
-                            HorizontalDivider(color = HopeWhite.copy(alpha = 0.1f))
+                            Text(
+                                text = "Navigation Drawer", 
+                                modifier = Modifier.padding(24.dp), 
+                                style = MaterialTheme.typography.headlineSmall, 
+                                fontWeight = FontWeight.Bold,
+                                color = HopeGreen
+                            )
+                            HorizontalDivider(
+                                modifier = Modifier.padding(horizontal = 24.dp),
+                                color = HopeWhite.copy(alpha = 0.1f)
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
                             moreScreens.forEach { screen ->
                                 NavigationDrawerItem(
-                                    label = { Text(screen.label) },
+                                    label = { Text(screen.label, fontWeight = FontWeight.Medium) },
                                     selected = currentRoute == screen.route,
                                     onClick = {
                                         navController.navigate(screen.route) {
@@ -72,11 +85,15 @@ class MainActivity : ComponentActivity() {
                                         }
                                         scope.launch { drawerState.close() }
                                     },
+                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                                    shape = RoundedCornerShape(12.dp),
                                     colors = NavigationDrawerItemDefaults.colors(
-                                        unselectedContainerColor = HopeDark,
+                                        unselectedContainerColor = Color.Transparent,
                                         selectedContainerColor = HopeGreen.copy(alpha = 0.2f),
-                                        unselectedTextColor = HopeWhite,
-                                        selectedTextColor = HopeGreen
+                                        unselectedTextColor = HopeWhite.copy(alpha = 0.7f),
+                                        selectedTextColor = HopeGreen,
+                                        unselectedIconColor = HopeWhite.copy(alpha = 0.7f),
+                                        selectedIconColor = HopeGreen
                                     )
                                 )
                             }

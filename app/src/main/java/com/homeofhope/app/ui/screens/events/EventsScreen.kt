@@ -1,7 +1,9 @@
 package com.homeofhope.app.ui.screens.events
 
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.CalendarToday
@@ -11,6 +13,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
@@ -24,6 +27,7 @@ import com.homeofhope.app.R
 import com.homeofhope.app.ui.components.FooterSection
 import com.homeofhope.app.ui.components.NewsletterSection
 import com.homeofhope.app.ui.components.PageHeader
+import com.homeofhope.app.ui.theme.HopeDark
 import com.homeofhope.app.ui.theme.HopeGreen
 import com.homeofhope.app.ui.theme.HopeWhite
 
@@ -57,44 +61,77 @@ fun EventsScreen(onVolunteerClick: () -> Unit) {
 fun EventCard(event: Event, onVolunteerClick: () -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
-        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
+        shape = RoundedCornerShape(28.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp)
     ) {
         Column {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(event.imageUrl)
-                    .crossfade(true)
-                    .build(),
-                placeholder = painterResource(R.drawable.ic_logo),
-                error = painterResource(R.drawable.ic_logo),
-                contentDescription = null,
-                modifier = Modifier.fillMaxWidth().height(180.dp),
-                contentScale = ContentScale.Crop
-            )
-            
-            Column(modifier = Modifier.padding(16.dp)) {
-                Text(text = event.title, fontSize = 20.sp, fontWeight = FontWeight.Bold)
-                Spacer(modifier = Modifier.height(12.dp))
+            Box(modifier = Modifier.height(200.dp)) {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(event.imageUrl)
+                        .crossfade(true)
+                        .build(),
+                    placeholder = painterResource(R.drawable.ic_logo),
+                    error = painterResource(R.drawable.ic_logo),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
                 
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    EventMetaItem(Icons.Default.CalendarToday, event.date)
-                    EventMetaItem(Icons.Default.Schedule, event.time)
+                // Date Badge
+                Surface(
+                    modifier = Modifier
+                        .padding(16.dp)
+                        .align(Alignment.TopEnd),
+                    color = HopeGreen,
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Column(
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        val dateParts = event.date.split(" ")
+                        if (dateParts.size >= 2) {
+                            Text(text = dateParts[0], color = HopeWhite, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                            Text(text = dateParts[1].substring(0, 3).uppercase(), color = HopeWhite, style = MaterialTheme.typography.labelSmall)
+                        }
+                    }
                 }
-                Spacer(modifier = Modifier.height(8.dp))
-                EventMetaItem(Icons.Default.LocationOn, event.location)
-                
-                Spacer(modifier = Modifier.height(12.dp))
-                Text(text = event.description, fontSize = 14.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+            }
+            
+            Column(modifier = Modifier.padding(24.dp)) {
+                Text(
+                    text = event.title,
+                    style = MaterialTheme.typography.headlineSmall,
+                    fontWeight = FontWeight.Bold
+                )
                 
                 Spacer(modifier = Modifier.height(16.dp))
                 
+                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
+                    EventMetaItem(Icons.Default.Schedule, event.time)
+                    EventMetaItem(Icons.Default.LocationOn, event.location)
+                }
+                
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                Text(
+                    text = event.description,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    lineHeight = 22.sp
+                )
+                
+                Spacer(modifier = Modifier.height(24.dp))
+                
                 Button(
                     onClick = onVolunteerClick,
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier.fillMaxWidth().height(48.dp),
                     colors = ButtonDefaults.buttonColors(containerColor = HopeGreen),
-                    shape = androidx.compose.foundation.shape.RoundedCornerShape(4.dp)
+                    shape = RoundedCornerShape(12.dp)
                 ) {
-                    Text("Join Now", color = HopeWhite)
+                    Text("Join Event", color = HopeWhite, fontWeight = FontWeight.Bold)
                 }
             }
         }

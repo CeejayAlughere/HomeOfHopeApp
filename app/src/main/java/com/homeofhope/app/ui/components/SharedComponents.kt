@@ -4,6 +4,7 @@ import android.content.Context
 import android.content.Intent
 import android.net.Uri
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
@@ -30,6 +31,7 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.homeofhope.app.R
 import com.homeofhope.app.ui.navigation.Screen
+import com.homeofhope.app.ui.theme.*
 import com.homeofhope.app.ui.theme.HopeDark
 import com.homeofhope.app.ui.theme.HopeGreen
 import com.homeofhope.app.ui.theme.HopeLight
@@ -38,8 +40,15 @@ import com.homeofhope.app.ui.theme.HopeWhite
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun AppTopBar(title: String, canNavigateBack: Boolean, onBack: () -> Unit) {
-    TopAppBar(
-        title = { Text(text = title, color = HopeWhite) },
+    CenterAlignedTopAppBar(
+        title = { 
+            Text(
+                text = title, 
+                color = HopeWhite,
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold
+            ) 
+        },
         navigationIcon = {
             if (canNavigateBack) {
                 IconButton(onClick = onBack) {
@@ -47,7 +56,11 @@ fun AppTopBar(title: String, canNavigateBack: Boolean, onBack: () -> Unit) {
                 }
             }
         },
-        colors = TopAppBarDefaults.topAppBarColors(containerColor = HopeDark)
+        colors = TopAppBarDefaults.centerAlignedTopAppBarColors(
+            containerColor = HopeDark,
+            navigationIconContentColor = HopeWhite,
+            titleContentColor = HopeWhite
+        )
     )
 }
 
@@ -55,38 +68,59 @@ fun AppTopBar(title: String, canNavigateBack: Boolean, onBack: () -> Unit) {
 fun NewsletterSection() {
     var email by remember { mutableStateOf("") }
     
-    Column(
+    Card(
         modifier = Modifier
             .fillMaxWidth()
-            .background(HopeLight)
-            .padding(24.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(16.dp),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = HopeLight),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
-        Text(
-            text = "Subscribe to Our Monthly Newsletter",
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold,
-            textAlign = TextAlign.Center
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            verticalAlignment = Alignment.CenterVertically
+        Column(
+            modifier = Modifier.padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            OutlinedTextField(
-                value = email,
-                onValueChange = { email = it },
-                modifier = Modifier.weight(1f),
-                placeholder = { Text("Enter your email") },
-                singleLine = true
+            Icon(
+                imageVector = Icons.Default.Email,
+                contentDescription = null,
+                tint = HopeGreen,
+                modifier = Modifier.size(40.dp)
             )
-            Spacer(modifier = Modifier.width(8.dp))
-            Button(
-                onClick = { /* Handle subscription */ },
-                colors = ButtonDefaults.buttonColors(containerColor = HopeGreen),
-                shape = RoundedCornerShape(4.dp)
+            Spacer(modifier = Modifier.height(16.dp))
+            Text(
+                text = "Subscribe to Our Newsletter",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold,
+                textAlign = TextAlign.Center
+            )
+            Text(
+                text = "Stay updated with our latest causes and events.",
+                style = MaterialTheme.typography.bodyMedium,
+                color = HopeGrey,
+                textAlign = TextAlign.Center
+            )
+            Spacer(modifier = Modifier.height(24.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                verticalAlignment = Alignment.CenterVertically
             ) {
-                Text("Subscribe")
+                OutlinedTextField(
+                    value = email,
+                    onValueChange = { email = it },
+                    modifier = Modifier.weight(1f),
+                    placeholder = { Text("Enter your email") },
+                    singleLine = true,
+                    shape = RoundedCornerShape(12.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Button(
+                    onClick = { /* Handle subscription */ },
+                    colors = ButtonDefaults.buttonColors(containerColor = HopeGreen),
+                    shape = RoundedCornerShape(12.dp),
+                    contentPadding = PaddingValues(horizontal = 16.dp, vertical = 12.dp)
+                ) {
+                    Text("Join")
+                }
             }
         }
     }
@@ -138,7 +172,7 @@ fun PageHeader(title: String, imageUrl: String) {
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(200.dp)
+            .height(250.dp)
     ) {
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
@@ -154,16 +188,22 @@ fun PageHeader(title: String, imageUrl: String) {
         Box(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Brush.verticalGradient(listOf(Color.Transparent, HopeDark.copy(alpha = 0.7f))))
+                .background(
+                    Brush.verticalGradient(
+                        listOf(Color.Transparent, Color.Black.copy(alpha = 0.7f))
+                    )
+                )
         )
         Text(
             text = title,
             color = HopeWhite,
             style = MaterialTheme.typography.headlineLarge,
             fontWeight = FontWeight.Bold,
+            textAlign = TextAlign.Center,
             modifier = Modifier
-                .align(Alignment.Center)
-                .padding(16.dp)
+                .align(Alignment.BottomCenter)
+                .padding(24.dp)
+                .padding(bottom = 16.dp)
         )
     }
 }
@@ -185,40 +225,82 @@ fun AppBottomNav(navController: NavController, currentRoute: String?, onMoreClic
         Screen.Events
     )
     
-    NavigationBar(containerColor = HopeDark) {
-        items.forEach { screen ->
-            NavigationBarItem(
-                icon = { Icon(screen.icon, contentDescription = screen.label) },
-                label = { Text(screen.label, fontSize = 10.sp) },
-                selected = currentRoute == screen.route,
-                onClick = {
-                    navController.navigate(screen.route) {
-                        popUpTo(navController.graph.startDestinationId) { saveState = true }
-                        launchSingleTop = true
-                        restoreState = true
+    Surface(
+        modifier = Modifier
+            .padding(horizontal = 24.dp, vertical = 16.dp)
+            .fillMaxWidth()
+            .height(72.dp),
+        shape = RoundedCornerShape(36.dp),
+        color = HopeDark,
+        tonalElevation = 8.dp,
+        shadowElevation = 8.dp
+    ) {
+        Row(
+            modifier = Modifier.fillMaxSize(),
+            horizontalArrangement = Arrangement.SpaceEvenly,
+            verticalAlignment = Alignment.CenterVertically
+        ) {
+            items.forEach { screen ->
+                val selected = currentRoute == screen.route
+                BottomNavItem(
+                    screenRoute = screen.route,
+                    screenLabel = screen.label,
+                    screenIcon = screen.icon,
+                    selected = selected,
+                    onClick = {
+                        if (!selected) {
+                            navController.navigate(screen.route) {
+                                popUpTo(navController.graph.startDestinationId) { saveState = true }
+                                launchSingleTop = true
+                                restoreState = true
+                            }
+                        }
                     }
-                },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = HopeGreen,
-                    selectedTextColor = HopeGreen,
-                    unselectedIconColor = HopeWhite.copy(alpha = 0.6f),
-                    unselectedTextColor = HopeWhite.copy(alpha = 0.6f),
-                    indicatorColor = Color.Transparent
                 )
+            }
+            
+            BottomNavItem(
+                screenRoute = "more",
+                screenLabel = "More",
+                screenIcon = Icons.Default.Menu,
+                selected = false,
+                onClick = onMoreClick
             )
         }
-        
-        NavigationBarItem(
-            icon = { Icon(Icons.Default.Menu, contentDescription = "More") },
-            label = { Text("More", fontSize = 10.sp) },
-            selected = false,
-            onClick = onMoreClick,
-            colors = NavigationBarItemDefaults.colors(
-                unselectedIconColor = HopeWhite.copy(alpha = 0.6f),
-                unselectedTextColor = HopeWhite.copy(alpha = 0.6f),
-                indicatorColor = Color.Transparent
+    }
+}
+
+@Composable
+fun BottomNavItem(screenRoute: String, screenLabel: String, screenIcon: androidx.compose.ui.graphics.vector.ImageVector, selected: Boolean, onClick: () -> Unit) {
+    val contentColor = if (selected) HopeGreen else HopeWhite.copy(alpha = 0.6f)
+    val containerColor = if (selected) HopeGreen.copy(alpha = 0.15f) else Color.Transparent
+    
+    Box(
+        modifier = Modifier
+            .size(width = 64.dp, height = 48.dp)
+            .background(containerColor, RoundedCornerShape(24.dp))
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center
+    ) {
+        Column(
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Icon(
+                imageVector = screenIcon,
+                contentDescription = screenLabel,
+                tint = contentColor,
+                modifier = Modifier.size(24.dp)
             )
-        )
+            if (selected) {
+                Text(
+                    text = screenLabel,
+                    color = contentColor,
+                    fontSize = 10.sp,
+                    fontWeight = FontWeight.Medium
+                )
+            }
+        }
     }
 }
 
