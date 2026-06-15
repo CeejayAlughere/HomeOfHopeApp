@@ -1,0 +1,16 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="200dp"
+    android:height="40dp"
+    android:viewportWidth="200"
+    android:viewportHeight="40">
+    <!-- Simple representative branding text "HOME OF HOPE" -->
+    <!-- Note: In a real app, this would be a proper text-path or image -->
+    <path
+        android:fillColor="#3EB489"
+        android:pathData="M20,15h3v10h-3zM25,15h3l2,5l2,-5h3v10h-3v-5l-2,5h-2l-2,-5v5h-3zM40,15h8v2h-5v2h4v2h-4v2h5v2h-8z"
+        android:alpha="0.8" />
+    <path
+        android:fillColor="#3EB489"
+        android:pathData="M60,15h8v10h-8zM62,17h4v6h-4zM72,15h8v2h-5v2h4v2h-4v6h-3zM85,15h8v2h-5v2h4v2h-4v2h5v2h-8z"
+        android:alpha="0.8" />
+</vector>

@@ -1,0 +1,19 @@
+<vector xmlns:android="http://schemas.android.com/apk/res/android"
+    android:width="288dp"
+    android:height="288dp"
+    android:viewportWidth="288"
+    android:viewportHeight="288">
+    <!-- Outer circle for a soft modern look -->
+    <path
+        android:fillColor="#3EB489"
+        android:pathData="M144,24A120,120 0,1 0,144 264A120,120 0,1 0,144 24ZM144,248A104,104 0,1 1,144 40A104,104 0,1 1,144 248Z"
+        android:alpha="0.1" />
+    <!-- Modern House icon -->
+    <path
+        android:fillColor="#3EB489"
+        android:pathData="M144,72L64,136V216H112V168H176V216H224V136L144,72Z" />
+    <!-- Heart in the middle of the house -->
+    <path
+        android:fillColor="#FFFFFF"
+        android:pathData="M144,144C144,144 141,138 136,138C131,138 128,142 128,146C128,151 133,155 144,162C155,155 160,151 160,146C160,142 157,138 152,138C147,138 144,144 144,144Z" />
+</vector>

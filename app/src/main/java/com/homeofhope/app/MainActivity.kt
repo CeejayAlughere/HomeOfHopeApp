@@ -1,6 +1,9 @@
 package com.homeofhope.app
 
+import android.animation.ObjectAnimator
 import android.os.Bundle
+import android.view.View
+import android.view.animation.AnticipateInterpolator
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
@@ -11,6 +14,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
+import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
@@ -31,8 +35,46 @@ import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
-        installSplashScreen()
+        val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
+        
+        // Add a custom exit animation for the splash screen
+        splashScreen.setOnExitAnimationListener { splashScreenView ->
+            // Create a fade out and scale up animation
+            val fadeOut = ObjectAnimator.ofFloat(
+                splashScreenView.view,
+                View.ALPHA,
+                1f,
+                0f
+            )
+            fadeOut.interpolator = AnticipateInterpolator()
+            fadeOut.duration = 500L
+
+            val scaleX = ObjectAnimator.ofFloat(
+                splashScreenView.iconView,
+                View.SCALE_X,
+                1f,
+                1.5f
+            )
+            scaleX.interpolator = AnticipateInterpolator()
+            scaleX.duration = 500L
+
+            val scaleY = ObjectAnimator.ofFloat(
+                splashScreenView.iconView,
+                View.SCALE_Y,
+                1f,
+                1.5f
+            )
+            scaleY.interpolator = AnticipateInterpolator()
+            scaleY.duration = 500L
+
+            // Run animations together and remove splash screen view when finished
+            fadeOut.doOnEnd { splashScreenView.remove() }
+            
+            fadeOut.start()
+            scaleX.start()
+            scaleY.start()
+        }
         
         val repository = HomeRepository(RetrofitClient.instance)
         val donateViewModel = DonateViewModel(repository)

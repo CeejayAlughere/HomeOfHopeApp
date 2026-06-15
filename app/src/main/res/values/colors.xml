@@ -2,4 +2,5 @@
 <resources>
     <color name="hope_dark">#1A1A2E</color>
     <color name="hope_green">#3EB489</color>
+    <color name="hope_white">#FFFFFF</color>
 </resources>

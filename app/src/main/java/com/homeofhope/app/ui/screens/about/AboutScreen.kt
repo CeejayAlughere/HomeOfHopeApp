@@ -46,7 +46,6 @@ fun AboutScreen() {
         PageHeader(title = "About Us", imageUrl = "https://images.unsplash.com/photo-1524069290683-0457abfe42c3?q=80&w=2070")
         AboutTabSection()
         StatsSection()
-        TestimonialsSection()
     }
 }
 
