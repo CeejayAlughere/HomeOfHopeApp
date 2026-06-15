@@ -99,7 +99,7 @@ fun ImpactStatsSection() {
                 modifier = Modifier.weight(1f)
             )
             ImpactCard(
-                count = "85%",
+                count = "75%",
                 label = "Goal Reached",
                 icon = Icons.Default.TrendingUp,
                 modifier = Modifier.weight(1f)
