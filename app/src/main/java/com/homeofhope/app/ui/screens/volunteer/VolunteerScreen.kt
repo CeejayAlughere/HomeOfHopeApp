@@ -128,10 +128,6 @@ fun VolunteerScreen(viewModel: VolunteerViewModel) {
                 .padding(padding)
                 .verticalScroll(scrollState)
         ) {
-            PageHeader(
-                title = "Join Our Mission", 
-                imageUrl = "https://images.unsplash.com/photo-1559027615-cd26714e5d99?q=80&w=2070"
-            )
             
             Column(modifier = Modifier.padding(16.dp)) {
                 VolunteerProgressBar(currentStep, totalSteps)
