@@ -1,19 +1,19 @@
 <vector xmlns:android="http://schemas.android.com/apk/res/android"
-    android:width="288dp"
-    android:height="288dp"
-    android:viewportWidth="288"
-    android:viewportHeight="288">
-    <!-- Outer circle for a soft modern look -->
+    android:width="108dp"
+    android:height="108dp"
+    android:viewportWidth="108"
+    android:viewportHeight="108">
+    <!-- Outer circle for a soft modern look, centered and scaled to stay within safe zone -->
     <path
         android:fillColor="#3EB489"
-        android:pathData="M144,24A120,120 0,1 0,144 264A120,120 0,1 0,144 24ZM144,248A104,104 0,1 1,144 40A104,104 0,1 1,144 248Z"
+        android:pathData="M54,24A30,30 0,1 0,54 84A30,30 0,1 0,54 24ZM54,80A26,26 0,1 1,54 28A26,26 0,1 1,54 80Z"
         android:alpha="0.1" />
-    <!-- Modern House icon -->
+    <!-- Modern House icon, centered and scaled -->
     <path
         android:fillColor="#3EB489"
-        android:pathData="M144,72L64,136V216H112V168H176V216H224V136L144,72Z" />
-    <!-- Heart in the middle of the house -->
+        android:pathData="M54,36L34,52V72H46V60H62V72H74V52L54,36Z" />
+    <!-- Heart in the middle of the house, centered and scaled -->
     <path
         android:fillColor="#FFFFFF"
-        android:pathData="M144,144C144,144 141,138 136,138C131,138 128,142 128,146C128,151 133,155 144,162C155,155 160,151 160,146C160,142 157,138 152,138C147,138 144,144 144,144Z" />
+        android:pathData="M54,54C54,54 53.25,52.5 52,52.5C50.75,52.5 50,53.5 50,54.5C50,55.75 51.25,56.75 54,58.5C56.75,56.75 58,55.75 58,54.5C58,53.5 57.25,52.5 56,52.5C54.75,52.5 54,54 54,54Z" />
 </vector>
