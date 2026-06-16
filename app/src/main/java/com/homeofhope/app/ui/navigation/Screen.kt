@@ -32,4 +32,5 @@ sealed class Screen(val route: String, val label: String, val icon: ImageVector)
     object Privacy   : Screen("privacy",   "Privacy", Icons.Default.PrivacyTip)
     object Terms     : Screen("terms",     "Terms",   Icons.Default.Gavel)
     object Cookies   : Screen("cookies",   "Cookies", Icons.Default.Cookie)
+    object CauseDetail : Screen("cause_detail/{causeId}", "Cause Detail", Icons.Default.Favorite)
 }

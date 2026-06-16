@@ -26,7 +26,7 @@ import com.homeofhope.app.ui.theme.HopeGreen
 import com.homeofhope.app.ui.theme.HopeWhite
 
 @Composable
-fun CausesScreen(onDonateClick: () -> Unit) {
+fun CausesScreen(onDonateClick: () -> Unit, onLearnMoreClick: (String) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -43,7 +43,7 @@ fun CausesScreen(onDonateClick: () -> Unit) {
             )
             
             causes.forEach { cause ->
-                CauseCard(cause, onDonateClick)
+                CauseCard(cause, onDonateClick, onLearnMoreClick)
                 Spacer(modifier = Modifier.height(24.dp))
             }
         }
@@ -52,7 +52,7 @@ fun CausesScreen(onDonateClick: () -> Unit) {
 }
 
 @Composable
-fun CauseCard(cause: Cause, onDonateClick: () -> Unit) {
+fun CauseCard(cause: Cause, onDonateClick: () -> Unit, onLearnMoreClick: (String) -> Unit) {
     val progress = (cause.raised / cause.goal).toFloat()
     
     Card(
@@ -114,7 +114,7 @@ fun CauseCard(cause: Cause, onDonateClick: () -> Unit) {
                 
                 Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
                     OutlinedButton(
-                        onClick = { /* Learn More */ },
+                        onClick = { onLearnMoreClick(cause.title) },
                         modifier = Modifier.weight(1f).height(48.dp),
                         shape = RoundedCornerShape(12.dp)
                     ) {

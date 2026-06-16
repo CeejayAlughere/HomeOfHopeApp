@@ -7,6 +7,7 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.homeofhope.app.ui.screens.about.AboutScreen
 import com.homeofhope.app.ui.screens.blog.BlogScreen
+import com.homeofhope.app.ui.screens.causes.CauseDetailScreen
 import com.homeofhope.app.ui.screens.causes.CausesScreen
 import com.homeofhope.app.ui.screens.contact.ContactScreen
 import com.homeofhope.app.ui.screens.donate.DonateScreen
@@ -47,7 +48,17 @@ fun HomeOfHopeNavGraph(
         }
         composable(Screen.About.route) { AboutScreen() }
         composable(Screen.Causes.route) { 
-            CausesScreen(onDonateClick = { navController.navigate(Screen.Donate.route) }) 
+            CausesScreen(onDonateClick = { navController.navigate(Screen.Donate.route) }) { causeId ->
+                navController.navigate("cause_detail/$causeId")
+            }
+        }
+        composable(Screen.CauseDetail.route) { backStackEntry ->
+            val causeId = backStackEntry.arguments?.getString("causeId") ?: ""
+            CauseDetailScreen(
+                causeId = causeId,
+                onBackClick = { navController.popBackStack() },
+                onDonateClick = { navController.navigate(Screen.Donate.route) }
+            )
         }
         composable(Screen.Events.route) { 
             EventsScreen(onVolunteerClick = { navController.navigate(Screen.Volunteer.route) }) 
