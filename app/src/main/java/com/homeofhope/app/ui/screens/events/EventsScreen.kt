@@ -30,7 +30,7 @@ import com.homeofhope.app.ui.theme.HopeGreen
 import com.homeofhope.app.ui.theme.HopeWhite
 
 @Composable
-fun EventsScreen(onVolunteerClick: () -> Unit) {
+fun EventsScreen() {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -47,16 +47,15 @@ fun EventsScreen(onVolunteerClick: () -> Unit) {
             )
             
             events.forEach { event ->
-                EventCard(event, onVolunteerClick)
+                EventCard(event)
                 Spacer(modifier = Modifier.height(24.dp))
             }
         }
-        
     }
 }
 
 @Composable
-fun EventCard(event: Event, onVolunteerClick: () -> Unit) {
+fun EventCard(event: Event) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(28.dp),
@@ -120,17 +119,6 @@ fun EventCard(event: Event, onVolunteerClick: () -> Unit) {
                     color = MaterialTheme.colorScheme.onSurfaceVariant,
                     lineHeight = 22.sp
                 )
-                
-                Spacer(modifier = Modifier.height(24.dp))
-                
-                Button(
-                    onClick = onVolunteerClick,
-                    modifier = Modifier.fillMaxWidth().height(48.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = HopeGreen),
-                    shape = RoundedCornerShape(12.dp)
-                ) {
-                    Text("Join Event", color = HopeWhite, fontWeight = FontWeight.Bold)
-                }
             }
         }
     }

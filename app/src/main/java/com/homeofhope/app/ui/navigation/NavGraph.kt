@@ -75,7 +75,7 @@ fun HomeOfHopeNavGraph(
             )
         }
         composable(Screen.Events.route) { 
-            EventsScreen(onVolunteerClick = { navController.navigate(Screen.Volunteer.route) }) 
+            EventsScreen()
         }
         composable(Screen.Blog.route) { 
             BlogScreen { blogId ->
