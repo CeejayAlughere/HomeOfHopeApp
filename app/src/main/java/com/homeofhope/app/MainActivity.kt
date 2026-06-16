@@ -144,29 +144,30 @@ class MainActivity : ComponentActivity() {
                 ) {
                     Scaffold(
                         topBar = {
-                            val title = when (currentRoute) {
-                                Screen.Home.route -> "Home Of Hope"
-                                Screen.About.route -> "About Us"
-                                Screen.Causes.route -> "Our Causes"
-                                Screen.Events.route -> "Upcoming Events"
-                                Screen.Blog.route -> "Blog"
-                                Screen.Services.route -> "Our Services"
-                                Screen.Donate.route -> "Donate"
-                                Screen.Volunteer.route -> "Volunteer"
-                                Screen.Contact.route -> "Contact Us"
-                                Screen.FAQ.route -> "FAQs"
-                                Screen.Help.route -> "Help"
-                                Screen.Privacy.route -> "Privacy Policy"
-                                Screen.Terms.route -> "Terms of Use"
-                                Screen.Cookies.route -> "Cookies Policy"
+                            val title = when {
+                                currentRoute == Screen.Home.route -> "Home Of Hope"
+                                currentRoute == Screen.About.route -> "About Us"
+                                currentRoute == Screen.Causes.route -> "Our Causes"
+                                currentRoute == Screen.Events.route -> "Upcoming Events"
+                                currentRoute == Screen.Blog.route -> "Blog"
+                                currentRoute == Screen.Services.route -> "Our Services"
+                                currentRoute == Screen.Donate.route -> "Donate"
+                                currentRoute == Screen.Volunteer.route -> "Volunteer"
+                                currentRoute == Screen.Contact.route -> "Contact Us"
+                                currentRoute == Screen.FAQ.route -> "FAQs"
+                                currentRoute == Screen.Help.route -> "Help"
+                                currentRoute == Screen.Privacy.route -> "Privacy Policy"
+                                currentRoute == Screen.Terms.route -> "Terms of Use"
+                                currentRoute == Screen.Cookies.route -> "Cookies Policy"
+                                currentRoute?.startsWith("cause_detail") == true -> "Cause Details"
+                                currentRoute?.startsWith("blog_detail") == true -> "Article"
                                 else -> "Home Of Hope"
                             }
+                            val canNavigateBack = currentRoute != Screen.Home.route && currentRoute != null
+                            
                             AppTopBar(
                                 title = title,
-                                canNavigateBack = currentRoute != Screen.Home.route && 
-                                                currentRoute != Screen.About.route && 
-                                                currentRoute != Screen.Causes.route && 
-                                                currentRoute != Screen.Events.route,
+                                canNavigateBack = canNavigateBack,
                                 onBack = { navController.popBackStack() }
                             )
                         },

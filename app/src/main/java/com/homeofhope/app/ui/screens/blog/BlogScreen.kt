@@ -16,8 +16,6 @@ import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.homeofhope.app.R
-import com.homeofhope.app.ui.components.FooterSection
-import com.homeofhope.app.ui.components.NewsletterSection
 import com.homeofhope.app.ui.components.PageHeader
 import com.homeofhope.app.ui.theme.HopeGreen
 import com.homeofhope.app.ui.theme.HopeWhite

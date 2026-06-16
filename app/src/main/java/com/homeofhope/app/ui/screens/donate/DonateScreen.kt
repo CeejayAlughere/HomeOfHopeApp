@@ -12,8 +12,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.homeofhope.app.ui.components.FooterSection
-import com.homeofhope.app.ui.components.NewsletterSection
 import com.homeofhope.app.ui.components.PageHeader
 import com.homeofhope.app.ui.theme.HopeGreen
 import com.homeofhope.app.ui.theme.HopeWhite
@@ -45,13 +43,10 @@ fun DonateScreen(viewModel: DonateViewModel) {
         }
     }
 
-    Scaffold(
-        snackbarHost = { SnackbarHost(hostState = snackbarHostState) }
-    ) { padding ->
+    Box(modifier = Modifier.fillMaxSize()) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(padding)
                 .verticalScroll(rememberScrollState())
         ) {
             PageHeader(title = "Donate Now", imageUrl = "https://images.unsplash.com/photo-1532629345422-7515f3d16bb6?q=80&w=2070")
@@ -217,7 +212,10 @@ fun DonateScreen(viewModel: DonateViewModel) {
                     }
                 }
             }
-            
         }
+        SnackbarHost(
+            hostState = snackbarHostState,
+            modifier = Modifier.padding(bottom = 80.dp) // Offset for bottom nav
+        )
     }
 }

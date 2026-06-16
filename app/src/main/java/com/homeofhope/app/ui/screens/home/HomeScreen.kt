@@ -31,8 +31,6 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
 import com.homeofhope.app.R
-import com.homeofhope.app.ui.components.FooterSection
-import com.homeofhope.app.ui.components.NewsletterSection
 import com.homeofhope.app.ui.components.SectionHeader
 import com.homeofhope.app.ui.theme.*
 import kotlinx.coroutines.delay

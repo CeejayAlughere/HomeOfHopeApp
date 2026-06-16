@@ -6,8 +6,6 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,133 +22,113 @@ import com.homeofhope.app.ui.theme.HopeDark
 import com.homeofhope.app.ui.theme.HopeGreen
 import com.homeofhope.app.ui.theme.HopeWhite
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CauseDetailScreen(
     causeId: String,
-    onBackClick: () -> Unit,
     onDonateClick: () -> Unit
 ) {
     // In a real app, this would come from a ViewModel or Repository
     val cause = getCauseById(causeId) ?: return
 
-    Scaffold(
-        topBar = {
-            TopAppBar(
-                title = { Text("Cause Details") },
-                navigationIcon = {
-                    IconButton(onClick = onBackClick) {
-                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back")
-                    }
-                },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = HopeWhite,
-                    titleContentColor = HopeDark
-                )
-            )
-        }
-    ) { padding ->
-        Column(
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(rememberScrollState())
+    ) {
+        AsyncImage(
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(cause.imageUrl)
+                .crossfade(true)
+                .build(),
+            contentDescription = null,
             modifier = Modifier
-                .fillMaxSize()
-                .padding(padding)
-                .verticalScroll(rememberScrollState())
-        ) {
-            AsyncImage(
-                model = ImageRequest.Builder(LocalContext.current)
-                    .data(cause.imageUrl)
-                    .crossfade(true)
-                    .build(),
-                contentDescription = null,
+                .fillMaxWidth()
+                .height(250.dp),
+            contentScale = ContentScale.Crop
+        )
+
+        Column(modifier = Modifier.padding(20.dp)) {
+            Text(
+                text = cause.title,
+                style = MaterialTheme.typography.headlineMedium,
+                fontWeight = FontWeight.Bold,
+                color = HopeDark
+            )
+            
+            Spacer(modifier = Modifier.height(16.dp))
+            
+            val progress = (cause.raised / cause.goal).toFloat()
+            LinearProgressIndicator(
+                progress = { progress },
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(250.dp),
-                contentScale = ContentScale.Crop
+                    .height(12.dp)
+                    .clip(CircleShape),
+                color = HopeGreen,
+                trackColor = HopeGreen.copy(alpha = 0.1f)
             )
-
-            Column(modifier = Modifier.padding(20.dp)) {
-                Text(
-                    text = cause.title,
-                    style = MaterialTheme.typography.headlineMedium,
-                    fontWeight = FontWeight.Bold,
-                    color = HopeDark
-                )
-                
-                Spacer(modifier = Modifier.height(16.dp))
-                
-                val progress = (cause.raised / cause.goal).toFloat()
-                LinearProgressIndicator(
-                    progress = { progress },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(12.dp)
-                        .clip(CircleShape),
-                    color = HopeGreen,
-                    trackColor = HopeGreen.copy(alpha = 0.1f)
-                )
-                
-                Row(
-                    modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    Column {
-                        Text(text = "Raised", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.outline)
-                        Text(text = "R${cause.raised.toInt()}", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = HopeGreen)
-                    }
-                    Column(horizontalAlignment = Alignment.End) {
-                        Text(text = "Goal", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.outline)
-                        Text(text = "R${cause.goal.toInt()}", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
-                    }
+            
+            Row(
+                modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
+                horizontalArrangement = Arrangement.SpaceBetween
+            ) {
+                Column {
+                    Text(text = "Raised", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.outline)
+                    Text(text = "R${cause.raised.toInt()}", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = HopeGreen)
                 }
-
-                HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
-
-                Text(
-                    text = "About this cause",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = HopeDark
-                )
-                
-                Spacer(modifier = Modifier.height(8.dp))
-                
-                Text(
-                    text = cause.description,
-                    style = MaterialTheme.typography.bodyLarge,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
-                    lineHeight = 26.sp
-                )
-                
-                Spacer(modifier = Modifier.height(24.dp))
-                
-                Text(
-                    text = "How your donation helps",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold,
-                    color = HopeDark
-                )
-                
-                Spacer(modifier = Modifier.height(12.dp))
-                
-                ImpactPoint("R100 provides 5 warm meals for a child")
-                ImpactPoint("R500 supports a child's school supplies for a term")
-                ImpactPoint("R1000 contributes to safe shelter and healthcare")
-
-                Spacer(modifier = Modifier.height(32.dp))
-                
-                Button(
-                    onClick = onDonateClick,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = HopeGreen),
-                    shape = RoundedCornerShape(16.dp)
-                ) {
-                    Text("Donate to this Cause", style = MaterialTheme.typography.titleMedium, color = HopeWhite)
+                Column(horizontalAlignment = Alignment.End) {
+                    Text(text = "Goal", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.outline)
+                    Text(text = "R${cause.goal.toInt()}", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
                 }
-                
-                Spacer(modifier = Modifier.height(24.dp))
             }
+
+            HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+
+            Text(
+                text = "About this cause",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = HopeDark
+            )
+            
+            Spacer(modifier = Modifier.height(8.dp))
+            
+            Text(
+                text = cause.description,
+                style = MaterialTheme.typography.bodyLarge,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                lineHeight = 26.sp
+            )
+            
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            Text(
+                text = "How your donation helps",
+                style = MaterialTheme.typography.titleLarge,
+                fontWeight = FontWeight.Bold,
+                color = HopeDark
+            )
+            
+            Spacer(modifier = Modifier.height(12.dp))
+            
+            ImpactPoint("R100 provides 5 warm meals for a child")
+            ImpactPoint("R500 supports a child's school supplies for a term")
+            ImpactPoint("R1000 contributes to safe shelter and healthcare")
+
+            Spacer(modifier = Modifier.height(32.dp))
+            
+            Button(
+                onClick = onDonateClick,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = HopeGreen),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Text("Donate to this Cause", style = MaterialTheme.typography.titleMedium, color = HopeWhite)
+            }
+            
+            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }

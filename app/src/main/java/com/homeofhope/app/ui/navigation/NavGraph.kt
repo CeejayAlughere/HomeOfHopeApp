@@ -43,8 +43,20 @@ fun HomeOfHopeNavGraph(
                 onDonateClick = { navController.navigate(Screen.Donate.route) },
                 onVolunteerClick = { navController.navigate(Screen.Volunteer.route) },
                 onContactClick = { navController.navigate(Screen.Contact.route) },
-                onViewAllCausesClick = { navController.navigate(Screen.Causes.route) },
-                onViewAllEventsClick = { navController.navigate(Screen.Events.route) }
+                onViewAllCausesClick = { 
+                    navController.navigate(Screen.Causes.route) {
+                        popUpTo(navController.graph.startDestinationId) { saveState = true }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                },
+                onViewAllEventsClick = { 
+                    navController.navigate(Screen.Events.route) {
+                        popUpTo(navController.graph.startDestinationId) { saveState = true }
+                        launchSingleTop = true
+                        restoreState = true
+                    }
+                }
             )
         }
         composable(Screen.About.route) { AboutScreen() }
@@ -57,10 +69,10 @@ fun HomeOfHopeNavGraph(
             val causeId = backStackEntry.arguments?.getString("causeId") ?: ""
             CauseDetailScreen(
                 causeId = causeId,
-                onBackClick = { navController.popBackStack() }
-            ) {
-                navController.navigate(Screen.Donate.route)
-            }
+                onDonateClick = {
+                    navController.navigate(Screen.Donate.route)
+                }
+            )
         }
         composable(Screen.Events.route) { 
             EventsScreen(onVolunteerClick = { navController.navigate(Screen.Volunteer.route) }) 
@@ -73,8 +85,7 @@ fun HomeOfHopeNavGraph(
         composable(Screen.BlogDetail.route) { backStackEntry ->
             val blogId = backStackEntry.arguments?.getString("blogId") ?: ""
             BlogDetailScreen(
-                blogId = blogId,
-                onBackClick = { navController.popBackStack() }
+                blogId = blogId
             )
         }
         composable(Screen.Services.route) { ServicesScreen() }
