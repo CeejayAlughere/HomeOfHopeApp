@@ -42,7 +42,8 @@ fun HomeScreen(
     onDonateClick: () -> Unit,
     onVolunteerClick: () -> Unit,
     onContactClick: () -> Unit,
-    onViewAllCausesClick: () -> Unit
+    onViewAllCausesClick: () -> Unit,
+    onViewAllEventsClick: () -> Unit
 ) {
     Column(
         modifier = Modifier
@@ -66,7 +67,7 @@ fun HomeScreen(
         
         Spacer(modifier = Modifier.height(24.dp))
         
-        UpcomingEventsSection(onVolunteerClick)
+        UpcomingEventsSection(onVolunteerClick, onViewAllEventsClick)
         
         Spacer(modifier = Modifier.height(32.dp))
     }
@@ -238,40 +239,95 @@ fun FeaturedCauseCard(cause: HomeCause, onDonateClick: () -> Unit) {
 }
 
 @Composable
-fun UpcomingEventsSection(onVolunteerClick: () -> Unit) {
-    Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-        Text(
-            text = "Upcoming Events",
-            style = MaterialTheme.typography.headlineSmall,
-            fontWeight = FontWeight.Bold
-        )
-        Spacer(modifier = Modifier.height(16.dp))
-        
-        Surface(
-            modifier = Modifier.fillMaxWidth(),
-            shape = RoundedCornerShape(20.dp),
-            color = MaterialTheme.colorScheme.surfaceVariant,
-            tonalElevation = 8.dp
+fun UpcomingEventsSection(onVolunteerClick: () -> Unit, onViewAllEventsClick: () -> Unit) {
+    val homeEvents = listOf(
+        HomeEvent("Community Food Drive", "21", "JUL", "08:00 AM • Thembisa", "https://images.unsplash.com/photo-1593113598332-cd288d649433?q=80&w=2070"),
+        HomeEvent("Youth Skills Day", "01", "APR", "11:00 AM • Thembisa", "https://images.unsplash.com/photo-1529070538774-1843cb3265df?q=80&w=2070"),
+        HomeEvent("Winter Blanket Drive", "04", "MAY", "10:00 AM • Thembisa", "https://images.unsplash.com/photo-1542810634-71277d95dcbb?q=80&w=2070")
+    )
+
+    Column {
+        Row(
+            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.SpaceBetween,
+            verticalAlignment = Alignment.CenterVertically
         ) {
-            Row(
-                modifier = Modifier.padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Box(
+            Text(
+                text = "Upcoming Events",
+                style = MaterialTheme.typography.headlineSmall,
+                fontWeight = FontWeight.Bold
+            )
+            TextButton(onClick = onViewAllEventsClick) {
+                Text("View All", color = HopeGreen)
+            }
+        }
+        
+        Spacer(modifier = Modifier.height(8.dp))
+        
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            items(homeEvents) { event ->
+                HomeEventCard(event, onVolunteerClick)
+            }
+        }
+    }
+}
+
+@Composable
+fun HomeEventCard(event: HomeEvent, onVolunteerClick: () -> Unit) {
+    Card(
+        modifier = Modifier
+            .width(280.dp)
+            .clickable(onClick = onVolunteerClick),
+        shape = RoundedCornerShape(24.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    ) {
+        Column {
+            Box(modifier = Modifier.height(140.dp)) {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(event.imageUrl)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = null,
+                    modifier = Modifier.fillMaxSize(),
+                    contentScale = ContentScale.Crop
+                )
+                
+                // Date Badge
+                Surface(
                     modifier = Modifier
-                        .size(60.dp)
-                        .background(HopeGreen, RoundedCornerShape(12.dp)),
-                    contentAlignment = Alignment.Center
+                        .padding(12.dp)
+                        .align(Alignment.TopEnd),
+                    color = HopeGreen,
+                    shape = RoundedCornerShape(12.dp)
                 ) {
-                    Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                        Text("21", color = HopeWhite, fontWeight = FontWeight.Bold, fontSize = 20.sp)
-                        Text("JUL", color = HopeWhite, fontSize = 12.sp)
+                    Column(
+                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                        horizontalAlignment = Alignment.CenterHorizontally
+                    ) {
+                        Text(text = event.day, color = HopeWhite, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                        Text(text = event.month, color = HopeWhite, style = MaterialTheme.typography.labelSmall)
                     }
                 }
-                Spacer(modifier = Modifier.width(16.dp))
-                Column(modifier = Modifier.weight(1f)) {
-                    Text("Community Food Drive", color = MaterialTheme.colorScheme.onSurfaceVariant, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
-                    Text("08:00 AM • Thembisa", color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f), style = MaterialTheme.typography.bodySmall)
+            }
+            
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = event.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Spacer(modifier = Modifier.height(4.dp))
+                Row(verticalAlignment = Alignment.CenterVertically) {
+                    Icon(imageVector = Icons.Default.Schedule, contentDescription = null, tint = HopeGreen, modifier = Modifier.size(14.dp))
+                    Spacer(modifier = Modifier.width(4.dp))
+                    Text(text = event.timeLocation, style = MaterialTheme.typography.bodySmall, color = HopeGrey)
                 }
             }
         }
@@ -446,6 +502,8 @@ fun ModernActionButton(
 }
 
 data class HomeCause(val title: String, val raised: Double, val goal: Double, val imageUrl: String)
+
+data class HomeEvent(val title: String, val day: String, val month: String, val timeLocation: String, val imageUrl: String)
 
 data class CarouselItem(
     val imageUrl: String,

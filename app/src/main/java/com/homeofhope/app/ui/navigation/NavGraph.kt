@@ -42,10 +42,10 @@ fun HomeOfHopeNavGraph(
             HomeScreen(
                 onDonateClick = { navController.navigate(Screen.Donate.route) },
                 onVolunteerClick = { navController.navigate(Screen.Volunteer.route) },
-                onContactClick = { navController.navigate(Screen.Contact.route) }
-            ) {
-                navController.navigate(Screen.Causes.route)
-            }
+                onContactClick = { navController.navigate(Screen.Contact.route) },
+                onViewAllCausesClick = { navController.navigate(Screen.Causes.route) },
+                onViewAllEventsClick = { navController.navigate(Screen.Events.route) }
+            )
         }
         composable(Screen.About.route) { AboutScreen() }
         composable(Screen.Causes.route) { 
