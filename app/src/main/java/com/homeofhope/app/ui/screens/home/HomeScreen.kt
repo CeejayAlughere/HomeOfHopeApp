@@ -294,7 +294,7 @@ fun HomeCarousel() {
             subtext = "Your support helps us deliver food, healthcare and education to disadvantaged communities across South Africa."
         ),
         CarouselItem(
-            imageUrl = "https://images.unsplash.com/photo-1518391846015-55a9cc003b25?q=80&w=2070",
+            imageUrl = "https://images.unsplash.com/photo-1593113598332-cd288d649433?q=80&w=2070",
             heading = "Be the reason someone finds hope today",
             subtext = "Join our growing community of donors and volunteers who are making a real, lasting difference in the lives of others."
         )

@@ -6,6 +6,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import com.homeofhope.app.ui.screens.about.AboutScreen
+import com.homeofhope.app.ui.screens.blog.BlogDetailScreen
 import com.homeofhope.app.ui.screens.blog.BlogScreen
 import com.homeofhope.app.ui.screens.causes.CauseDetailScreen
 import com.homeofhope.app.ui.screens.causes.CausesScreen
@@ -56,14 +57,26 @@ fun HomeOfHopeNavGraph(
             val causeId = backStackEntry.arguments?.getString("causeId") ?: ""
             CauseDetailScreen(
                 causeId = causeId,
-                onBackClick = { navController.popBackStack() },
-                onDonateClick = { navController.navigate(Screen.Donate.route) }
-            )
+                onBackClick = { navController.popBackStack() }
+            ) {
+                navController.navigate(Screen.Donate.route)
+            }
         }
         composable(Screen.Events.route) { 
             EventsScreen(onVolunteerClick = { navController.navigate(Screen.Volunteer.route) }) 
         }
-        composable(Screen.Blog.route) { BlogScreen() }
+        composable(Screen.Blog.route) { 
+            BlogScreen { blogId ->
+                navController.navigate("blog_detail/$blogId")
+            }
+        }
+        composable(Screen.BlogDetail.route) { backStackEntry ->
+            val blogId = backStackEntry.arguments?.getString("blogId") ?: ""
+            BlogDetailScreen(
+                blogId = blogId,
+                onBackClick = { navController.popBackStack() }
+            )
+        }
         composable(Screen.Services.route) { ServicesScreen() }
         composable(Screen.Donate.route) { DonateScreen(viewModel = donateViewModel) }
         composable(Screen.Volunteer.route) { VolunteerScreen(viewModel = volunteerViewModel) }

@@ -23,7 +23,7 @@ import com.homeofhope.app.ui.theme.HopeGreen
 import com.homeofhope.app.ui.theme.HopeWhite
 
 @Composable
-fun BlogScreen() {
+fun BlogScreen(onReadMoreClick: (String) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -39,7 +39,7 @@ fun BlogScreen() {
             )
             
             blogs.forEach { blog ->
-                BlogCard(blog)
+                BlogCard(blog, onReadMoreClick)
                 Spacer(modifier = Modifier.height(24.dp))
             }
         }
@@ -47,7 +47,7 @@ fun BlogScreen() {
 }
 
 @Composable
-fun BlogCard(blog: BlogPost) {
+fun BlogCard(blog: BlogPost, onReadMoreClick: (String) -> Unit) {
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(28.dp),
@@ -82,7 +82,7 @@ fun BlogCard(blog: BlogPost) {
                 )
                 Spacer(modifier = Modifier.height(20.dp))
                 TextButton(
-                    onClick = { /* Read More */ },
+                    onClick = { onReadMoreClick(blog.title) },
                     contentPadding = PaddingValues(0.dp)
                 ) {
                     Text(
