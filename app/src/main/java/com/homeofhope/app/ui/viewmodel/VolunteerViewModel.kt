@@ -13,11 +13,11 @@ class VolunteerViewModel(private val repository: HomeRepository) : ViewModel() {
     var uiState by mutableStateOf<UiState>(UiState.Idle)
         private set
 
-    fun submitVolunteer(name: String, email: String, reason: String) {
+    fun submitVolunteer(volunteer: Volunteer) {
         viewModelScope.launch {
             uiState = UiState.Loading
             uiState = try {
-                val response = repository.submitVolunteer(Volunteer(name = name, email = email, reason = reason))
+                val response = repository.submitVolunteer(volunteer)
                 if (response.success) UiState.Success else UiState.Error(response.message)
             } catch (e: Exception) {
                 UiState.Error(e.message ?: "Unknown error")

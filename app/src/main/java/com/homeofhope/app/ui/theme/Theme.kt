@@ -21,11 +21,13 @@ private val DarkColorScheme = darkColorScheme(
     tertiary = Pink80,
     background = HopeDark,
     surface = HopeDark,
+    surfaceVariant = HopeDarkContainer,
     onPrimary = HopeWhite,
     onSecondary = HopeWhite,
     onTertiary = HopeWhite,
     onBackground = HopeWhite,
     onSurface = HopeWhite,
+    onSurfaceVariant = HopeWhite
 )
 
 private val LightColorScheme = lightColorScheme(
@@ -34,11 +36,13 @@ private val LightColorScheme = lightColorScheme(
     tertiary = Pink40,
     background = HopeLight,
     surface = HopeWhite,
+    surfaceVariant = HopeLight,
     onPrimary = HopeWhite,
     onSecondary = HopeWhite,
     onTertiary = HopeWhite,
     onBackground = HopeDark,
     onSurface = HopeDark,
+    onSurfaceVariant = HopeGrey
 )
 
 @Composable

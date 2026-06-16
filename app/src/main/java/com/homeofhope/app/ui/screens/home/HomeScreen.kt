@@ -132,7 +132,7 @@ fun ImpactCard(count: String, label: String, icon: ImageVector, modifier: Modifi
                 text = count,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = HopeDark
+                color = MaterialTheme.colorScheme.onSurface
             )
             Text(
                 text = label,
@@ -186,7 +186,7 @@ fun FeaturedCauseCard(cause: HomeCause, onDonateClick: () -> Unit) {
         modifier = Modifier.width(260.dp),
         shape = RoundedCornerShape(24.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-        colors = CardDefaults.cardColors(containerColor = HopeLight)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
     ) {
         Column {
             AsyncImage(
@@ -225,12 +225,12 @@ fun FeaturedCauseCard(cause: HomeCause, onDonateClick: () -> Unit) {
                 Spacer(modifier = Modifier.height(12.dp))
                 Button(
                     onClick = onDonateClick,
-                    modifier = Modifier.fillMaxWidth(),
-                    colors = ButtonDefaults.buttonColors(containerColor = HopeDark),
-                    shape = RoundedCornerShape(8.dp),
+                    modifier = Modifier.fillMaxWidth().height(48.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = HopeGreen),
+                    shape = RoundedCornerShape(12.dp),
                     contentPadding = PaddingValues(vertical = 8.dp)
                 ) {
-                    Text("Donate Now", style = MaterialTheme.typography.labelLarge)
+                    Text("Donate Now", style = MaterialTheme.typography.labelLarge, color = HopeWhite)
                 }
             }
         }
@@ -250,7 +250,7 @@ fun UpcomingEventsSection(onVolunteerClick: () -> Unit) {
         Surface(
             modifier = Modifier.fillMaxWidth(),
             shape = RoundedCornerShape(20.dp),
-            color = HopeDark,
+            color = MaterialTheme.colorScheme.surfaceVariant,
             tonalElevation = 8.dp
         ) {
             Row(
@@ -270,8 +270,8 @@ fun UpcomingEventsSection(onVolunteerClick: () -> Unit) {
                 }
                 Spacer(modifier = Modifier.width(16.dp))
                 Column(modifier = Modifier.weight(1f)) {
-                    Text("Community Food Drive", color = HopeWhite, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
-                    Text("08:00 AM • Thembisa", color = HopeWhite.copy(alpha = 0.7f), style = MaterialTheme.typography.bodySmall)
+                    Text("Community Food Drive", color = MaterialTheme.colorScheme.onSurfaceVariant, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
+                    Text("08:00 AM • Thembisa", color = MaterialTheme.colorScheme.onSurfaceVariant.copy(alpha = 0.7f), style = MaterialTheme.typography.bodySmall)
                 }
             }
         }
@@ -415,7 +415,7 @@ fun QuickActionButtons(
         ModernActionButton(
             text = "Volunteer",
             icon = Icons.Default.Groups,
-            containerColor = HopeDark,
+            containerColor = MaterialTheme.colorScheme.secondary,
             contentColor = HopeWhite,
             modifier = Modifier.weight(1f),
             onClick = onVolunteerClick
