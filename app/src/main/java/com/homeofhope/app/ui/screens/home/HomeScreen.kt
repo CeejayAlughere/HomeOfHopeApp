@@ -74,7 +74,7 @@ fun HomeScreen(
 fun ImpactStatsSection() {
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
         Text(
-            text = "OUR REAL-WORLD IMPACT",
+            text = "OUR REAL WORLD IMPACT",
             style = MaterialTheme.typography.labelLarge,
             color = HopeGreen,
             fontWeight = FontWeight.Bold,

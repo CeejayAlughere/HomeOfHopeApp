@@ -121,6 +121,7 @@ class MainActivity : ComponentActivity() {
                             moreScreens.forEach { screen ->
                                 NavigationDrawerItem(
                                     label = { Text(screen.label, fontWeight = FontWeight.Medium) },
+                                    icon = { Icon(screen.icon, contentDescription = null) },
                                     selected = currentRoute == screen.route,
                                     onClick = {
                                         navController.navigate(screen.route) {

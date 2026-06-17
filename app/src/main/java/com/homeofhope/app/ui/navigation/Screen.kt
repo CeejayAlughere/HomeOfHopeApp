@@ -1,18 +1,8 @@
 package com.homeofhope.app.ui.navigation
 
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Article
-import androidx.compose.material.icons.filled.ContactMail
-import androidx.compose.material.icons.filled.Cookie
-import androidx.compose.material.icons.filled.Event
-import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material.icons.filled.Gavel
-import androidx.compose.material.icons.filled.Help
-import androidx.compose.material.icons.filled.Home
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.material.icons.filled.MedicalServices
-import androidx.compose.material.icons.filled.PrivacyTip
-import androidx.compose.material.icons.filled.QuestionAnswer
+import androidx.compose.material.icons.automirrored.filled.Login
+import androidx.compose.material.icons.filled.*
 import androidx.compose.ui.graphics.vector.ImageVector
 
 sealed class Screen(val route: String, val label: String, val icon: ImageVector) {
@@ -32,9 +22,9 @@ sealed class Screen(val route: String, val label: String, val icon: ImageVector)
     object BlogDetail : Screen("blog_detail/{blogId}", "Blog Detail", Icons.Default.Article)
 
     // Membership
-    object Register : Screen("register", "Become a Member", Icons.Default.Favorite)
-    object Login : Screen("login", "Login", Icons.Default.Home)
-    object MemberDashboard : Screen("member_dashboard", "Member Dashboard", Icons.Default.Home)
-    object MemberDonate : Screen("member_donate", "Donate", Icons.Default.Favorite)
-    object MemberVolunteer : Screen("member_volunteer", "Volunteer", Icons.Default.Home)
+    object Register : Screen("register", "Become a Member", Icons.Default.PersonAdd)
+    object Login : Screen("login", "Login", Icons.AutoMirrored.Filled.Login)
+    object MemberDashboard : Screen("member_dashboard", "Member Dashboard", Icons.Default.Dashboard)
+    object MemberDonate : Screen("member_donate", "Donate", Icons.Default.VolunteerActivism)
+    object MemberVolunteer : Screen("member_volunteer", "Volunteer", Icons.Default.Groups)
 }
