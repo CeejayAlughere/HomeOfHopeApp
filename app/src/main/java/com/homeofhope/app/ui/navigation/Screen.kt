@@ -30,4 +30,11 @@ sealed class Screen(val route: String, val label: String, val icon: ImageVector)
     object Cookies   : Screen("cookies",   "Cookies", Icons.Default.Cookie)
     object CauseDetail : Screen("cause_detail/{causeId}", "Cause Detail", Icons.Default.Favorite)
     object BlogDetail : Screen("blog_detail/{blogId}", "Blog Detail", Icons.Default.Article)
+
+    // Membership
+    object Register : Screen("register", "Become a Member", Icons.Default.Favorite)
+    object Login : Screen("login", "Login", Icons.Default.Home)
+    object MemberDashboard : Screen("member_dashboard", "Member Dashboard", Icons.Default.Home)
+    object MemberDonate : Screen("member_donate", "Donate", Icons.Default.Favorite)
+    object MemberVolunteer : Screen("member_volunteer", "Volunteer", Icons.Default.Home)
 }

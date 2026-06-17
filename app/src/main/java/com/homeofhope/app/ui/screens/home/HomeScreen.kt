@@ -38,6 +38,7 @@ import kotlinx.coroutines.delay
 @Composable
 fun HomeScreen(
     onContactClick: () -> Unit,
+    onBecomeMemberClick: () -> Unit,
     onViewAllCausesClick: () -> Unit,
     onViewAllEventsClick: () -> Unit
 ) {
@@ -55,7 +56,7 @@ fun HomeScreen(
         
         Spacer(modifier = Modifier.height(24.dp))
         
-        QuickActionButtons(onContactClick)
+        QuickActionButtons(onBecomeMemberClick)
         
         Spacer(modifier = Modifier.height(24.dp))
         
@@ -435,7 +436,7 @@ fun CarouselSlide(item: CarouselItem) {
 
 @Composable
 fun QuickActionButtons(
-    onContactClick: () -> Unit
+    onBecomeMemberClick: () -> Unit
 ) {
     Row(
         modifier = Modifier
@@ -444,12 +445,12 @@ fun QuickActionButtons(
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         ModernActionButton(
-            text = "Contact Us",
-            icon = Icons.Default.ContactMail,
+            text = "Become a Member",
+            icon = Icons.Default.Favorite,
             containerColor = HopeGreen,
             contentColor = HopeWhite,
             modifier = Modifier.fillMaxWidth(),
-            onClick = onContactClick
+            onClick = onBecomeMemberClick
         )
     }
 }

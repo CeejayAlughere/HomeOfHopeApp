@@ -18,8 +18,10 @@ import androidx.core.animation.doOnEnd
 import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
+import com.homeofhope.app.data.local.AppDatabase
 import com.homeofhope.app.data.network.RetrofitClient
 import com.homeofhope.app.data.repository.HomeRepository
+import com.homeofhope.app.data.repository.MemberRepository
 import com.homeofhope.app.ui.components.AppBottomNav
 import com.homeofhope.app.ui.components.AppTopBar
 import com.homeofhope.app.ui.navigation.HomeOfHopeNavGraph
@@ -29,6 +31,7 @@ import com.homeofhope.app.ui.theme.HopeDark
 import com.homeofhope.app.ui.theme.HopeGreen
 import com.homeofhope.app.ui.theme.HopeWhite
 import com.homeofhope.app.ui.viewmodel.ContactViewModel
+import com.homeofhope.app.ui.viewmodel.MemberViewModel
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -76,6 +79,11 @@ class MainActivity : ComponentActivity() {
         
         val repository = HomeRepository(RetrofitClient.instance)
         val contactViewModel = ContactViewModel(repository)
+
+        // Room Database Setup
+        val database = AppDatabase.getDatabase(this)
+        val memberRepository = MemberRepository(database.memberDao())
+        val memberViewModel = MemberViewModel(memberRepository)
 
         setContent {
             HomeOfHopeTheme {
@@ -152,6 +160,9 @@ class MainActivity : ComponentActivity() {
                                 currentRoute == Screen.Privacy.route -> "Privacy Policy"
                                 currentRoute == Screen.Terms.route -> "Terms of Use"
                                 currentRoute == Screen.Cookies.route -> "Cookies Policy"
+                                currentRoute == Screen.Register.route -> "Become a Member"
+                                currentRoute == Screen.Login.route -> "Login"
+                                currentRoute == Screen.MemberDashboard.route -> "Member Dashboard"
                                 currentRoute?.startsWith("cause_detail") == true -> "Cause Details"
                                 currentRoute?.startsWith("blog_detail") == true -> "Article"
                                 else -> "Home Of Hope"
@@ -175,6 +186,7 @@ class MainActivity : ComponentActivity() {
                         HomeOfHopeNavGraph(
                             navController = navController,
                             contactViewModel = contactViewModel,
+                            memberViewModel = memberViewModel,
                             modifier = Modifier.padding(padding)
                         )
                     }

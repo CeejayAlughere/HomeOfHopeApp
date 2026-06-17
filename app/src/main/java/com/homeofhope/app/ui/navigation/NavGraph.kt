@@ -18,13 +18,18 @@ import com.homeofhope.app.ui.screens.home.HomeScreen
 import com.homeofhope.app.ui.screens.legal.CookiesScreen
 import com.homeofhope.app.ui.screens.legal.PrivacyScreen
 import com.homeofhope.app.ui.screens.legal.TermsScreen
+import com.homeofhope.app.ui.screens.member.LoginScreen
+import com.homeofhope.app.ui.screens.member.MemberDashboardScreen
+import com.homeofhope.app.ui.screens.member.RegisterScreen
 import com.homeofhope.app.ui.screens.services.ServicesScreen
 import com.homeofhope.app.ui.viewmodel.ContactViewModel
+import com.homeofhope.app.ui.viewmodel.MemberViewModel
 
 @Composable
 fun HomeOfHopeNavGraph(
     navController: NavHostController,
     contactViewModel: ContactViewModel,
+    memberViewModel: MemberViewModel,
     modifier: Modifier = Modifier
 ) {
     NavHost(
@@ -35,6 +40,7 @@ fun HomeOfHopeNavGraph(
         composable(Screen.Home.route) { 
             HomeScreen(
                 onContactClick = { navController.navigate(Screen.Contact.route) },
+                onBecomeMemberClick = { navController.navigate(Screen.Register.route) },
                 onViewAllCausesClick = { 
                     navController.navigate(Screen.Causes.route) {
                         popUpTo(navController.graph.startDestinationId) { saveState = true }
@@ -89,5 +95,37 @@ fun HomeOfHopeNavGraph(
         composable(Screen.Privacy.route) { PrivacyScreen() }
         composable(Screen.Terms.route) { TermsScreen() }
         composable(Screen.Cookies.route) { CookiesScreen() }
+
+        // Membership
+        composable(Screen.Register.route) {
+            RegisterScreen(
+                viewModel = memberViewModel,
+                onRegisterSuccess = { navController.navigate(Screen.Login.route) },
+                onBackClick = { navController.navigate(Screen.Login.route) }
+            )
+        }
+        composable(Screen.Login.route) {
+            LoginScreen(
+                viewModel = memberViewModel,
+                onLoginSuccess = { 
+                    navController.navigate(Screen.MemberDashboard.route) {
+                        popUpTo(Screen.Home.route)
+                    }
+                },
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+        composable(Screen.MemberDashboard.route) {
+            MemberDashboardScreen(
+                viewModel = memberViewModel,
+                onDonateClick = { navController.navigate(Screen.Causes.route) },
+                onVolunteerClick = { navController.navigate(Screen.Events.route) },
+                onLogoutClick = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Home.route) { inclusive = true }
+                    }
+                }
+            )
+        }
     }
 }

@@ -1,0 +1,20 @@
+package com.homeofhope.app.data.local.dao
+
+import androidx.room.Dao
+import androidx.room.Insert
+import androidx.room.OnConflictStrategy
+import androidx.room.Query
+import com.homeofhope.app.data.local.entity.Member
+import kotlinx.coroutines.flow.Flow
+
+@Dao
+interface MemberDao {
+    @Insert(onConflict = OnConflictStrategy.ABORT)
+    suspend fun insertMember(member: Member)
+
+    @Query("SELECT * FROM members WHERE username = :username LIMIT 1")
+    suspend fun getMemberByUsername(username: String): Member?
+
+    @Query("SELECT * FROM members")
+    fun getAllMembers(): Flow<List<Member>>
+}
