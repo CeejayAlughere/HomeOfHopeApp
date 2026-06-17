@@ -166,7 +166,6 @@ fun FeaturedCausesSection(onViewAllCausesClick: () -> Unit) {
                 }
             }
         }
-        
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -261,7 +260,6 @@ fun UpcomingEventsSection(onViewAllEventsClick: () -> Unit) {
         }
     }
 }
-
 @Composable
 fun HomeEventCard(event: HomeEvent) {
     Card(
@@ -300,7 +298,6 @@ fun HomeEventCard(event: HomeEvent) {
                     }
                 }
             }
-            
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
                     text = event.title,
