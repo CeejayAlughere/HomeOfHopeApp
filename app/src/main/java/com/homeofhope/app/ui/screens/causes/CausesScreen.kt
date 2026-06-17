@@ -24,7 +24,7 @@ import com.homeofhope.app.ui.theme.HopeGreen
 import com.homeofhope.app.ui.theme.HopeWhite
 
 @Composable
-fun CausesScreen(onDonateClick: () -> Unit, onLearnMoreClick: (String) -> Unit) {
+fun CausesScreen(onLearnMoreClick: (String) -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -41,7 +41,7 @@ fun CausesScreen(onDonateClick: () -> Unit, onLearnMoreClick: (String) -> Unit) 
             )
             
             causes.forEach { cause ->
-                CauseCard(cause, onDonateClick, onLearnMoreClick)
+                CauseCard(cause, onLearnMoreClick)
                 Spacer(modifier = Modifier.height(24.dp))
             }
         }
@@ -50,7 +50,7 @@ fun CausesScreen(onDonateClick: () -> Unit, onLearnMoreClick: (String) -> Unit) 
 }
 
 @Composable
-fun CauseCard(cause: Cause, onDonateClick: () -> Unit, onLearnMoreClick: (String) -> Unit) {
+fun CauseCard(cause: Cause, onLearnMoreClick: (String) -> Unit) {
     val progress = (cause.raised / cause.goal).toFloat()
     
     Card(
@@ -110,22 +110,13 @@ fun CauseCard(cause: Cause, onDonateClick: () -> Unit, onLearnMoreClick: (String
                 
                 Spacer(modifier = Modifier.height(24.dp))
                 
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    OutlinedButton(
-                        onClick = { onLearnMoreClick(cause.title) },
-                        modifier = Modifier.weight(1f).height(48.dp),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text("Learn More")
-                    }
-                    Button(
-                        onClick = onDonateClick,
-                        modifier = Modifier.weight(1f).height(48.dp),
-                        colors = ButtonDefaults.buttonColors(containerColor = HopeGreen),
-                        shape = RoundedCornerShape(12.dp)
-                    ) {
-                        Text("Donate Now", color = HopeWhite)
-                    }
+                Button(
+                    onClick = { onLearnMoreClick(cause.title) },
+                    modifier = Modifier.fillMaxWidth().height(48.dp),
+                    colors = ButtonDefaults.buttonColors(containerColor = HopeGreen),
+                    shape = RoundedCornerShape(12.dp)
+                ) {
+                    Text("Learn More", color = HopeWhite)
                 }
             }
         }

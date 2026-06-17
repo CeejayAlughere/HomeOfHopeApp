@@ -37,8 +37,6 @@ import kotlinx.coroutines.delay
 
 @Composable
 fun HomeScreen(
-    onDonateClick: () -> Unit,
-    onVolunteerClick: () -> Unit,
     onContactClick: () -> Unit,
     onViewAllCausesClick: () -> Unit,
     onViewAllEventsClick: () -> Unit
@@ -57,15 +55,15 @@ fun HomeScreen(
         
         Spacer(modifier = Modifier.height(24.dp))
         
-        QuickActionButtons(onDonateClick, onVolunteerClick, onContactClick)
+        QuickActionButtons(onContactClick)
         
         Spacer(modifier = Modifier.height(24.dp))
         
-        FeaturedCausesSection(onDonateClick, onViewAllCausesClick)
+        FeaturedCausesSection(onViewAllCausesClick)
         
         Spacer(modifier = Modifier.height(24.dp))
         
-        UpcomingEventsSection(onVolunteerClick, onViewAllEventsClick)
+        UpcomingEventsSection(onViewAllEventsClick)
         
         Spacer(modifier = Modifier.height(32.dp))
     }
@@ -143,7 +141,7 @@ fun ImpactCard(count: String, label: String, icon: ImageVector, modifier: Modifi
 }
 
 @Composable
-fun FeaturedCausesSection(onDonateClick: () -> Unit, onViewAllCausesClick: () -> Unit) {
+fun FeaturedCausesSection(onViewAllCausesClick: () -> Unit) {
     val featuredCauses = listOf(
         HomeCause("Feed A Hungry Child", 6000.0, 10000.0, "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=2070"),
         HomeCause("Clean Water For All", 8500.0, 10000.0, "https://images.unsplash.com/photo-1594708767771-a7502209ff51?q=80&w=2070"),
@@ -173,14 +171,14 @@ fun FeaturedCausesSection(onDonateClick: () -> Unit, onViewAllCausesClick: () ->
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(featuredCauses) { cause ->
-                FeaturedCauseCard(cause, onDonateClick)
+                FeaturedCauseCard(cause)
             }
         }
     }
 }
 
 @Composable
-fun FeaturedCauseCard(cause: HomeCause, onDonateClick: () -> Unit) {
+fun FeaturedCauseCard(cause: HomeCause) {
     Card(
         modifier = Modifier.width(260.dp),
         shape = RoundedCornerShape(24.dp),
@@ -221,23 +219,13 @@ fun FeaturedCauseCard(cause: HomeCause, onDonateClick: () -> Unit) {
                     Text("R${cause.raised.toInt()} raised", style = MaterialTheme.typography.labelSmall, color = HopeGreen, fontWeight = FontWeight.Bold)
                     Text("Target R${cause.goal.toInt()}", style = MaterialTheme.typography.labelSmall, color = HopeGrey)
                 }
-                Spacer(modifier = Modifier.height(12.dp))
-                Button(
-                    onClick = onDonateClick,
-                    modifier = Modifier.fillMaxWidth().height(48.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = HopeGreen),
-                    shape = RoundedCornerShape(12.dp),
-                    contentPadding = PaddingValues(vertical = 8.dp)
-                ) {
-                    Text("Donate Now", style = MaterialTheme.typography.labelLarge, color = HopeWhite)
-                }
             }
         }
     }
 }
 
 @Composable
-fun UpcomingEventsSection(onVolunteerClick: () -> Unit, onViewAllEventsClick: () -> Unit) {
+fun UpcomingEventsSection(onViewAllEventsClick: () -> Unit) {
     val homeEvents = listOf(
         HomeEvent("Community Food Drive", "21", "JUL", "08:00 AM • Thembisa", "https://images.unsplash.com/photo-1593113598332-cd288d649433?q=80&w=2070"),
         HomeEvent("Youth Skills Day", "01", "APR", "11:00 AM • Thembisa", "https://images.unsplash.com/photo-1529070538774-1843cb3265df?q=80&w=2070"),
@@ -267,18 +255,17 @@ fun UpcomingEventsSection(onVolunteerClick: () -> Unit, onViewAllEventsClick: ()
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             items(homeEvents) { event ->
-                HomeEventCard(event, onVolunteerClick)
+                HomeEventCard(event)
             }
         }
     }
 }
 
 @Composable
-fun HomeEventCard(event: HomeEvent, onVolunteerClick: () -> Unit) {
+fun HomeEventCard(event: HomeEvent) {
     Card(
         modifier = Modifier
-            .width(280.dp)
-            .clickable(onClick = onVolunteerClick),
+            .width(280.dp),
         shape = RoundedCornerShape(24.dp),
         colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
         elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
@@ -350,7 +337,7 @@ fun HomeCarousel() {
         CarouselItem(
             imageUrl = "https://images.unsplash.com/photo-1593113598332-cd288d649433?q=80&w=2070",
             heading = "Be the reason someone finds hope today",
-            subtext = "Join our growing community of donors and volunteers who are making a real, lasting difference in the lives of others."
+            subtext = "Join our community and help make a real, lasting difference in the lives of others."
         )
     )
 
@@ -448,8 +435,6 @@ fun CarouselSlide(item: CarouselItem) {
 
 @Composable
 fun QuickActionButtons(
-    onDonateClick: () -> Unit,
-    onVolunteerClick: () -> Unit,
     onContactClick: () -> Unit
 ) {
     Row(
@@ -459,20 +444,12 @@ fun QuickActionButtons(
         horizontalArrangement = Arrangement.spacedBy(12.dp)
     ) {
         ModernActionButton(
-            text = "Donate",
-            icon = Icons.Default.VolunteerActivism,
+            text = "Contact Us",
+            icon = Icons.Default.ContactMail,
             containerColor = HopeGreen,
             contentColor = HopeWhite,
-            modifier = Modifier.weight(1f),
-            onClick = onDonateClick
-        )
-        ModernActionButton(
-            text = "Volunteer",
-            icon = Icons.Default.Groups,
-            containerColor = MaterialTheme.colorScheme.secondary,
-            contentColor = HopeWhite,
-            modifier = Modifier.weight(1f),
-            onClick = onVolunteerClick
+            modifier = Modifier.fillMaxWidth(),
+            onClick = onContactClick
         )
     }
 }

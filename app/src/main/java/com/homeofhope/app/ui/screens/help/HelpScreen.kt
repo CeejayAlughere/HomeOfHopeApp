@@ -6,7 +6,6 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ContactSupport
 import androidx.compose.material.icons.filled.Help
-import androidx.compose.material.icons.filled.VolunteerActivism
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -30,9 +29,7 @@ fun HelpScreen(onContactClick: () -> Unit, onFaqClick: () -> Unit) {
         PageHeader(title = "Help & Support", imageUrl = "https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?q=80&w=2070")
         
         Column(modifier = Modifier.padding(16.dp)) {
-            HelpCard(Icons.Default.VolunteerActivism, "Making a Donation", "Visit the Donate section, enter your name and email, select an amount and tap Donate Now. Your contribution goes directly to supporting our community programmes.")
-            Spacer(modifier = Modifier.height(16.dp))
-            HelpCard(Icons.Default.VolunteerActivism, "Becoming a Volunteer", "Visit the Volunteer section and complete the form. One of our team members will reach out to you with more details about how you can get involved.")
+            HelpCard(Icons.Default.Help, "Using the App", "Navigate through our different sections using the bottom menu and the side drawer. You can find information about our mission, causes, and upcoming events.")
             Spacer(modifier = Modifier.height(16.dp))
             HelpCard(Icons.Default.ContactSupport, "Getting in Touch", "Visit the Contact section and send us a message. You can also call us directly on 084 212 4937. We aim to respond within 24 hours.")
             

@@ -129,14 +129,13 @@ fun StatsSection() {
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             AboutStatCard("Countries", 1, Icons.Default.Public, Modifier.weight(1f))
-            AboutStatCard("Volunteers", 400, Icons.Default.Groups, Modifier.weight(1f), suffix = "+")
+            AboutStatCard("Lives Impacted", 5240, Icons.Default.Favorite, Modifier.weight(1f))
         }
         Spacer(modifier = Modifier.height(16.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            AboutStatCard("Lives Impacted", 5240, Icons.Default.Favorite, Modifier.weight(1f))
             AboutStatCard("Meals Served", 12500, Icons.Default.Restaurant, Modifier.weight(1f), suffix = "+")
         }
     }

@@ -115,7 +115,7 @@ fun BlogDetailScreen(
 fun getBlogById(id: String): BlogPost? {
     val blogs = listOf(
         BlogPost("How Our Feeding Programme Is Changing Lives in Thembisa", "Every morning, dozens of children arrive at our centre knowing they will receive a warm, nutritious meal. We share the stories of the families whose lives have been transformed by your support.", "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=2070"),
-        BlogPost("Meet the Volunteers Who Show Up Every Single Week", "Behind every meal served and every child supported is a team of dedicated volunteers. We sat down with some of our longest serving volunteers to hear why they keep coming back.", "https://images.unsplash.com/photo-1531206715517-5c0ba140b2b8?q=80&w=2070"),
+        BlogPost("Building a Stronger Community through Unity", "The spirit of Ubuntu is alive and well in our community. We explore how coming together as one can create lasting change and hope for everyone.", "https://images.unsplash.com/photo-1531206715517-5c0ba140b2b8?q=80&w=2070"),
         BlogPost("Why Safe Shelter Is About More Than Just a Roof", "For many of the families we support, having a safe place to sleep is just the beginning. We explore how stable shelter opens the door to education, health and a hopeful future.", "https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?q=80&w=2070")
     )
     return blogs.find { it.title == id }

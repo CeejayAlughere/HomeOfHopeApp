@@ -17,10 +17,10 @@ fun PrivacyScreen() {
         At Siyazigabisa Home Of Hope, we take your privacy seriously. This policy explains what data we collect and how we use it.
         
         1. Data We Collect
-        We collect information you provide directly to us, such as your name, email address, donation amounts, and contact messages.
+        We collect information you provide directly to us, such as your name, email address, and contact messages.
         
         2. How We Use Your Data
-        We use your data to process donations, send newsletters (if you've subscribed), and respond to your queries.
+        We use your data to send newsletters (if you've subscribed), and respond to your queries.
         
         3. Data Sharing
         We do not sell or share your personal data with third parties for marketing purposes.
@@ -44,16 +44,10 @@ fun TermsScreen() {
         2. Use of the Application
         The app is for personal, non-commercial use only. You agree not to use it for any unlawful purpose.
         
-        3. Donation Terms
-        Donations made through the app are processed securely and are generally non-refundable once processed.
-        
-        4. Volunteer Terms
-        Signing up as a volunteer does not create an employment relationship.
-        
-        5. Limitation of Liability
+        3. Limitation of Liability
         We are not liable for any damages arising from your use of the application.
         
-        6. Governing Law
+        4. Governing Law
         These terms are governed by the laws of South Africa.
     """.trimIndent())
 }

@@ -24,8 +24,7 @@ import com.homeofhope.app.ui.theme.HopeWhite
 
 @Composable
 fun CauseDetailScreen(
-    causeId: String,
-    onDonateClick: () -> Unit
+    causeId: String
 ) {
     // In a real app, this would come from a ViewModel or Repository
     val cause = getCauseById(causeId) ?: return
@@ -103,7 +102,7 @@ fun CauseDetailScreen(
             Spacer(modifier = Modifier.height(24.dp))
             
             Text(
-                text = "How your donation helps",
+                text = "Project Impact",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = HopeDark
@@ -116,19 +115,6 @@ fun CauseDetailScreen(
             ImpactPoint("R1000 contributes to safe shelter and healthcare")
 
             Spacer(modifier = Modifier.height(32.dp))
-            
-            Button(
-                onClick = onDonateClick,
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = HopeGreen),
-                shape = RoundedCornerShape(16.dp)
-            ) {
-                Text("Donate to this Cause", style = MaterialTheme.typography.titleMedium, color = HopeWhite)
-            }
-            
-            Spacer(modifier = Modifier.height(24.dp))
         }
     }
 }

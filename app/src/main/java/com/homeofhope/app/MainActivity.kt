@@ -29,8 +29,6 @@ import com.homeofhope.app.ui.theme.HopeDark
 import com.homeofhope.app.ui.theme.HopeGreen
 import com.homeofhope.app.ui.theme.HopeWhite
 import com.homeofhope.app.ui.viewmodel.ContactViewModel
-import com.homeofhope.app.ui.viewmodel.DonateViewModel
-import com.homeofhope.app.ui.viewmodel.VolunteerViewModel
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -77,8 +75,6 @@ class MainActivity : ComponentActivity() {
         }
         
         val repository = HomeRepository(RetrofitClient.instance)
-        val donateViewModel = DonateViewModel(repository)
-        val volunteerViewModel = VolunteerViewModel(repository)
         val contactViewModel = ContactViewModel(repository)
 
         setContent {
@@ -90,8 +86,7 @@ class MainActivity : ComponentActivity() {
                 val currentRoute = navBackStackEntry?.destination?.route
 
                 val moreScreens = listOf(
-                    Screen.Blog, Screen.Services, Screen.Donate, 
-                    Screen.Volunteer, Screen.Contact, Screen.FAQ, 
+                    Screen.Blog, Screen.Services, Screen.Contact, Screen.FAQ, 
                     Screen.Help, Screen.Privacy, Screen.Terms, Screen.Cookies
                 )
 
@@ -151,8 +146,6 @@ class MainActivity : ComponentActivity() {
                                 currentRoute == Screen.Events.route -> "Upcoming Events"
                                 currentRoute == Screen.Blog.route -> "Blog"
                                 currentRoute == Screen.Services.route -> "Our Services"
-                                currentRoute == Screen.Donate.route -> "Donate"
-                                currentRoute == Screen.Volunteer.route -> "Volunteer"
                                 currentRoute == Screen.Contact.route -> "Contact Us"
                                 currentRoute == Screen.FAQ.route -> "FAQs"
                                 currentRoute == Screen.Help.route -> "Help"
@@ -181,8 +174,6 @@ class MainActivity : ComponentActivity() {
                     ) { padding ->
                         HomeOfHopeNavGraph(
                             navController = navController,
-                            donateViewModel = donateViewModel,
-                            volunteerViewModel = volunteerViewModel,
                             contactViewModel = contactViewModel,
                             modifier = Modifier.padding(padding)
                         )

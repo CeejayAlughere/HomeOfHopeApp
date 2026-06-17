@@ -8,9 +8,9 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MedicalServices
+import androidx.compose.material.icons.filled.Psychology
 import androidx.compose.material.icons.filled.Restaurant
 import androidx.compose.material.icons.filled.School
-import androidx.compose.material.icons.filled.VolunteerActivism
 import androidx.compose.material.icons.filled.WaterDrop
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
@@ -40,7 +40,7 @@ fun ServicesScreen() {
                 ServiceItem(Icons.Default.MedicalServices, "Health Care", "Our health programmes connect people with essential medical support, wellness check-ups and mental health resources at no cost to them."),
                 ServiceItem(Icons.Default.School, "Primary Education", "We believe every child deserves a quality education. We fund school supplies, tutoring and learning programmes for children from disadvantaged backgrounds."),
                 ServiceItem(Icons.Default.Home, "Residence Facilities", "Home Of Hope provides safe, temporary shelter for individuals and families facing homelessness, offering them a secure place to rebuild their lives."),
-                ServiceItem(Icons.Default.VolunteerActivism, "Social Care", "Our dedicated social workers and volunteers offer counselling, family support and community outreach programmes to help people overcome hardship and find stability.")
+                ServiceItem(Icons.Default.Psychology, "Social Care", "Our dedicated social workers offer counselling, family support and community outreach programmes to help people overcome hardship and find stability.")
             )
             
             services.chunked(2).forEach { rowItems ->
