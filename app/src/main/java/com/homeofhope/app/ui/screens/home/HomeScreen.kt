@@ -338,7 +338,6 @@ fun HomeCarousel() {
             subtext = "Join our community and help make a real, lasting difference in the lives of others."
         )
     )
-
     LaunchedEffect(pagerState) {
         while (true) {
             delay(9000)
