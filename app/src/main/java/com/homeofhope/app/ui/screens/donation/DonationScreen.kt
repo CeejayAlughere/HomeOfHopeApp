@@ -23,14 +23,17 @@ import com.homeofhope.app.ui.theme.HopeGreen
 import com.homeofhope.app.ui.theme.HopeGrey
 import com.homeofhope.app.ui.theme.HopeWhite
 import com.homeofhope.app.ui.viewmodel.DonationViewModel
+import com.homeofhope.app.ui.viewmodel.MemberViewModel
 import com.homeofhope.app.ui.viewmodel.UiState
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DonationScreen(
     viewModel: DonationViewModel,
+    memberViewModel: MemberViewModel,
     onDonationSuccess: () -> Unit
 ) {
+    val currentMember = memberViewModel.currentUser
     var fullName by remember { mutableStateOf("") }
     var selectedBank by remember { mutableStateOf("") }
     var cardNumber by remember { mutableStateOf("") }
@@ -214,7 +217,15 @@ fun DonationScreen(
 
             Button(
                 onClick = {
-                    viewModel.submitDonation(fullName, selectedBank, cardNumber, expiryDate, cvv, amount)
+                    viewModel.submitDonation(
+                        memberId = currentMember?.id,
+                        fullName = fullName,
+                        bankName = selectedBank,
+                        cardNumber = cardNumber,
+                        expiryDate = expiryDate,
+                        cvv = cvv,
+                        amount = amount
+                    )
                 },
                 modifier = Modifier
                     .fillMaxWidth()

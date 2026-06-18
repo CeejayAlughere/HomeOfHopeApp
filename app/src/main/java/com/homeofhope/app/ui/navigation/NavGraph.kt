@@ -23,6 +23,7 @@ import com.homeofhope.app.ui.screens.member.MemberDashboardScreen
 import com.homeofhope.app.ui.screens.member.RegisterScreen
 import com.homeofhope.app.ui.screens.services.ServicesScreen
 import com.homeofhope.app.ui.screens.donation.DonationScreen
+import com.homeofhope.app.ui.screens.donation.DonationSuccessScreen
 import com.homeofhope.app.ui.viewmodel.ContactViewModel
 import com.homeofhope.app.ui.viewmodel.DonationViewModel
 import com.homeofhope.app.ui.viewmodel.MemberViewModel
@@ -122,8 +123,11 @@ fun HomeOfHopeNavGraph(
         composable(Screen.MemberDashboard.route) {
             MemberDashboardScreen(
                 viewModel = memberViewModel,
+                donationViewModel = donationViewModel,
                 onDonateClick = { navController.navigate(Screen.Donation.route) },
                 onVolunteerClick = { navController.navigate(Screen.Events.route) },
+                onEventsClick = { navController.navigate(Screen.Events.route) },
+                onProfileClick = { /* Navigate to profile if it exists */ },
                 onLogoutClick = {
                     navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Home.route) { inclusive = true }
@@ -135,8 +139,21 @@ fun HomeOfHopeNavGraph(
         composable(Screen.Donation.route) {
             DonationScreen(
                 viewModel = donationViewModel,
+                memberViewModel = memberViewModel,
                 onDonationSuccess = {
-                    navController.popBackStack()
+                    navController.navigate(Screen.DonationSuccess.route) {
+                        popUpTo(Screen.Donation.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+
+        composable(Screen.DonationSuccess.route) {
+            DonationSuccessScreen(
+                onDoneClick = {
+                    navController.navigate(Screen.MemberDashboard.route) {
+                        popUpTo(Screen.MemberDashboard.route) { inclusive = true }
+                    }
                 }
             )
         }

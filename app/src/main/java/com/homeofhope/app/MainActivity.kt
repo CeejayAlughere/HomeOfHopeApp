@@ -20,6 +20,7 @@ import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.homeofhope.app.data.local.AppDatabase
 import com.homeofhope.app.data.network.RetrofitClient
+import com.homeofhope.app.data.repository.DonationRepository
 import com.homeofhope.app.data.repository.HomeRepository
 import com.homeofhope.app.data.repository.MemberRepository
 import com.homeofhope.app.ui.components.AppBottomNav
@@ -80,10 +81,12 @@ class MainActivity : ComponentActivity() {
         
         val repository = HomeRepository(RetrofitClient.instance)
         val contactViewModel = ContactViewModel(repository)
-        val donationViewModel = DonationViewModel(repository)
-
+        
         // Room Database Setup
         val database = AppDatabase.getDatabase(this)
+        val donationRepository = DonationRepository(database.donationDao())
+        val donationViewModel = DonationViewModel(repository, donationRepository)
+
         val memberRepository = MemberRepository(database.memberDao())
         val memberViewModel = MemberViewModel(memberRepository)
 

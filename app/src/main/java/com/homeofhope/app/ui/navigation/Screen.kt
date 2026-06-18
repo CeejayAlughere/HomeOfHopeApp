@@ -28,4 +28,5 @@ sealed class Screen(val route: String, val label: String, val icon: ImageVector)
     object MemberDashboard : Screen("member_dashboard", "Member Dashboard", Icons.Default.Dashboard)
     object MemberDonate : Screen("member_donate", "Donate", Icons.Default.VolunteerActivism)
     object MemberVolunteer : Screen("member_volunteer", "Volunteer", Icons.Default.Groups)
+    object DonationSuccess : Screen("donation_success", "Donation Successful", Icons.Default.CheckCircle)
 }

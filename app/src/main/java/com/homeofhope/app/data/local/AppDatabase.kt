@@ -4,12 +4,15 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.homeofhope.app.data.local.dao.DonationDao
 import com.homeofhope.app.data.local.dao.MemberDao
+import com.homeofhope.app.data.local.entity.DonationRecord
 import com.homeofhope.app.data.local.entity.Member
 
-@Database(entities = [Member::class], version = 1, exportSchema = false)
+@Database(entities = [Member::class, DonationRecord::class], version = 2, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun memberDao(): MemberDao
+    abstract fun donationDao(): DonationDao
 
     companion object {
         @Volatile
@@ -21,7 +24,9 @@ abstract class AppDatabase : RoomDatabase() {
                     context.applicationContext,
                     AppDatabase::class.java,
                     "home_of_hope_database"
-                ).build()
+                )
+                    .fallbackToDestructiveMigration()
+                    .build()
                 INSTANCE = instance
                 instance
             }
