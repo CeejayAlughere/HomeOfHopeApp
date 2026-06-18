@@ -83,7 +83,7 @@ fun MemberDashboardScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             DashboardButton(
-                text = "Donate to a Cause",
+                text = "Make a Donation",
                 icon = Icons.Default.Favorite,
                 onClick = onDonateClick
             )

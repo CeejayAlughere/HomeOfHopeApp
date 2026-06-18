@@ -6,6 +6,8 @@ import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -24,7 +26,8 @@ import com.homeofhope.app.ui.theme.HopeWhite
 
 @Composable
 fun CauseDetailScreen(
-    causeId: String
+    causeId: String,
+    onDonateClick: () -> Unit
 ) {
     // In a real app, this would come from a ViewModel or Repository
     val cause = getCauseById(causeId) ?: return
@@ -34,6 +37,7 @@ fun CauseDetailScreen(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
+        // ... (existing content) ...
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .data(cause.imageUrl)
@@ -82,6 +86,20 @@ fun CauseDetailScreen(
             }
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
+            
+            // Donation Button
+            Button(
+                onClick = onDonateClick,
+                modifier = Modifier.fillMaxWidth().height(56.dp),
+                colors = ButtonDefaults.buttonColors(containerColor = HopeGreen),
+                shape = RoundedCornerShape(16.dp)
+            ) {
+                Icon(imageVector = Icons.Default.Favorite, contentDescription = null)
+                Spacer(modifier = Modifier.width(8.dp))
+                Text("DONATE TO THIS CAUSE", fontWeight = FontWeight.Bold)
+            }
+
+            Spacer(modifier = Modifier.height(24.dp))
 
             Text(
                 text = "About this cause",

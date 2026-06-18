@@ -22,7 +22,9 @@ import com.homeofhope.app.ui.screens.member.LoginScreen
 import com.homeofhope.app.ui.screens.member.MemberDashboardScreen
 import com.homeofhope.app.ui.screens.member.RegisterScreen
 import com.homeofhope.app.ui.screens.services.ServicesScreen
+import com.homeofhope.app.ui.screens.donation.DonationScreen
 import com.homeofhope.app.ui.viewmodel.ContactViewModel
+import com.homeofhope.app.ui.viewmodel.DonationViewModel
 import com.homeofhope.app.ui.viewmodel.MemberViewModel
 
 @Composable
@@ -30,6 +32,7 @@ fun HomeOfHopeNavGraph(
     navController: NavHostController,
     contactViewModel: ContactViewModel,
     memberViewModel: MemberViewModel,
+    donationViewModel: DonationViewModel,
     modifier: Modifier = Modifier
 ) {
     NavHost(
@@ -66,7 +69,8 @@ fun HomeOfHopeNavGraph(
         composable(Screen.CauseDetail.route) { backStackEntry ->
             val causeId = backStackEntry.arguments?.getString("causeId") ?: ""
             CauseDetailScreen(
-                causeId = causeId
+                causeId = causeId,
+                onDonateClick = { navController.navigate(Screen.Donation.route) }
             )
         }
         composable(Screen.Events.route) { 
@@ -118,12 +122,21 @@ fun HomeOfHopeNavGraph(
         composable(Screen.MemberDashboard.route) {
             MemberDashboardScreen(
                 viewModel = memberViewModel,
-                onDonateClick = { navController.navigate(Screen.Causes.route) },
+                onDonateClick = { navController.navigate(Screen.Donation.route) },
                 onVolunteerClick = { navController.navigate(Screen.Events.route) },
                 onLogoutClick = {
                     navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Home.route) { inclusive = true }
                     }
+                }
+            )
+        }
+
+        composable(Screen.Donation.route) {
+            DonationScreen(
+                viewModel = donationViewModel,
+                onDonationSuccess = {
+                    navController.popBackStack()
                 }
             )
         }

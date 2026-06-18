@@ -31,6 +31,7 @@ import com.homeofhope.app.ui.theme.HopeDark
 import com.homeofhope.app.ui.theme.HopeGreen
 import com.homeofhope.app.ui.theme.HopeWhite
 import com.homeofhope.app.ui.viewmodel.ContactViewModel
+import com.homeofhope.app.ui.viewmodel.DonationViewModel
 import com.homeofhope.app.ui.viewmodel.MemberViewModel
 import kotlinx.coroutines.launch
 
@@ -79,6 +80,7 @@ class MainActivity : ComponentActivity() {
         
         val repository = HomeRepository(RetrofitClient.instance)
         val contactViewModel = ContactViewModel(repository)
+        val donationViewModel = DonationViewModel(repository)
 
         // Room Database Setup
         val database = AppDatabase.getDatabase(this)
@@ -94,8 +96,8 @@ class MainActivity : ComponentActivity() {
                 val currentRoute = navBackStackEntry?.destination?.route
 
                 val moreScreens = listOf(
-                    Screen.Blog, Screen.Services, Screen.Contact, Screen.FAQ, 
-                    Screen.Help, Screen.Privacy, Screen.Terms, Screen.Cookies
+                    Screen.Donation, Screen.Blog, Screen.Services, Screen.Contact, 
+                    Screen.FAQ, Screen.Help, Screen.Privacy, Screen.Terms, Screen.Cookies
                 )
 
                 ModalNavigationDrawer(
@@ -164,6 +166,7 @@ class MainActivity : ComponentActivity() {
                                 currentRoute == Screen.Register.route -> "Become a Member"
                                 currentRoute == Screen.Login.route -> "Login"
                                 currentRoute == Screen.MemberDashboard.route -> "Member Dashboard"
+                                currentRoute == Screen.Donation.route -> "Make a Donation"
                                 currentRoute?.startsWith("cause_detail") == true -> "Cause Details"
                                 currentRoute?.startsWith("blog_detail") == true -> "Article"
                                 else -> "Home Of Hope"
@@ -188,6 +191,7 @@ class MainActivity : ComponentActivity() {
                             navController = navController,
                             contactViewModel = contactViewModel,
                             memberViewModel = memberViewModel,
+                            donationViewModel = donationViewModel,
                             modifier = Modifier.padding(padding)
                         )
                     }
