@@ -40,6 +40,7 @@ import com.homeofhope.app.ui.viewmodel.MemberViewModel
 fun LoginScreen(
     viewModel: MemberViewModel,
     onLoginSuccess: () -> Unit,
+    onRegisterClick: () -> Unit,
     onBackClick: () -> Unit
 ) {
     var username by remember { mutableStateOf("") }
@@ -215,7 +216,7 @@ fun LoginScreen(
                     verticalAlignment = Alignment.CenterVertically
                 ) {
                     Text(text = "Don't have an account?", color = HopeGrey, fontSize = 14.sp)
-                    TextButton(onClick = { /* Navigate to register or back to where registration is triggered */ }) {
+                    TextButton(onClick = onRegisterClick) {
                         Text(
                             text = "Register Now",
                             color = HopeGreen,

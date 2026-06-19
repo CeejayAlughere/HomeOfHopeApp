@@ -117,6 +117,7 @@ fun HomeOfHopeNavGraph(
                         popUpTo(Screen.Home.route)
                     }
                 },
+                onRegisterClick = { navController.navigate(Screen.Register.route) },
                 onBackClick = { navController.popBackStack() }
             )
         }
