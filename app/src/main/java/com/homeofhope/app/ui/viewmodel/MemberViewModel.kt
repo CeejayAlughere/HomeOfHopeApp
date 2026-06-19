@@ -28,6 +28,18 @@ class MemberViewModel(private val repository: MemberRepository) : ViewModel() {
     var currentUser by mutableStateOf<Member?>(null)
         private set
 
+    private val _joinedEvents = MutableStateFlow<Set<String>>(emptySet())
+    val joinedEvents: StateFlow<Set<String>> = _joinedEvents.asStateFlow()
+
+    fun toggleJoinEvent(eventTitle: String) {
+        val current = _joinedEvents.value
+        if (current.contains(eventTitle)) {
+            _joinedEvents.value = current - eventTitle
+        } else {
+            _joinedEvents.value = current + eventTitle
+        }
+    }
+
     fun register(fullName: String, idNumber: String, username: String, password: String, confirmPass: String) {
         if (fullName.isBlank() || idNumber.isBlank() || username.isBlank() || password.isBlank() || confirmPass.isBlank()) {
             _authState.value = AuthState.Error("All fields are required")
