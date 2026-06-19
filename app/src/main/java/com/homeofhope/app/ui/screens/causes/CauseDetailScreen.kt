@@ -9,7 +9,7 @@ import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
+import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -22,15 +22,44 @@ import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.homeofhope.app.ui.theme.HopeDark
 import com.homeofhope.app.ui.theme.HopeGreen
+import com.homeofhope.app.ui.theme.HopeGrey
 import com.homeofhope.app.ui.theme.HopeWhite
 
 @Composable
 fun CauseDetailScreen(
     causeId: String,
-    onDonateClick: () -> Unit
+    isLoggedIn: Boolean,
+    onDonateClick: () -> Unit,
+    onLoginClick: () -> Unit
 ) {
+    var showLoginDialog by remember { mutableStateOf(false) }
+
     // In a real app, this would come from a ViewModel or Repository
     val cause = getCauseById(causeId) ?: return
+
+    if (showLoginDialog) {
+        AlertDialog(
+            onDismissRequest = { showLoginDialog = false },
+            title = { Text("Membership Required") },
+            text = { Text("You need to be a member to make a donation. Joining our community helps us keep track of your impact and keep you updated on our causes.") },
+            confirmButton = {
+                Button(
+                    onClick = {
+                        showLoginDialog = false
+                        onLoginClick()
+                    },
+                    colors = ButtonDefaults.buttonColors(containerColor = HopeGreen)
+                ) {
+                    Text("Login / Register")
+                }
+            },
+            dismissButton = {
+                TextButton(onClick = { showLoginDialog = false }) {
+                    Text("Cancel", color = HopeGrey)
+                }
+            }
+        )
+    }
 
     Column(
         modifier = Modifier
@@ -89,7 +118,13 @@ fun CauseDetailScreen(
             
             // Donation Button
             Button(
-                onClick = onDonateClick,
+                onClick = {
+                    if (isLoggedIn) {
+                        onDonateClick()
+                    } else {
+                        showLoginDialog = true
+                    }
+                },
                 modifier = Modifier.fillMaxWidth().height(56.dp),
                 colors = ButtonDefaults.buttonColors(containerColor = HopeGreen),
                 shape = RoundedCornerShape(16.dp)

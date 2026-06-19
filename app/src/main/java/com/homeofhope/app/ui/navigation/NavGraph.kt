@@ -71,7 +71,13 @@ fun HomeOfHopeNavGraph(
             val causeId = backStackEntry.arguments?.getString("causeId") ?: ""
             CauseDetailScreen(
                 causeId = causeId,
-                onDonateClick = { navController.navigate(Screen.Donation.route) }
+                isLoggedIn = memberViewModel.currentUser != null,
+                onDonateClick = {
+                    navController.navigate(Screen.Donation.route)
+                },
+                onLoginClick = {
+                    navController.navigate(Screen.Login.route)
+                }
             )
         }
         composable(Screen.Events.route) { 
@@ -125,7 +131,13 @@ fun HomeOfHopeNavGraph(
             MemberDashboardScreen(
                 viewModel = memberViewModel,
                 donationViewModel = donationViewModel,
-                onDonateClick = { navController.navigate(Screen.Donation.route) },
+                onDonateClick = {
+                    if (memberViewModel.currentUser != null) {
+                        navController.navigate(Screen.Donation.route)
+                    } else {
+                        navController.navigate(Screen.Login.route)
+                    }
+                },
                 onVolunteerClick = { navController.navigate(Screen.Events.route) },
                 onEventsClick = { navController.navigate(Screen.Events.route) },
                 onProfileClick = { /* Navigate to profile if it exists */ },
