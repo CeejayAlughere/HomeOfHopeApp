@@ -99,7 +99,7 @@ class MainActivity : ComponentActivity() {
                 val currentRoute = navBackStackEntry?.destination?.route
 
                 val moreScreens = listOf(
-                    Screen.Donation, Screen.Blog, Screen.Services, Screen.Contact, 
+                    Screen.Blog, Screen.Services, Screen.Contact,
                     Screen.FAQ, Screen.Help, Screen.Privacy, Screen.Terms, Screen.Cookies
                 )
 
