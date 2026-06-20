@@ -20,10 +20,14 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.homeofhope.app.data.local.entity.Announcement
 import com.homeofhope.app.data.local.entity.DonationRecord
+import com.homeofhope.app.data.local.entity.Event
+import com.homeofhope.app.data.local.entity.ImpactStory
 import com.homeofhope.app.ui.theme.HomeOfHopeTheme
 import com.homeofhope.app.ui.theme.HopeGreen
 import com.homeofhope.app.ui.theme.HopeWhite
@@ -50,7 +54,11 @@ fun MemberDashboardScreen(
         remember { mutableStateOf(emptyList<DonationRecord>()) }
     }
     
-    val joinedEvents by viewModel?.joinedEvents?.collectAsState() ?: remember { mutableStateOf(emptySet()) }
+    val upcomingEvents by viewModel?.upcomingEvents?.collectAsState() ?: remember { mutableStateOf(emptyList()) }
+    val joinedEvents by viewModel?.joinedEvents?.collectAsState() ?: remember { mutableStateOf(emptyList()) }
+    val announcements by viewModel?.announcements?.collectAsState() ?: remember { mutableStateOf(emptyList()) }
+    val impactStories by viewModel?.impactStories?.collectAsState() ?: remember { mutableStateOf(emptyList()) }
+
     var showAllReceipts by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -80,7 +88,12 @@ fun MemberDashboardScreen(
             horizontalAlignment = Alignment.Start
         ) {
             // Premium Header Section
-            HeaderSection(user?.fullName ?: "Member")
+            HeaderSection(user?.fullName ?: "Member", donations.size, joinedEvents.size)
+
+            Spacer(modifier = Modifier.height(24.dp))
+            
+            // Impact Summary Card
+            ImpactSummaryCard(donations, joinedEvents)
 
             Spacer(modifier = Modifier.height(24.dp))
             
@@ -91,27 +104,33 @@ fun MemberDashboardScreen(
             HorizontalDivider()
             Spacer(modifier = Modifier.height(24.dp))
 
-            // My Impact Section
-            Text(
-                text = "📊 My Impact",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
+            // Dynamic Upcoming Events Section
+            EventsSection(
+                events = upcomingEvents,
+                joinedEvents = joinedEvents,
+                onJoinToggle = { eventId, isJoined -> 
+                    viewModel?.toggleJoinEvent(eventId, isJoined)
+                }
             )
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                val totalDonated = donations.sumOf { it.amount }
-                ImpactCard(Modifier.weight(1f), "R${String.format(Locale.getDefault(), "%.0f", totalDonated)}", "Total Donated", Icons.Default.Favorite)
-                ImpactCard(Modifier.weight(1f), "${joinedEvents.size}", "Events Joined", Icons.Default.EventAvailable)
-                ImpactCard(Modifier.weight(1f), "${joinedEvents.size * 4}", "Hours (est.)", Icons.Default.Timer)
-            }
 
             Spacer(modifier = Modifier.height(32.dp))
             HorizontalDivider()
             Spacer(modifier = Modifier.height(24.dp))
-            
+
+            // Announcements Section
+            AnnouncementsSection(announcements)
+
+            Spacer(modifier = Modifier.height(32.dp))
+            HorizontalDivider()
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Impact Stories Section
+            ImpactStoriesSection(impactStories)
+
+            Spacer(modifier = Modifier.height(32.dp))
+            HorizontalDivider()
+            Spacer(modifier = Modifier.height(24.dp))
+
             // Achievements Badges
             AchievementsSection(donations.isNotEmpty(), joinedEvents.isNotEmpty())
 
@@ -144,18 +163,6 @@ fun MemberDashboardScreen(
                 ActionButton(Modifier.weight(1f), "Donate", Icons.Default.AddCard, onDonateClick)
                 ActionButton(Modifier.weight(1f), "Volunteer", Icons.Default.Handshake, onVolunteerClick)
             }
-
-            Spacer(modifier = Modifier.height(32.dp))
-            HorizontalDivider()
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Featured Volunteer Opportunity
-            FeaturedVolunteerCard(
-                eventTitle = "Winter Food Drive",
-                eventDate = "28 June 2026",
-                isJoined = joinedEvents.contains("Winter Food Drive"),
-                onJoinToggle = { viewModel?.toggleJoinEvent("Winter Food Drive") }
-            )
             
             Spacer(modifier = Modifier.height(32.dp))
         }
@@ -163,7 +170,7 @@ fun MemberDashboardScreen(
 }
 
 @Composable
-fun HeaderSection(name: String) {
+fun HeaderSection(name: String, totalDonations: Int, totalEvents: Int) {
     Row(
         verticalAlignment = Alignment.CenterVertically,
         modifier = Modifier.fillMaxWidth()
@@ -185,38 +192,276 @@ fun HeaderSection(name: String) {
         Spacer(modifier = Modifier.width(16.dp))
         Column {
             Text(
-                text = "Welcome Back,",
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Text(
-                text = name,
+                text = "Welcome Back, $name 👋",
                 style = MaterialTheme.typography.headlineSmall,
                 fontWeight = FontWeight.Bold
             )
+            val supportText = if (totalDonations + totalEvents > 0) {
+                "You have supported ${totalDonations + totalEvents} community initiatives."
+            } else {
+                "Ready to make an impact today?"
+            }
+            Text(
+                text = supportText,
+                style = MaterialTheme.typography.bodyMedium,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+        }
+    }
+}
+
+@Composable
+fun ImpactSummaryCard(donations: List<DonationRecord>, joinedEvents: List<Event>) {
+    val calendar = Calendar.getInstance()
+    val currentMonth = calendar.get(Calendar.MONTH)
+    val currentYear = calendar.get(Calendar.YEAR)
+
+    val monthlyDonations = donations.filter {
+        val d = Calendar.getInstance().apply { timeInMillis = it.date }
+        d.get(Calendar.MONTH) == currentMonth && d.get(Calendar.YEAR) == currentYear
+    }
+    
+    val monthlyEventsCount = joinedEvents.filter {
+        val d = Calendar.getInstance().apply { timeInMillis = it.date }
+        d.get(Calendar.MONTH) == currentMonth && d.get(Calendar.YEAR) == currentYear
+    }.size
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(20.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f))
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(
+                text = "This Month's Impact",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold,
+                color = MaterialTheme.colorScheme.primary
+            )
+            Spacer(modifier = Modifier.height(16.dp))
             Row(
-                verticalAlignment = Alignment.CenterVertically,
-                modifier = Modifier.padding(top = 4.dp)
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.SpaceBetween
             ) {
-                Surface(
-                    color = HopeGreen.copy(alpha = 0.15f),
-                    shape = RoundedCornerShape(100.dp)
-                ) {
-                    Text(
-                        text = "Active Member",
-                        color = HopeGreen,
-                        fontSize = 11.sp,
-                        fontWeight = FontWeight.ExtraBold,
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 2.dp)
-                    )
-                }
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(
-                    text = "Joined June 2026",
-                    style = MaterialTheme.typography.bodySmall,
-                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                ImpactItem(
+                    label = "Donated",
+                    value = "R${monthlyDonations.sumOf { it.amount }.toInt()}",
+                    icon = Icons.Default.Favorite,
+                    modifier = Modifier.weight(1f)
+                )
+                ImpactItem(
+                    label = "Events",
+                    value = "$monthlyEventsCount",
+                    icon = Icons.Default.Event,
+                    modifier = Modifier.weight(1f)
+                )
+                ImpactItem(
+                    label = "Hours",
+                    value = "${monthlyEventsCount * 4}",
+                    icon = Icons.Default.Timer,
+                    modifier = Modifier.weight(1f)
+                )
+                ImpactItem(
+                    label = "Projects",
+                    value = "${(monthlyDonations.size + monthlyEventsCount).coerceAtMost(5)}",
+                    icon = Icons.Default.Public,
+                    modifier = Modifier.weight(1f)
                 )
             }
+        }
+    }
+}
+
+@Composable
+fun ImpactItem(label: String, value: String, icon: ImageVector, modifier: Modifier) {
+    Column(
+        modifier = modifier,
+        horizontalAlignment = Alignment.CenterHorizontally
+    ) {
+        Icon(icon, contentDescription = null, tint = HopeGreen, modifier = Modifier.size(20.dp))
+        Text(text = value, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+        Text(text = label, fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant)
+    }
+}
+
+@Composable
+fun EventsSection(events: List<Event>, joinedEvents: List<Event>, onJoinToggle: (Int, Boolean) -> Unit) {
+    Text(
+        text = "📅 Upcoming Events",
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.Bold
+    )
+    Spacer(modifier = Modifier.height(16.dp))
+    
+    if (events.isEmpty()) {
+        EmptyStateCard("No upcoming events at the moment.")
+    } else {
+        events.forEach { event ->
+            val isJoined = joinedEvents.any { it.id == event.id }
+            EventCard(event, isJoined) { onJoinToggle(event.id, isJoined) }
+            Spacer(modifier = Modifier.height(12.dp))
+        }
+    }
+}
+
+@Composable
+fun EventCard(event: Event, isJoined: Boolean, onJoinClick: () -> Unit) {
+    val sdf = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
+    val dateString = sdf.format(Date(event.date))
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(
+            containerColor = if (isJoined) HopeGreen.copy(alpha = 0.05f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+        )
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Row(verticalAlignment = Alignment.Top) {
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(text = event.title, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+                    Row(verticalAlignment = Alignment.CenterVertically) {
+                        Icon(Icons.Default.LocationOn, contentDescription = null, size = 12.dp, tint = Color.Gray)
+                        Spacer(modifier = Modifier.width(4.dp))
+                        Text(text = "${event.location} • $dateString", fontSize = 12.sp, color = Color.Gray)
+                    }
+                }
+                if (isJoined) {
+                    Icon(Icons.Default.CheckCircle, contentDescription = "Joined", tint = HopeGreen)
+                }
+            }
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = event.description,
+                fontSize = 13.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                maxLines = 2,
+                overflow = TextOverflow.Ellipsis
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Button(
+                onClick = onJoinClick,
+                modifier = Modifier.fillMaxWidth(),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = if (isJoined) Color.Gray else HopeGreen
+                ),
+                shape = RoundedCornerShape(8.dp),
+                contentPadding = PaddingValues(0.dp)
+            ) {
+                Text(if (isJoined) "Leave Event" else "Join Event", fontSize = 14.sp)
+            }
+        }
+    }
+}
+
+@Composable
+fun AnnouncementsSection(announcements: List<Announcement>) {
+    Text(
+        text = "📢 Latest Updates",
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.Bold
+    )
+    Spacer(modifier = Modifier.height(16.dp))
+    
+    if (announcements.isEmpty()) {
+        EmptyStateCard("Check back later for updates!")
+    } else {
+        announcements.forEach { announcement ->
+            AnnouncementItem(announcement)
+            Spacer(modifier = Modifier.height(8.dp))
+        }
+    }
+}
+
+@Composable
+fun AnnouncementItem(announcement: Announcement) {
+    val sdf = SimpleDateFormat("dd MMM", Locale.getDefault())
+    val dateString = sdf.format(Date(announcement.date))
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(12.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+    ) {
+        Row(modifier = Modifier.padding(12.dp), verticalAlignment = Alignment.CenterVertically) {
+            Column(
+                modifier = Modifier
+                    .background(HopeGreen.copy(alpha = 0.1f), RoundedCornerShape(8.dp))
+                    .padding(8.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                Text(text = dateString.split(" ")[0], fontWeight = FontWeight.Bold, fontSize = 14.sp, color = HopeGreen)
+                Text(text = dateString.split(" ")[1], fontSize = 10.sp, color = HopeGreen)
+            }
+            Spacer(modifier = Modifier.width(16.dp))
+            Column {
+                Text(text = announcement.title, fontWeight = FontWeight.Bold, fontSize = 14.sp)
+                Text(
+                    text = announcement.content,
+                    fontSize = 12.sp,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ImpactStoriesSection(stories: List<ImpactStory>) {
+    Text(
+        text = "🌟 Impact Stories",
+        style = MaterialTheme.typography.titleMedium,
+        fontWeight = FontWeight.Bold
+    )
+    Spacer(modifier = Modifier.height(16.dp))
+    
+    if (stories.isEmpty()) {
+        EmptyStateCard("Stories of hope coming soon.")
+    } else {
+        stories.forEach { story ->
+            StoryCard(story)
+            Spacer(modifier = Modifier.height(12.dp))
+        }
+    }
+}
+
+@Composable
+fun StoryCard(story: ImpactStory) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        shape = RoundedCornerShape(16.dp),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.2f))
+    ) {
+        Column(modifier = Modifier.padding(16.dp)) {
+            Text(text = story.title, fontWeight = FontWeight.Bold, fontSize = 16.sp)
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = story.description,
+                fontSize = 13.sp,
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+            Spacer(modifier = Modifier.height(8.dp))
+            Text(
+                text = SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(Date(story.date)),
+                fontSize = 11.sp,
+                fontWeight = FontWeight.Bold,
+                color = HopeGreen
+            )
+        }
+    }
+}
+
+@Composable
+fun EmptyStateCard(message: String) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(containerColor = Color.Transparent),
+        border = androidx.compose.foundation.BorderStroke(1.dp, Color.LightGray.copy(alpha = 0.5f))
+    ) {
+        Box(modifier = Modifier.padding(24.dp).fillMaxWidth(), contentAlignment = Alignment.Center) {
+            Text(text = message, style = MaterialTheme.typography.bodySmall, color = Color.Gray)
         }
     }
 }
@@ -368,63 +613,6 @@ fun DonationHistorySection(donations: List<DonationRecord>, showAll: Boolean, on
 }
 
 @Composable
-fun FeaturedVolunteerCard(eventTitle: String, eventDate: String, isJoined: Boolean, onJoinToggle: () -> Unit) {
-    Text(
-        text = "📅 Volunteer Opportunity",
-        style = MaterialTheme.typography.titleMedium,
-        fontWeight = FontWeight.Bold
-    )
-    Spacer(modifier = Modifier.height(16.dp))
-    Card(
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(20.dp),
-        colors = CardDefaults.cardColors(
-            containerColor = if (isJoined) HopeGreen.copy(alpha = 0.1f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.4f)
-        )
-    ) {
-        Column(modifier = Modifier.padding(20.dp)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Surface(
-                    modifier = Modifier.size(40.dp),
-                    shape = RoundedCornerShape(10.dp),
-                    color = HopeGreen.copy(alpha = 0.1f)
-                ) {
-                    Box(contentAlignment = Alignment.Center) {
-                        Icon(Icons.Default.Celebration, contentDescription = null, tint = HopeGreen)
-                    }
-                }
-                Spacer(modifier = Modifier.width(16.dp))
-                Column {
-                    Text(
-                        text = eventTitle,
-                        style = MaterialTheme.typography.titleMedium,
-                        fontWeight = FontWeight.Bold
-                    )
-                    Text(
-                        text = eventDate,
-                        style = MaterialTheme.typography.bodySmall,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
-            }
-            Spacer(modifier = Modifier.height(20.dp))
-            Button(
-                onClick = onJoinToggle,
-                modifier = Modifier.fillMaxWidth(),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = if (isJoined) Color.Gray else HopeGreen
-                ),
-                shape = RoundedCornerShape(12.dp)
-            ) {
-                Icon(if (isJoined) Icons.Default.Check else Icons.Default.Groups, contentDescription = null)
-                Spacer(modifier = Modifier.width(8.dp))
-                Text(if (isJoined) "Signed Up" else "Volunteer Now", fontWeight = FontWeight.Bold)
-            }
-        }
-    }
-}
-
-@Composable
 fun DonationReceiptItem(donation: DonationRecord) {
     val sdf = SimpleDateFormat("dd MMM yyyy", Locale.getDefault())
     val dateString = sdf.format(Date(donation.date))
@@ -456,25 +644,6 @@ fun DonationReceiptItem(donation: DonationRecord) {
 }
 
 @Composable
-fun ImpactCard(modifier: Modifier, value: String, label: String, icon: ImageVector) {
-    Card(
-        modifier = modifier,
-        shape = RoundedCornerShape(12.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
-    ) {
-        Column(
-            modifier = Modifier.padding(12.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
-        ) {
-            Icon(icon, contentDescription = null, tint = HopeGreen, modifier = Modifier.size(24.dp))
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(text = value, fontWeight = FontWeight.Bold, fontSize = 16.sp)
-            Text(text = label, fontSize = 10.sp, color = MaterialTheme.colorScheme.onSurfaceVariant, maxLines = 1)
-        }
-    }
-}
-
-@Composable
 fun ActionButton(modifier: Modifier, text: String, icon: ImageVector, onClick: () -> Unit) {
     OutlinedButton(
         onClick = onClick,
@@ -486,6 +655,11 @@ fun ActionButton(modifier: Modifier, text: String, icon: ImageVector, onClick: (
         Spacer(modifier = Modifier.width(8.dp))
         Text(text = text, fontWeight = FontWeight.Medium)
     }
+}
+
+@Composable
+fun Icon(icon: ImageVector, contentDescription: String?, size: androidx.compose.ui.unit.Dp, tint: Color) {
+    androidx.compose.material3.Icon(icon, contentDescription = contentDescription, modifier = Modifier.size(size), tint = tint)
 }
 
 @Preview(showBackground = true)

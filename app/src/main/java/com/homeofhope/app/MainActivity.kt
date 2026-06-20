@@ -1,6 +1,7 @@
 package com.homeofhope.app
 
 import android.animation.ObjectAnimator
+import androidx.lifecycle.lifecycleScope
 import android.os.Bundle
 import android.view.View
 import android.view.animation.AnticipateInterpolator
@@ -19,9 +20,15 @@ import androidx.core.splashscreen.SplashScreen.Companion.installSplashScreen
 import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.homeofhope.app.data.local.AppDatabase
+import com.homeofhope.app.data.local.entity.Announcement
+import com.homeofhope.app.data.local.entity.Event
+import com.homeofhope.app.data.local.entity.ImpactStory
 import com.homeofhope.app.data.network.RetrofitClient
+import com.homeofhope.app.data.repository.AnnouncementRepository
 import com.homeofhope.app.data.repository.DonationRepository
+import com.homeofhope.app.data.repository.EventRepository
 import com.homeofhope.app.data.repository.HomeRepository
+import com.homeofhope.app.data.repository.ImpactStoryRepository
 import com.homeofhope.app.data.repository.MemberRepository
 import com.homeofhope.app.ui.components.AppBottomNav
 import com.homeofhope.app.ui.components.AppTopBar
@@ -88,7 +95,19 @@ class MainActivity : ComponentActivity() {
         val donationViewModel = DonationViewModel(repository, donationRepository)
 
         val memberRepository = MemberRepository(database.memberDao())
-        val memberViewModel = MemberViewModel(memberRepository)
+        val eventRepository = EventRepository(database.eventDao())
+        val announcementRepository = AnnouncementRepository(database.announcementDao())
+        val impactStoryRepository = ImpactStoryRepository(database.impactStoryDao())
+        
+        val memberViewModel = MemberViewModel(
+            memberRepository,
+            eventRepository,
+            announcementRepository,
+            impactStoryRepository
+        )
+
+        // Seed data for development/debug mode
+        seedData(eventRepository, announcementRepository, impactStoryRepository, lifecycleScope)
 
         setContent {
             HomeOfHopeTheme {
@@ -200,6 +219,65 @@ class MainActivity : ComponentActivity() {
                     }
                 }
             }
+        }
+    }
+
+    private fun seedData(
+        eventRepo: EventRepository,
+        announcementRepo: AnnouncementRepository,
+        impactStoryRepo: ImpactStoryRepository,
+        scope: androidx.lifecycle.LifecycleCoroutineScope
+    ) {
+        scope.launch {
+            // Seed Events
+            eventRepo.insertEvent(
+                Event(
+                    title = "Winter Food Drive",
+                    date = System.currentTimeMillis() + 86400000 * 7,
+                    location = "Community Center",
+                    description = "Join us in collecting and distributing food to those in need this winter."
+                )
+            )
+            eventRepo.insertEvent(
+                Event(
+                    title = "Youth Mentorship Program",
+                    date = System.currentTimeMillis() + 86400000 * 14,
+                    location = "Local Library",
+                    description = "Help guide the next generation. Share your skills and experience."
+                )
+            )
+
+            // Seed Announcements
+            announcementRepo.insertAnnouncement(
+                Announcement(
+                    title = "New Partnership Announced",
+                    content = "We are excited to partner with Local Bank to expand our reach.",
+                    date = System.currentTimeMillis()
+                )
+            )
+            announcementRepo.insertAnnouncement(
+                Announcement(
+                    title = "Annual Gala Success",
+                    content = "Thank you to everyone who attended! We raised over R100k.",
+                    date = System.currentTimeMillis() - 86400000 * 2
+                )
+            )
+
+            // Seed Impact Stories
+            impactStoryRepo.insertImpactStory(
+                ImpactStory(
+                    title = "Education for All",
+                    description = "Thanks to your donations, 50 more children started school this month.",
+                    date = System.currentTimeMillis() - 86400000 * 30
+                )
+            )
+            impactStoryRepo.insertImpactStory(
+                ImpactStory(
+                    title = "Clean Water Initiative",
+                    description = "Three new wells were completed in the northern district.",
+                    date = System.currentTimeMillis() - 86400000 * 60
+                )
+            )
         }
     }
 }

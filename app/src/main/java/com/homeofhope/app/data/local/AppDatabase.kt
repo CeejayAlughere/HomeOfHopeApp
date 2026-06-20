@@ -4,15 +4,36 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
+import com.homeofhope.app.data.local.dao.AnnouncementDao
 import com.homeofhope.app.data.local.dao.DonationDao
+import com.homeofhope.app.data.local.dao.EventDao
+import com.homeofhope.app.data.local.dao.ImpactStoryDao
 import com.homeofhope.app.data.local.dao.MemberDao
+import com.homeofhope.app.data.local.entity.Announcement
 import com.homeofhope.app.data.local.entity.DonationRecord
+import com.homeofhope.app.data.local.entity.Event
+import com.homeofhope.app.data.local.entity.EventJoin
+import com.homeofhope.app.data.local.entity.ImpactStory
 import com.homeofhope.app.data.local.entity.Member
 
-@Database(entities = [Member::class, DonationRecord::class], version = 3, exportSchema = false)
+@Database(
+    entities = [
+        Member::class,
+        DonationRecord::class,
+        Event::class,
+        EventJoin::class,
+        Announcement::class,
+        ImpactStory::class
+    ],
+    version = 4,
+    exportSchema = false
+)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun memberDao(): MemberDao
     abstract fun donationDao(): DonationDao
+    abstract fun eventDao(): EventDao
+    abstract fun announcementDao(): AnnouncementDao
+    abstract fun impactStoryDao(): ImpactStoryDao
 
     companion object {
         @Volatile
