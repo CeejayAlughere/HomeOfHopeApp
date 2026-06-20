@@ -7,6 +7,8 @@ import kotlinx.coroutines.flow.Flow
 class ImpactStoryRepository(private val impactStoryDao: ImpactStoryDao) {
     fun getAllImpactStories(): Flow<List<ImpactStory>> = impactStoryDao.getAllImpactStories()
 
+    suspend fun storyExists(title: String): Boolean = impactStoryDao.getStoryCountByTitle(title) > 0
+
     suspend fun insertImpactStory(story: ImpactStory) =
         impactStoryDao.insertImpactStory(story)
 }

@@ -234,54 +234,66 @@ class MainActivity : ComponentActivity() {
     ) {
         scope.launch {
             // Seed Events
-            eventRepo.insertEvent(
-                Event(
-                    title = "Winter Food Drive",
-                    date = System.currentTimeMillis() + 86400000 * 7,
-                    location = "Community Center",
-                    description = "Join us in collecting and distributing food to those in need this winter."
+            if (!eventRepo.eventExists("Winter Food Drive")) {
+                eventRepo.insertEvent(
+                    Event(
+                        title = "Winter Food Drive",
+                        date = System.currentTimeMillis() + 86400000 * 7,
+                        location = "Community Center",
+                        description = "Join us in collecting and distributing food to those in need this winter."
+                    )
                 )
-            )
-            eventRepo.insertEvent(
-                Event(
-                    title = "Youth Mentorship Program",
-                    date = System.currentTimeMillis() + 86400000 * 14,
-                    location = "Local Library",
-                    description = "Help guide the next generation. Share your skills and experience."
+            }
+            if (!eventRepo.eventExists("Youth Mentorship Program")) {
+                eventRepo.insertEvent(
+                    Event(
+                        title = "Youth Mentorship Program",
+                        date = System.currentTimeMillis() + 86400000 * 14,
+                        location = "Local Library",
+                        description = "Help guide the next generation. Share your skills and experience."
+                    )
                 )
-            )
+            }
 
             // Seed Announcements
-            announcementRepo.insertAnnouncement(
-                Announcement(
-                    title = "New Partnership Announced",
-                    content = "We are excited to partner with Local Bank to expand our reach.",
-                    date = System.currentTimeMillis()
+            if (!announcementRepo.announcementExists("New Partnership Announced")) {
+                announcementRepo.insertAnnouncement(
+                    Announcement(
+                        title = "New Partnership Announced",
+                        content = "We are excited to partner with Local Bank to expand our reach.",
+                        date = System.currentTimeMillis()
+                    )
                 )
-            )
-            announcementRepo.insertAnnouncement(
-                Announcement(
-                    title = "Annual Gala Success",
-                    content = "Thank you to everyone who attended! We raised over R100k.",
-                    date = System.currentTimeMillis() - 86400000 * 2
+            }
+            if (!announcementRepo.announcementExists("Annual Gala Success")) {
+                announcementRepo.insertAnnouncement(
+                    Announcement(
+                        title = "Annual Gala Success",
+                        content = "Thank you to everyone who attended! We raised over R100k.",
+                        date = System.currentTimeMillis() - 86400000 * 2
+                    )
                 )
-            )
+            }
 
             // Seed Impact Stories
-            impactStoryRepo.insertImpactStory(
-                ImpactStory(
-                    title = "Education for All",
-                    description = "Thanks to your donations, 50 more children started school this month.",
-                    date = System.currentTimeMillis() - 86400000 * 30
+            if (!impactStoryRepo.storyExists("Education for All")) {
+                impactStoryRepo.insertImpactStory(
+                    ImpactStory(
+                        title = "Education for All",
+                        description = "Thanks to your donations, 50 more children started school this month.",
+                        date = System.currentTimeMillis() - 86400000 * 30
+                    )
                 )
-            )
-            impactStoryRepo.insertImpactStory(
-                ImpactStory(
-                    title = "Clean Water Initiative",
-                    description = "Three new wells were completed in the northern district.",
-                    date = System.currentTimeMillis() - 86400000 * 60
+            }
+            if (!impactStoryRepo.storyExists("Clean Water Initiative")) {
+                impactStoryRepo.insertImpactStory(
+                    ImpactStory(
+                        title = "Clean Water Initiative",
+                        description = "Three new wells were completed in the northern district.",
+                        date = System.currentTimeMillis() - 86400000 * 60
+                    )
                 )
-            )
+            }
         }
     }
 }

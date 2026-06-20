@@ -95,9 +95,36 @@ fun MemberDashboardScreen(
                 .padding(16.dp),
             horizontalAlignment = Alignment.Start
         ) {
-            // Premium Header Section
+            //  Header Section
             HeaderSection(user?.fullName ?: "Member", donations.size, joinedEvents.size)
 
+            Spacer(modifier = Modifier.height(24.dp))
+
+            // Quick Actions Section
+            Text(
+                text = "Quick Actions",
+                style = MaterialTheme.typography.titleMedium,
+                fontWeight = FontWeight.Bold
+            )
+            Spacer(modifier = Modifier.height(16.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                ActionButton(Modifier.weight(1f), "Donate", Icons.Default.AddCard, onDonateClick)
+                ActionButton(Modifier.weight(1f), "Volunteer", Icons.Default.Handshake, onVolunteerClick)
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                ActionButton(Modifier.weight(1f), "Member Card", Icons.Default.Badge, onMembershipCardClick)
+                ActionButton(Modifier.weight(1f), "Community", Icons.Default.Forum, onCommunityWallClick)
+            }
+
+            Spacer(modifier = Modifier.height(32.dp))
+            HorizontalDivider()
             Spacer(modifier = Modifier.height(24.dp))
             
             // Impact Summary Card
@@ -118,7 +145,8 @@ fun MemberDashboardScreen(
                 joinedEvents = joinedEvents,
                 onJoinToggle = { eventId, isJoined -> 
                     viewModel?.toggleJoinEvent(eventId, isJoined)
-                }
+                },
+                onViewAllClick = onEventsClick
             )
 
             Spacer(modifier = Modifier.height(32.dp))
@@ -146,40 +174,13 @@ fun MemberDashboardScreen(
             HorizontalDivider()
             Spacer(modifier = Modifier.height(24.dp))
 
-            // Recent Donations (Receipts) Section with Toggle
+            // Recent Donations
             DonationHistorySection(
                 donations = donations,
                 showAll = showAllReceipts,
                 onToggleShowAll = { showAllReceipts = !showAllReceipts }
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
-            HorizontalDivider()
-            Spacer(modifier = Modifier.height(24.dp))
-
-            // Quick Actions Section
-            Text(
-                text = "Quick Actions",
-                style = MaterialTheme.typography.titleMedium,
-                fontWeight = FontWeight.Bold
-            )
-            Spacer(modifier = Modifier.height(16.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                ActionButton(Modifier.weight(1f), "Donate", Icons.Default.AddCard, onDonateClick)
-                ActionButton(Modifier.weight(1f), "Volunteer", Icons.Default.Handshake, onVolunteerClick)
-            }
-            Spacer(modifier = Modifier.height(12.dp))
-            Row(
-                modifier = Modifier.fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                ActionButton(Modifier.weight(1f), "Member Card", Icons.Default.Badge, onMembershipCardClick)
-                ActionButton(Modifier.weight(1f), "Community", Icons.Default.Forum, onCommunityWallClick)
-            }
-            
             Spacer(modifier = Modifier.height(32.dp))
         }
     }
@@ -301,18 +302,28 @@ fun ImpactItem(label: String, value: String, icon: ImageVector, modifier: Modifi
 }
 
 @Composable
-fun EventsSection(events: List<Event>, joinedEvents: List<Event>, onJoinToggle: (Int, Boolean) -> Unit) {
-    Text(
-        text = "📅 Upcoming Events",
-        style = MaterialTheme.typography.titleMedium,
-        fontWeight = FontWeight.Bold
-    )
+fun EventsSection(events: List<Event>, joinedEvents: List<Event>, onJoinToggle: (Int, Boolean) -> Unit, onViewAllClick: () -> Unit) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween,
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Text(
+            text = "Upcoming Events",
+            style = MaterialTheme.typography.titleMedium,
+            fontWeight = FontWeight.Bold
+        )
+        TextButton(onClick = onViewAllClick) {
+            Text("View All", color = HopeGreen)
+        }
+    }
     Spacer(modifier = Modifier.height(16.dp))
     
     if (events.isEmpty()) {
         EmptyStateCard("No upcoming events at the moment.")
     } else {
-        events.forEach { event ->
+        // Only show first 3 unique events in dashboard
+        events.distinctBy { it.title }.take(3).forEach { event ->
             val isJoined = joinedEvents.any { it.id == event.id }
             EventCard(event, isJoined) { onJoinToggle(event.id, isJoined) }
             Spacer(modifier = Modifier.height(12.dp))
@@ -373,7 +384,7 @@ fun EventCard(event: Event, isJoined: Boolean, onJoinClick: () -> Unit) {
 @Composable
 fun AnnouncementsSection(announcements: List<Announcement>) {
     Text(
-        text = "📢 Latest Updates",
+        text = "Latest Community Updates",
         style = MaterialTheme.typography.titleMedium,
         fontWeight = FontWeight.Bold
     )
@@ -382,7 +393,7 @@ fun AnnouncementsSection(announcements: List<Announcement>) {
     if (announcements.isEmpty()) {
         EmptyStateCard("Check back later for updates!")
     } else {
-        announcements.forEach { announcement ->
+        announcements.distinctBy { it.title }.forEach { announcement ->
             AnnouncementItem(announcement)
             Spacer(modifier = Modifier.height(8.dp))
         }
@@ -427,7 +438,7 @@ fun AnnouncementItem(announcement: Announcement) {
 @Composable
 fun ImpactStoriesSection(stories: List<ImpactStory>) {
     Text(
-        text = "🌟 Impact Stories",
+        text = "Impact Stories",
         style = MaterialTheme.typography.titleMedium,
         fontWeight = FontWeight.Bold
     )
@@ -436,7 +447,7 @@ fun ImpactStoriesSection(stories: List<ImpactStory>) {
     if (stories.isEmpty()) {
         EmptyStateCard("Stories of hope coming soon.")
     } else {
-        stories.forEach { story ->
+        stories.distinctBy { it.title }.forEach { story ->
             StoryCard(story)
             Spacer(modifier = Modifier.height(12.dp))
         }
@@ -574,7 +585,7 @@ fun ProgressDetail(label: String, current: Double, target: Double, prefix: Strin
 @Composable
 fun AchievementsSection(badges: List<Badge>) {
     Text(
-        text = "🏆 My Badges",
+        text = "My Badges",
         style = MaterialTheme.typography.titleMedium,
         fontWeight = FontWeight.Bold
     )
@@ -643,7 +654,7 @@ fun DonationHistorySection(donations: List<DonationRecord>, showAll: Boolean, on
         verticalAlignment = Alignment.CenterVertically
     ) {
         Text(
-            text = "🧾 Giving History",
+            text = "Donation History",
             style = MaterialTheme.typography.titleMedium,
             fontWeight = FontWeight.Bold
         )

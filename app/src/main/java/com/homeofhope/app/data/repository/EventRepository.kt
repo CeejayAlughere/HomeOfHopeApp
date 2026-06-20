@@ -8,6 +8,8 @@ import kotlinx.coroutines.flow.Flow
 class EventRepository(private val eventDao: EventDao) {
     fun getAllUpcomingEvents(): Flow<List<Event>> = eventDao.getAllUpcomingEvents()
 
+    suspend fun eventExists(title: String): Boolean = eventDao.getEventCountByTitle(title) > 0
+
     suspend fun insertEvent(event: Event) = eventDao.insertEvent(event)
 
     suspend fun joinEvent(memberId: Int, eventId: Int) {

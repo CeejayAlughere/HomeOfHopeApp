@@ -10,6 +10,9 @@ interface EventDao {
     @Query("SELECT * FROM events ORDER BY date ASC")
     fun getAllUpcomingEvents(): Flow<List<Event>>
 
+    @Query("SELECT COUNT(*) FROM events WHERE title = :title")
+    suspend fun getEventCountByTitle(title: String): Int
+
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertEvent(event: Event)
 

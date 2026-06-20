@@ -14,4 +14,7 @@ interface AnnouncementDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertAnnouncement(announcement: Announcement)
+
+    @Query("SELECT COUNT(*) FROM announcements WHERE title = :title")
+    suspend fun getAnnouncementCountByTitle(title: String): Int
 }

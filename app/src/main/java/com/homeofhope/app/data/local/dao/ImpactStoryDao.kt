@@ -14,4 +14,7 @@ interface ImpactStoryDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertImpactStory(story: ImpactStory)
+
+    @Query("SELECT COUNT(*) FROM impact_stories WHERE title = :title")
+    suspend fun getStoryCountByTitle(title: String): Int
 }
