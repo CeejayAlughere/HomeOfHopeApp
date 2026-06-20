@@ -13,12 +13,7 @@ import com.homeofhope.app.data.local.entity.CommunityMessage
 import com.homeofhope.app.data.local.entity.DonationRecord
 import com.homeofhope.app.data.model.Badge
 import com.homeofhope.app.data.model.MembershipLevel
-import com.homeofhope.app.data.repository.AnnouncementRepository
-import com.homeofhope.app.data.repository.CommunityRepository
-import com.homeofhope.app.data.repository.DonationRepository
-import com.homeofhope.app.data.repository.EventRepository
-import com.homeofhope.app.data.repository.ImpactStoryRepository
-import com.homeofhope.app.data.repository.MemberRepository
+import com.homeofhope.app.data.repository.*
 import com.homeofhope.app.utils.MembershipCalculator
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -46,7 +41,8 @@ class MemberViewModel(
     private val donationRepository: DonationRepository,
     private val communityRepository: CommunityRepository,
     private val announcementRepository: AnnouncementRepository,
-    private val impactStoryRepository: ImpactStoryRepository
+    private val impactStoryRepository: ImpactStoryRepository,
+    private val adminRepository: AdminRepository
 ) : ViewModel() {
 
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
@@ -77,7 +73,14 @@ class MemberViewModel(
 
     @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     val totalHours: StateFlow<Double> = _currentUserFlow.flatMapLatest { user ->
-        user?.let { eventRepository.getTotalHoursForMember(it.id).map { h -> h ?: 0.0 } } ?: flowOf(0.0)
+        user?.let { 
+            combine(
+                eventRepository.getTotalHoursForMember(it.id).map { h -> h ?: 0.0 },
+                adminRepository.getTotalHoursByMember(it.id).map { h -> h ?: 0.0 }
+            ) { eventHours, adminHours ->
+                eventHours + adminHours
+            }
+        } ?: flowOf(0.0)
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0.0)
 
     @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)

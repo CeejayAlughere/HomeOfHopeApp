@@ -31,4 +31,10 @@ sealed class Screen(val route: String, val label: String, val icon: ImageVector)
     object DonationSuccess : Screen("donation_success", "Donation Successful", Icons.Default.CheckCircle)
     object MembershipCard : Screen("membership_card", "Membership Card", Icons.Default.Badge)
     object CommunityWall : Screen("community_wall", "Community Wall", Icons.Default.Forum)
+
+    // Admin
+    object AdminDashboard : Screen("admin_dashboard", "Admin Dashboard", Icons.Default.AdminPanelSettings)
+    object MemberManagement : Screen("member_management", "Member Management", Icons.Default.People)
+    object MemberDetails : Screen("member_details/{memberId}", "Member Details", Icons.Default.Person)
+    object VolunteerHoursManagement : Screen("volunteer_hours_management", "Volunteer Hours", Icons.Default.Schedule)
 }

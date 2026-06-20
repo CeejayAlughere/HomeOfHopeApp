@@ -32,14 +32,14 @@ import com.homeofhope.app.ui.theme.HopeDark
 import com.homeofhope.app.ui.theme.HopeGreen
 import com.homeofhope.app.ui.theme.HopeGrey
 import com.homeofhope.app.ui.theme.HopeWhite
-import com.homeofhope.app.ui.viewmodel.AuthState
-import com.homeofhope.app.ui.viewmodel.MemberViewModel
+import com.homeofhope.app.ui.viewmodel.*
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     viewModel: MemberViewModel,
     onLoginSuccess: () -> Unit,
+    onAdminLoginSuccess: () -> Unit,
     onRegisterClick: () -> Unit,
     onBackClick: () -> Unit
 ) {
@@ -55,6 +55,9 @@ fun LoginScreen(
             viewModel.clearAuthState()
         }
     }
+
+    // Admin Login Logic
+    var adminError by remember { mutableStateOf<String?>(null) }
 
     Box(
         modifier = Modifier
@@ -183,7 +186,19 @@ fun LoginScreen(
 
                 // Login Button
                 Button(
-                    onClick = { viewModel.login(username, password) },
+                    onClick = {
+                        if (username == "admin@hoh.org") {
+                            // Check admin credentials
+                            // Using the seeded admin info
+                            if (password == "Admin@123") {
+                                onAdminLoginSuccess()
+                            } else {
+                                adminError = "Invalid admin password"
+                            }
+                        } else {
+                            viewModel.login(username, password)
+                        }
+                    },
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(56.dp),
@@ -205,6 +220,16 @@ fun LoginScreen(
                             letterSpacing = 1.sp
                         )
                     }
+                }
+
+                if (adminError != null) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = adminError!!,
+                        color = MaterialTheme.colorScheme.error,
+                        fontSize = 12.sp,
+                        modifier = Modifier.padding(start = 4.dp)
+                    )
                 }
 
                 Spacer(modifier = Modifier.height(24.dp))

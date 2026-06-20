@@ -1,9 +1,6 @@
 package com.homeofhope.app.data.local.dao
 
-import androidx.room.Dao
-import androidx.room.Insert
-import androidx.room.OnConflictStrategy
-import androidx.room.Query
+import androidx.room.*
 import com.homeofhope.app.data.local.entity.Member
 import kotlinx.coroutines.flow.Flow
 
@@ -23,4 +20,10 @@ interface MemberDao {
 
     @Query("SELECT * FROM members")
     suspend fun getAllMembersOnce(): List<Member>
+
+    @Delete
+    suspend fun deleteMember(member: Member)
+
+    @Query("SELECT COUNT(*) FROM members")
+    fun getMemberCount(): Flow<Int>
 }

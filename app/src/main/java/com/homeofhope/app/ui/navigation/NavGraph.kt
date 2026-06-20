@@ -30,12 +30,16 @@ import com.homeofhope.app.ui.viewmodel.ContactViewModel
 import com.homeofhope.app.ui.viewmodel.DonationViewModel
 import com.homeofhope.app.ui.viewmodel.MemberViewModel
 
+import com.homeofhope.app.ui.screens.admin.*
+import com.homeofhope.app.ui.viewmodel.AdminViewModel
+
 @Composable
 fun HomeOfHopeNavGraph(
     navController: NavHostController,
     contactViewModel: ContactViewModel,
     memberViewModel: MemberViewModel,
     donationViewModel: DonationViewModel,
+    adminViewModel: AdminViewModel,
     modifier: Modifier = Modifier
 ) {
     NavHost(
@@ -125,6 +129,11 @@ fun HomeOfHopeNavGraph(
                         popUpTo(Screen.Home.route)
                     }
                 },
+                onAdminLoginSuccess = {
+                    navController.navigate(Screen.AdminDashboard.route) {
+                        popUpTo(Screen.Home.route)
+                    }
+                },
                 onRegisterClick = { navController.navigate(Screen.Register.route) },
                 onBackClick = { navController.popBackStack() }
             )
@@ -186,6 +195,41 @@ fun HomeOfHopeNavGraph(
                         popUpTo(Screen.MemberDashboard.route) { inclusive = true }
                     }
                 }
+            )
+        }
+
+        // Admin
+        composable(Screen.AdminDashboard.route) {
+            AdminDashboardScreen(
+                viewModel = adminViewModel,
+                onMemberManagementClick = { navController.navigate(Screen.MemberManagement.route) },
+                onVolunteerHoursClick = { navController.navigate(Screen.VolunteerHoursManagement.route) },
+                onLogoutClick = {
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Home.route) { inclusive = true }
+                    }
+                }
+            )
+        }
+        composable(Screen.MemberManagement.route) {
+            MemberManagementScreen(
+                viewModel = adminViewModel,
+                onMemberClick = { id -> navController.navigate("member_details/$id") },
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+        composable(Screen.MemberDetails.route) { backStackEntry ->
+            val memberId = backStackEntry.arguments?.getString("memberId")?.toIntOrNull() ?: 0
+            MemberDetailsScreen(
+                memberId = memberId,
+                viewModel = adminViewModel,
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+        composable(Screen.VolunteerHoursManagement.route) {
+            VolunteerHoursManagementScreen(
+                viewModel = adminViewModel,
+                onBackClick = { navController.popBackStack() }
             )
         }
     }

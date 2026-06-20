@@ -4,18 +4,8 @@ import android.content.Context
 import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
-import com.homeofhope.app.data.local.dao.AnnouncementDao
-import com.homeofhope.app.data.local.dao.CommunityDao
-import com.homeofhope.app.data.local.dao.DonationDao
-import com.homeofhope.app.data.local.dao.EventDao
-import com.homeofhope.app.data.local.dao.ImpactStoryDao
-import com.homeofhope.app.data.local.dao.MemberDao
-import com.homeofhope.app.data.local.entity.Announcement
-import com.homeofhope.app.data.local.entity.DonationRecord
-import com.homeofhope.app.data.local.entity.Event
-import com.homeofhope.app.data.local.entity.EventJoin
-import com.homeofhope.app.data.local.entity.ImpactStory
-import com.homeofhope.app.data.local.entity.Member
+import com.homeofhope.app.data.local.dao.*
+import com.homeofhope.app.data.local.entity.*
 
 @Database(
     entities = [
@@ -25,9 +15,11 @@ import com.homeofhope.app.data.local.entity.Member
         EventJoin::class,
         Announcement::class,
         ImpactStory::class,
-        com.homeofhope.app.data.local.entity.CommunityMessage::class
+        CommunityMessage::class,
+        Admin::class,
+        VolunteerHours::class
     ],
-    version = 5,
+    version = 6,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {
@@ -37,6 +29,8 @@ abstract class AppDatabase : RoomDatabase() {
     abstract fun communityDao(): CommunityDao
     abstract fun announcementDao(): AnnouncementDao
     abstract fun impactStoryDao(): ImpactStoryDao
+    abstract fun adminDao(): AdminDao
+    abstract fun volunteerHoursDao(): VolunteerHoursDao
 
     companion object {
         @Volatile

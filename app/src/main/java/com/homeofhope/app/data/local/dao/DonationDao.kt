@@ -13,4 +13,10 @@ interface DonationDao {
 
     @Query("SELECT * FROM donations WHERE memberId = :memberId ORDER BY date DESC")
     fun getDonationsForMember(memberId: Int): Flow<List<DonationRecord>>
+
+    @Query("SELECT SUM(amount) FROM donations")
+    fun getTotalDonationsAll(): Flow<Double?>
+
+    @Query("SELECT * FROM donations ORDER BY date DESC")
+    fun getAllDonations(): Flow<List<DonationRecord>>
 }

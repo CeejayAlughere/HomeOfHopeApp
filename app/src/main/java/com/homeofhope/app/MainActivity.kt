@@ -24,13 +24,7 @@ import com.homeofhope.app.data.local.entity.Announcement
 import com.homeofhope.app.data.local.entity.Event
 import com.homeofhope.app.data.local.entity.ImpactStory
 import com.homeofhope.app.data.network.RetrofitClient
-import com.homeofhope.app.data.repository.AnnouncementRepository
-import com.homeofhope.app.data.repository.CommunityRepository
-import com.homeofhope.app.data.repository.DonationRepository
-import com.homeofhope.app.data.repository.EventRepository
-import com.homeofhope.app.data.repository.HomeRepository
-import com.homeofhope.app.data.repository.ImpactStoryRepository
-import com.homeofhope.app.data.repository.MemberRepository
+import com.homeofhope.app.data.repository.*
 import com.homeofhope.app.ui.components.AppBottomNav
 import com.homeofhope.app.ui.components.AppTopBar
 import com.homeofhope.app.ui.navigation.HomeOfHopeNavGraph
@@ -39,9 +33,7 @@ import com.homeofhope.app.ui.theme.HomeOfHopeTheme
 import com.homeofhope.app.ui.theme.HopeDark
 import com.homeofhope.app.ui.theme.HopeGreen
 import com.homeofhope.app.ui.theme.HopeWhite
-import com.homeofhope.app.ui.viewmodel.ContactViewModel
-import com.homeofhope.app.ui.viewmodel.DonationViewModel
-import com.homeofhope.app.ui.viewmodel.MemberViewModel
+import com.homeofhope.app.ui.viewmodel.*
 import kotlinx.coroutines.launch
 
 class MainActivity : ComponentActivity() {
@@ -101,17 +93,27 @@ class MainActivity : ComponentActivity() {
         val announcementRepository = AnnouncementRepository(database.announcementDao())
         val impactStoryRepository = ImpactStoryRepository(database.impactStoryDao())
         
+        val adminRepository = AdminRepository(
+            database.adminDao(),
+            database.memberDao(),
+            database.volunteerHoursDao(),
+            database.donationDao(),
+            database.eventDao()
+        )
+        val adminViewModel = AdminViewModel(adminRepository)
+
         val memberViewModel = MemberViewModel(
             memberRepository,
             eventRepository,
             donationRepository,
             communityRepository,
             announcementRepository,
-            impactStoryRepository
+            impactStoryRepository,
+            adminRepository
         )
 
         // Seed data for development/debug mode
-        seedData(eventRepository, announcementRepository, impactStoryRepository, lifecycleScope)
+        seedData(adminRepository, eventRepository, announcementRepository, impactStoryRepository, lifecycleScope)
 
         setContent {
             HomeOfHopeTheme {
@@ -218,6 +220,7 @@ class MainActivity : ComponentActivity() {
                             contactViewModel = contactViewModel,
                             memberViewModel = memberViewModel,
                             donationViewModel = donationViewModel,
+                            adminViewModel = adminViewModel,
                             modifier = Modifier.padding(padding)
                         )
                     }
@@ -227,12 +230,22 @@ class MainActivity : ComponentActivity() {
     }
 
     private fun seedData(
+        adminRepo: AdminRepository,
         eventRepo: EventRepository,
         announcementRepo: AnnouncementRepository,
         impactStoryRepo: ImpactStoryRepository,
         scope: androidx.lifecycle.LifecycleCoroutineScope
     ) {
         scope.launch {
+            // Seed Admin
+            if (adminRepo.getAdminByEmail("admin@hoh.org") == null) {
+                adminRepo.insertAdmin(
+                    com.homeofhope.app.data.local.entity.Admin(
+                        email = "admin@hoh.org",
+                        password = "Admin@123"
+                    )
+                )
+            }
             // Seed Events
             if (!eventRepo.eventExists("Winter Food Drive")) {
                 eventRepo.insertEvent(
