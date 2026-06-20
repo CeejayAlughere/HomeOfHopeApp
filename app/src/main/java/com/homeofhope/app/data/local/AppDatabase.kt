@@ -9,7 +9,7 @@ import com.homeofhope.app.data.local.dao.MemberDao
 import com.homeofhope.app.data.local.entity.DonationRecord
 import com.homeofhope.app.data.local.entity.Member
 
-@Database(entities = [Member::class, DonationRecord::class], version = 2, exportSchema = false)
+@Database(entities = [Member::class, DonationRecord::class], version = 3, exportSchema = false)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun memberDao(): MemberDao
     abstract fun donationDao(): DonationDao

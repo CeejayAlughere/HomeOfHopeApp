@@ -40,6 +40,19 @@ class MemberViewModel(private val repository: MemberRepository) : ViewModel() {
         }
     }
 
+    fun updatePaymentInfo(bankName: String, cardNumber: String, expiryDate: String) {
+        val user = currentUser ?: return
+        viewModelScope.launch {
+            val updatedUser = user.copy(
+                savedBankName = bankName,
+                savedCardNumber = cardNumber,
+                savedExpiryDate = expiryDate
+            )
+            repository.updateMember(updatedUser)
+            currentUser = updatedUser
+        }
+    }
+
     fun register(fullName: String, idNumber: String, username: String, password: String, confirmPass: String) {
         if (fullName.isBlank() || idNumber.isBlank() || username.isBlank() || password.isBlank() || confirmPass.isBlank()) {
             _authState.value = AuthState.Error("All fields are required")

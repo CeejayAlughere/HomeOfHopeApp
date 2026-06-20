@@ -10,5 +10,9 @@ data class Member(
     val fullName: String,
     val idNumber: String,
     val username: String,
-    val password: String
+    val password: String,
+    // Saved payment info
+    val savedBankName: String? = null,
+    val savedCardNumber: String? = null,
+    val savedExpiryDate: String? = null
 )

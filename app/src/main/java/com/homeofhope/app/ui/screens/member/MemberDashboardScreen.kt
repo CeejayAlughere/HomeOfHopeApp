@@ -132,7 +132,7 @@ fun MemberDashboardScreen(
 
             // Quick Actions Section
             Text(
-                text = "⚡ Quick Actions",
+                text = "Quick Actions",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold
             )

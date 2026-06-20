@@ -9,6 +9,10 @@ class MemberRepository(private val memberDao: MemberDao) {
         memberDao.insertMember(member)
     }
 
+    suspend fun updateMember(member: Member) {
+        memberDao.updateMember(member)
+    }
+
     suspend fun getMemberByUsername(username: String): Member? {
         return memberDao.getMemberByUsername(username)
     }

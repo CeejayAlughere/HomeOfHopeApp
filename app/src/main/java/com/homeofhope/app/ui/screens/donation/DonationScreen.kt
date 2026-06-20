@@ -34,10 +34,11 @@ fun DonationScreen(
     onDonationSuccess: () -> Unit
 ) {
     val currentMember = memberViewModel.currentUser
-    var fullName by remember { mutableStateOf("") }
-    var selectedBank by remember { mutableStateOf("") }
-    var cardNumber by remember { mutableStateOf("") }
-    var expiryDate by remember { mutableStateOf("") }
+    
+    var fullName by remember { mutableStateOf(currentMember?.fullName ?: "") }
+    var selectedBank by remember { mutableStateOf(currentMember?.savedBankName ?: "") }
+    var cardNumber by remember { mutableStateOf(currentMember?.savedCardNumber ?: "") }
+    var expiryDate by remember { mutableStateOf(currentMember?.savedExpiryDate ?: "") }
     var cvv by remember { mutableStateOf("") }
     var amount by remember { mutableStateOf("") }
     
@@ -48,6 +49,8 @@ fun DonationScreen(
 
     LaunchedEffect(uiState) {
         if (uiState is UiState.Success) {
+            // Save payment info upon success
+            memberViewModel.updatePaymentInfo(selectedBank, cardNumber, expiryDate)
             onDonationSuccess()
             viewModel.resetState()
         }
@@ -90,6 +93,43 @@ fun DonationScreen(
                 .fillMaxWidth(),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
+            if (currentMember?.savedCardNumber != null) {
+                Surface(
+                    color = HopeGreen.copy(alpha = 0.1f),
+                    shape = RoundedCornerShape(12.dp),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Row(
+                        modifier = Modifier.padding(16.dp),
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        Icon(Icons.Default.Info, contentDescription = null, tint = HopeGreen)
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Column(modifier = Modifier.weight(1f)) {
+                            Text(
+                                text = "Using saved payment details",
+                                fontWeight = FontWeight.Bold,
+                                color = HopeGreen,
+                                fontSize = 14.sp
+                            )
+                            Text(
+                                text = "You can update these details by simply typing in the form below.",
+                                fontSize = 12.sp,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                        TextButton(onClick = {
+                            selectedBank = ""
+                            cardNumber = ""
+                            expiryDate = ""
+                            cvv = ""
+                        }) {
+                            Text("Clear", color = HopeGreen, fontWeight = FontWeight.Bold)
+                        }
+                    }
+                }
+            }
+
             Text(
                 text = "Personal Details",
                 style = MaterialTheme.typography.titleMedium,

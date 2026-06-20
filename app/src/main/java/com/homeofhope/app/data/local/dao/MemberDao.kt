@@ -12,6 +12,9 @@ interface MemberDao {
     @Insert(onConflict = OnConflictStrategy.ABORT)
     suspend fun insertMember(member: Member)
 
+    @androidx.room.Update
+    suspend fun updateMember(member: Member)
+
     @Query("SELECT * FROM members WHERE username = :username LIMIT 1")
     suspend fun getMemberByUsername(username: String): Member?
 
