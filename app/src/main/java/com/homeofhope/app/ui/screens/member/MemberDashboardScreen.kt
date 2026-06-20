@@ -278,12 +278,6 @@ fun ImpactSummaryCard(donations: List<DonationRecord>, joinedEvents: List<Event>
                     icon = Icons.Default.Timer,
                     modifier = Modifier.weight(1f)
                 )
-                ImpactItem(
-                    label = "Projects",
-                    value = "${(monthlyDonations.size + monthlyEventsCount).coerceAtMost(5)}",
-                    icon = Icons.Default.Public,
-                    modifier = Modifier.weight(1f)
-                )
             }
         }
     }
