@@ -9,17 +9,26 @@ import com.homeofhope.app.data.local.entity.Announcement
 import com.homeofhope.app.data.local.entity.Event
 import com.homeofhope.app.data.local.entity.ImpactStory
 import com.homeofhope.app.data.local.entity.Member
+import com.homeofhope.app.data.local.entity.CommunityMessage
+import com.homeofhope.app.data.local.entity.DonationRecord
+import com.homeofhope.app.data.model.Badge
+import com.homeofhope.app.data.model.MembershipLevel
 import com.homeofhope.app.data.repository.AnnouncementRepository
+import com.homeofhope.app.data.repository.CommunityRepository
+import com.homeofhope.app.data.repository.DonationRepository
 import com.homeofhope.app.data.repository.EventRepository
 import com.homeofhope.app.data.repository.ImpactStoryRepository
 import com.homeofhope.app.data.repository.MemberRepository
+import com.homeofhope.app.utils.MembershipCalculator
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.flatMapLatest
 import kotlinx.coroutines.flow.flowOf
+import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 
@@ -34,6 +43,8 @@ sealed class AuthState {
 class MemberViewModel(
     private val repository: MemberRepository,
     private val eventRepository: EventRepository,
+    private val donationRepository: DonationRepository,
+    private val communityRepository: CommunityRepository,
     private val announcementRepository: AnnouncementRepository,
     private val impactStoryRepository: ImpactStoryRepository
 ) : ViewModel() {
@@ -58,6 +69,54 @@ class MemberViewModel(
     val joinedEvents: StateFlow<List<Event>> = _currentUserFlow.flatMapLatest { user ->
         user?.let { eventRepository.getJoinedEventsForMember(it.id) } ?: flowOf(emptyList())
     }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    val totalDonations: StateFlow<Double> = _currentUserFlow.flatMapLatest { user ->
+        user?.let { donationRepository.getDonationsForMember(it.id) }?.map { it.sumOf { d -> d.amount } } ?: flowOf(0.0)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0.0)
+
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    val totalHours: StateFlow<Double> = _currentUserFlow.flatMapLatest { user ->
+        user?.let { eventRepository.getTotalHoursForMember(it.id).map { h -> h ?: 0.0 } } ?: flowOf(0.0)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), 0.0)
+
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    val membershipLevel: StateFlow<MembershipLevel> = combine(totalDonations, totalHours, joinedEvents) { donations, hours, events ->
+        MembershipCalculator.calculateLevel(donations, hours, events.size)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), MembershipLevel.SEED_SUPPORTER)
+
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    val badges: StateFlow<List<Badge>> = combine(_currentUserFlow, totalDonations, totalHours, joinedEvents, membershipLevel) { user, donations, hours, events, level ->
+        val firstDonationDate = user?.let { u ->
+            // We can't easily get the first donation date here without another flow or a suspend call
+            // But for the purpose of the badge, if totalDonations > 0, it means they have donated at least once.
+            if (donations > 0) System.currentTimeMillis() else null
+        }
+        MembershipCalculator.getBadges(donations, hours, events.size, firstDonationDate, level)
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    val communityMessages: StateFlow<List<CommunityMessage>> = communityRepository.allMessages
+        .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
+
+    fun sendMessage(content: String) {
+        val user = currentUser ?: return
+        viewModelScope.launch {
+            communityRepository.sendMessage(
+                CommunityMessage(
+                    memberId = user.id,
+                    memberName = user.fullName,
+                    content = content
+                )
+            )
+        }
+    }
+
+    fun completeEvent(eventId: Int, hours: Double) {
+        val user = currentUser ?: return
+        viewModelScope.launch {
+            eventRepository.updateHours(user.id, eventId, hours)
+        }
+    }
 
     fun isJoined(eventId: Int): Flow<Boolean> {
         val userId = currentUser?.id ?: return flowOf(false)
@@ -114,7 +173,9 @@ class MemberViewModel(
                     fullName = fullName,
                     idNumber = idNumber,
                     username = username,
-                    password = password
+                    password = password,
+                    memberNumber = MembershipCalculator.generateMemberId(),
+                    joinDate = System.currentTimeMillis()
                 )
                 repository.registerMember(newMember)
                 _authState.value = AuthState.Registered

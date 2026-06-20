@@ -28,6 +28,9 @@ import com.homeofhope.app.data.local.entity.Announcement
 import com.homeofhope.app.data.local.entity.DonationRecord
 import com.homeofhope.app.data.local.entity.Event
 import com.homeofhope.app.data.local.entity.ImpactStory
+import com.homeofhope.app.data.local.entity.Member
+import com.homeofhope.app.data.model.Badge
+import com.homeofhope.app.data.model.MembershipLevel
 import com.homeofhope.app.ui.theme.HomeOfHopeTheme
 import com.homeofhope.app.ui.theme.HopeGreen
 import com.homeofhope.app.ui.theme.HopeWhite
@@ -45,7 +48,9 @@ fun MemberDashboardScreen(
     onVolunteerClick: () -> Unit,
     onEventsClick: () -> Unit,
     onProfileClick: () -> Unit,
-    onLogoutClick: () -> Unit
+    onLogoutClick: () -> Unit,
+    onMembershipCardClick: () -> Unit,
+    onCommunityWallClick: () -> Unit
 ) {
     val user = viewModel?.currentUser
     val donations by if (user != null && donationViewModel != null) {
@@ -56,6 +61,9 @@ fun MemberDashboardScreen(
     
     val upcomingEvents by viewModel?.upcomingEvents?.collectAsState() ?: remember { mutableStateOf(emptyList()) }
     val joinedEvents by viewModel?.joinedEvents?.collectAsState() ?: remember { mutableStateOf(emptyList()) }
+    val totalHours by viewModel?.totalHours?.collectAsState() ?: remember { mutableStateOf(0.0) }
+    val membershipLevel by viewModel?.membershipLevel?.collectAsState() ?: remember { mutableStateOf(MembershipLevel.SEED_SUPPORTER) }
+    val badges by viewModel?.badges?.collectAsState() ?: remember { mutableStateOf(emptyList<Badge>()) }
     val announcements by viewModel?.announcements?.collectAsState() ?: remember { mutableStateOf(emptyList()) }
     val impactStories by viewModel?.impactStories?.collectAsState() ?: remember { mutableStateOf(emptyList()) }
 
@@ -93,12 +101,12 @@ fun MemberDashboardScreen(
             Spacer(modifier = Modifier.height(24.dp))
             
             // Impact Summary Card
-            ImpactSummaryCard(donations, joinedEvents)
+            ImpactSummaryCard(donations, joinedEvents, totalHours)
 
             Spacer(modifier = Modifier.height(24.dp))
             
             // Membership Progress Bar
-            MembershipProgressCard(donations.sumOf { it.amount })
+            MembershipProgressCard(membershipLevel, donations.sumOf { it.amount }, totalHours, joinedEvents.size)
 
             Spacer(modifier = Modifier.height(32.dp))
             HorizontalDivider()
@@ -132,7 +140,7 @@ fun MemberDashboardScreen(
             Spacer(modifier = Modifier.height(24.dp))
 
             // Achievements Badges
-            AchievementsSection(donations.isNotEmpty(), joinedEvents.isNotEmpty())
+            AchievementsSection(badges)
 
             Spacer(modifier = Modifier.height(32.dp))
             HorizontalDivider()
@@ -162,6 +170,14 @@ fun MemberDashboardScreen(
             ) {
                 ActionButton(Modifier.weight(1f), "Donate", Icons.Default.AddCard, onDonateClick)
                 ActionButton(Modifier.weight(1f), "Volunteer", Icons.Default.Handshake, onVolunteerClick)
+            }
+            Spacer(modifier = Modifier.height(12.dp))
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(12.dp)
+            ) {
+                ActionButton(Modifier.weight(1f), "Member Card", Icons.Default.Badge, onMembershipCardClick)
+                ActionButton(Modifier.weight(1f), "Community", Icons.Default.Forum, onCommunityWallClick)
             }
             
             Spacer(modifier = Modifier.height(32.dp))
@@ -211,7 +227,7 @@ fun HeaderSection(name: String, totalDonations: Int, totalEvents: Int) {
 }
 
 @Composable
-fun ImpactSummaryCard(donations: List<DonationRecord>, joinedEvents: List<Event>) {
+fun ImpactSummaryCard(donations: List<DonationRecord>, joinedEvents: List<Event>, totalHours: Double) {
     val calendar = Calendar.getInstance()
     val currentMonth = calendar.get(Calendar.MONTH)
     val currentYear = calendar.get(Calendar.YEAR)
@@ -256,8 +272,8 @@ fun ImpactSummaryCard(donations: List<DonationRecord>, joinedEvents: List<Event>
                     modifier = Modifier.weight(1f)
                 )
                 ImpactItem(
-                    label = "Hours",
-                    value = "${monthlyEventsCount * 4}",
+                    label = "Total Hours",
+                    value = "${totalHours.toInt()}",
                     icon = Icons.Default.Timer,
                     modifier = Modifier.weight(1f)
                 )
@@ -467,9 +483,14 @@ fun EmptyStateCard(message: String) {
 }
 
 @Composable
-fun MembershipProgressCard(totalDonated: Double) {
-    val nextGoal = 1000.0
-    val progress = (totalDonated / nextGoal).coerceIn(0.0, 1.0).toFloat()
+fun MembershipProgressCard(currentLevel: MembershipLevel, totalDonated: Double, totalHours: Double, eventsAttended: Int) {
+    val nextLevel = when (currentLevel) {
+        MembershipLevel.SEED_SUPPORTER -> MembershipLevel.HOPE_SUPPORTER
+        MembershipLevel.HOPE_SUPPORTER -> MembershipLevel.SILVER_SUPPORTER
+        MembershipLevel.SILVER_SUPPORTER -> MembershipLevel.GOLD_SUPPORTER
+        MembershipLevel.GOLD_SUPPORTER -> MembershipLevel.LEGACY_SUPPORTER
+        MembershipLevel.LEGACY_SUPPORTER -> null
+    }
     
     Card(
         modifier = Modifier.fillMaxWidth(),
@@ -483,67 +504,106 @@ fun MembershipProgressCard(totalDonated: Double) {
                 verticalAlignment = Alignment.CenterVertically
             ) {
                 Text(
-                    text = "Road to Silver Supporter",
+                    text = "Current Tier: ${currentLevel.label}",
                     style = MaterialTheme.typography.titleSmall,
                     fontWeight = FontWeight.Bold
                 )
-                Text(
-                    text = "${(progress * 100).toInt()}%",
-                    style = MaterialTheme.typography.labelLarge,
+                if (nextLevel != null) {
+                    Text(
+                        text = "Next: ${nextLevel.label}",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = HopeGreen
+                    )
+                }
+            }
+            
+            if (nextLevel != null) {
+                Spacer(modifier = Modifier.height(16.dp))
+                
+                val donationProgress = (totalDonated / nextLevel.minDonation).coerceIn(0.0, 1.0).toFloat()
+                val hoursProgress = (totalHours / nextLevel.minHours).coerceIn(0.0, 1.0).toFloat()
+                val eventsProgress = (eventsAttended.toDouble() / nextLevel.minEvents.toDouble()).coerceIn(0.0, 1.0).toFloat()
+                
+                val overallProgress = (donationProgress + hoursProgress + eventsProgress) / 3f
+                
+                LinearProgressIndicator(
+                    progress = { overallProgress },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(8.dp)
+                        .clip(CircleShape),
                     color = HopeGreen,
-                    fontWeight = FontWeight.Bold
+                    trackColor = HopeGreen.copy(alpha = 0.1f)
+                )
+                
+                Spacer(modifier = Modifier.height(12.dp))
+                
+                Column(verticalArrangement = Arrangement.spacedBy(4.dp)) {
+                    ProgressDetail("Donation", totalDonated, nextLevel.minDonation, "R")
+                    ProgressDetail("Hours", totalHours, nextLevel.minHours, "")
+                    ProgressDetail("Events", eventsAttended.toDouble(), nextLevel.minEvents.toDouble(), "")
+                }
+            } else {
+                Spacer(modifier = Modifier.height(12.dp))
+                Text(
+                    text = "You have reached the highest membership tier! Thank you for your incredible support.",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = HopeGreen,
+                    fontWeight = FontWeight.Medium
                 )
             }
-            Spacer(modifier = Modifier.height(12.dp))
-            LinearProgressIndicator(
-                progress = { progress },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(8.dp)
-                    .clip(CircleShape),
-                color = HopeGreen,
-                trackColor = HopeGreen.copy(alpha = 0.1f)
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text = "R${totalDonated.toInt()} of R${nextGoal.toInt()} donated. Almost there!",
-                style = MaterialTheme.typography.bodySmall,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
         }
     }
 }
 
 @Composable
-fun AchievementsSection(hasDonated: Boolean, hasVolunteered: Boolean) {
+fun ProgressDetail(label: String, current: Double, target: Double, prefix: String) {
+    Row(
+        modifier = Modifier.fillMaxWidth(),
+        horizontalArrangement = Arrangement.SpaceBetween
+    ) {
+        Text(text = label, style = MaterialTheme.typography.labelSmall, color = MaterialTheme.colorScheme.onSurfaceVariant)
+        Text(
+            text = "$prefix${current.toInt()} / $prefix${target.toInt()}",
+            style = MaterialTheme.typography.labelSmall,
+            fontWeight = FontWeight.Bold
+        )
+    }
+}
+
+@Composable
+fun AchievementsSection(badges: List<Badge>) {
     Text(
         text = "🏆 My Badges",
         style = MaterialTheme.typography.titleMedium,
         fontWeight = FontWeight.Bold
     )
     Spacer(modifier = Modifier.height(16.dp))
-    Row(
-        modifier = Modifier.fillMaxWidth(),
-        horizontalArrangement = Arrangement.spacedBy(16.dp)
-    ) {
-        BadgeItem(
-            label = "First Donor",
-            icon = Icons.Default.VolunteerActivism,
-            isUnlocked = hasDonated,
-            modifier = Modifier.weight(1f)
-        )
-        BadgeItem(
-            label = "Hope Helper",
-            icon = Icons.Default.Groups,
-            isUnlocked = hasVolunteered,
-            modifier = Modifier.weight(1f)
-        )
-        BadgeItem(
-            label = "Community Star",
-            icon = Icons.Default.Star,
-            isUnlocked = false,
-            modifier = Modifier.weight(1f)
-        )
+    
+    if (badges.isEmpty()) {
+        EmptyStateCard("Complete actions to unlock badges!")
+    } else {
+        // Display badges in a grid-like layout
+        badges.chunked(3).forEach { rowBadges ->
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                rowBadges.forEach { badge ->
+                    BadgeItem(
+                        label = badge.label,
+                        icon = badge.icon,
+                        isUnlocked = badge.isUnlocked,
+                        modifier = Modifier.weight(1f)
+                    )
+                }
+                // Add spacers if the row is not full
+                repeat(3 - rowBadges.size) {
+                    Spacer(modifier = Modifier.weight(1f))
+                }
+            }
+            Spacer(modifier = Modifier.height(16.dp))
+        }
     }
 }
 
@@ -673,7 +733,9 @@ fun MemberDashboardPreview() {
             onVolunteerClick = {},
             onEventsClick = {},
             onProfileClick = {},
-            onLogoutClick = {}
+            onLogoutClick = {},
+            onMembershipCardClick = {},
+            onCommunityWallClick = {}
         )
     }
 }

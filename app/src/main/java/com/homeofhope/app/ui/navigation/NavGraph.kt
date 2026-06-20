@@ -20,7 +20,9 @@ import com.homeofhope.app.ui.screens.legal.PrivacyScreen
 import com.homeofhope.app.ui.screens.legal.TermsScreen
 import com.homeofhope.app.ui.screens.member.LoginScreen
 import com.homeofhope.app.ui.screens.member.MemberDashboardScreen
+import com.homeofhope.app.ui.screens.member.MembershipCardScreen
 import com.homeofhope.app.ui.screens.member.RegisterScreen
+import com.homeofhope.app.ui.screens.community.CommunityWallScreen
 import com.homeofhope.app.ui.screens.services.ServicesScreen
 import com.homeofhope.app.ui.screens.donation.DonationScreen
 import com.homeofhope.app.ui.screens.donation.DonationSuccessScreen
@@ -145,7 +147,23 @@ fun HomeOfHopeNavGraph(
                     navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Home.route) { inclusive = true }
                     }
-                }
+                },
+                onMembershipCardClick = { navController.navigate(Screen.MembershipCard.route) },
+                onCommunityWallClick = { navController.navigate(Screen.CommunityWall.route) }
+            )
+        }
+
+        composable(Screen.MembershipCard.route) {
+            MembershipCardScreen(
+                viewModel = memberViewModel,
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(Screen.CommunityWall.route) {
+            CommunityWallScreen(
+                viewModel = memberViewModel,
+                onBackClick = { navController.popBackStack() }
             )
         }
 

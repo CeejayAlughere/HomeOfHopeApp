@@ -23,4 +23,11 @@ class EventRepository(private val eventDao: EventDao) {
         
     fun isMemberJoined(memberId: Int, eventId: Int): Flow<Boolean> =
         eventDao.isMemberJoined(memberId, eventId)
+
+    suspend fun updateHours(memberId: Int, eventId: Int, hours: Double) {
+        eventDao.updateHours(memberId, eventId, hours)
+    }
+
+    fun getTotalHoursForMember(memberId: Int): Flow<Double?> =
+        eventDao.getTotalHoursForMember(memberId)
 }

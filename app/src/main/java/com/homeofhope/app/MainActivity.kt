@@ -25,6 +25,7 @@ import com.homeofhope.app.data.local.entity.Event
 import com.homeofhope.app.data.local.entity.ImpactStory
 import com.homeofhope.app.data.network.RetrofitClient
 import com.homeofhope.app.data.repository.AnnouncementRepository
+import com.homeofhope.app.data.repository.CommunityRepository
 import com.homeofhope.app.data.repository.DonationRepository
 import com.homeofhope.app.data.repository.EventRepository
 import com.homeofhope.app.data.repository.HomeRepository
@@ -96,12 +97,15 @@ class MainActivity : ComponentActivity() {
 
         val memberRepository = MemberRepository(database.memberDao())
         val eventRepository = EventRepository(database.eventDao())
+        val communityRepository = CommunityRepository(database.communityDao())
         val announcementRepository = AnnouncementRepository(database.announcementDao())
         val impactStoryRepository = ImpactStoryRepository(database.impactStoryDao())
         
         val memberViewModel = MemberViewModel(
             memberRepository,
             eventRepository,
+            donationRepository,
+            communityRepository,
             announcementRepository,
             impactStoryRepository
         )

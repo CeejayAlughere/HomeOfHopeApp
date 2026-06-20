@@ -24,4 +24,10 @@ interface EventDao {
     
     @Query("SELECT EXISTS(SELECT 1 FROM event_joins WHERE memberId = :memberId AND eventId = :eventId)")
     fun isMemberJoined(memberId: Int, eventId: Int): Flow<Boolean>
+
+    @Query("UPDATE event_joins SET hoursCompleted = :hours WHERE memberId = :memberId AND eventId = :eventId")
+    suspend fun updateHours(memberId: Int, eventId: Int, hours: Double)
+
+    @Query("SELECT SUM(hoursCompleted) FROM event_joins WHERE memberId = :memberId")
+    fun getTotalHoursForMember(memberId: Int): Flow<Double?>
 }

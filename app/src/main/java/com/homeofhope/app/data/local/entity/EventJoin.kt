@@ -25,5 +25,6 @@ import androidx.room.Index
 )
 data class EventJoin(
     val memberId: Int,
-    val eventId: Int
+    val eventId: Int,
+    val hoursCompleted: Double = 0.0
 )

@@ -17,5 +17,9 @@ class MemberRepository(private val memberDao: MemberDao) {
         return memberDao.getMemberByUsername(username)
     }
 
+    suspend fun getMemberById(id: Int): Member? {
+        return memberDao.getAllMembersOnce().find { it.id == id }
+    }
+
     val allMembers: Flow<List<Member>> = memberDao.getAllMembers()
 }

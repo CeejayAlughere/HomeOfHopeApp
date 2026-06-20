@@ -20,4 +20,7 @@ interface MemberDao {
 
     @Query("SELECT * FROM members")
     fun getAllMembers(): Flow<List<Member>>
+
+    @Query("SELECT * FROM members")
+    suspend fun getAllMembersOnce(): List<Member>
 }

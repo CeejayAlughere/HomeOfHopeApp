@@ -11,6 +11,8 @@ data class Member(
     val idNumber: String,
     val username: String,
     val password: String,
+    val memberNumber: String = "",
+    val joinDate: Long = System.currentTimeMillis(),
     // Saved payment info
     val savedBankName: String? = null,
     val savedCardNumber: String? = null,
