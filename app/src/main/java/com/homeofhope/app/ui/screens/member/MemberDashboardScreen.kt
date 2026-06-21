@@ -229,20 +229,6 @@ fun HeaderSection(name: String, totalDonations: Int, totalEvents: Int) {
 
 @Composable
 fun ImpactSummaryCard(donations: List<DonationRecord>, joinedEvents: List<Event>, totalHours: Double) {
-    val calendar = Calendar.getInstance()
-    val currentMonth = calendar.get(Calendar.MONTH)
-    val currentYear = calendar.get(Calendar.YEAR)
-
-    val monthlyDonations = donations.filter {
-        val d = Calendar.getInstance().apply { timeInMillis = it.date }
-        d.get(Calendar.MONTH) == currentMonth && d.get(Calendar.YEAR) == currentYear
-    }
-    
-    val monthlyEventsCount = joinedEvents.filter {
-        val d = Calendar.getInstance().apply { timeInMillis = it.date }
-        d.get(Calendar.MONTH) == currentMonth && d.get(Calendar.YEAR) == currentYear
-    }.size
-
     Card(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(20.dp),
@@ -250,7 +236,7 @@ fun ImpactSummaryCard(donations: List<DonationRecord>, joinedEvents: List<Event>
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Text(
-                text = "This Month's Impact",
+                text = "My Impact",
                 style = MaterialTheme.typography.titleMedium,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.primary
@@ -261,14 +247,14 @@ fun ImpactSummaryCard(donations: List<DonationRecord>, joinedEvents: List<Event>
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 ImpactItem(
-                    label = "Donated",
-                    value = "R${monthlyDonations.sumOf { it.amount }.toInt()}",
+                    label = "Total Donated",
+                    value = "R${donations.sumOf { it.amount }.toInt()}",
                     icon = Icons.Default.Favorite,
                     modifier = Modifier.weight(1f)
                 )
                 ImpactItem(
-                    label = "Events",
-                    value = "$monthlyEventsCount",
+                    label = "Total Events",
+                    value = "${joinedEvents.size}",
                     icon = Icons.Default.Event,
                     modifier = Modifier.weight(1f)
                 )

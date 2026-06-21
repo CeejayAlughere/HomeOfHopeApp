@@ -147,6 +147,21 @@ class MemberViewModel(
             )
             repository.updateMember(updatedUser)
             currentUser = updatedUser
+            _currentUserFlow.value = updatedUser
+        }
+    }
+
+    fun updateProfile(fullName: String, email: String, phoneNumber: String) {
+        val user = currentUser ?: return
+        viewModelScope.launch {
+            val updatedUser = user.copy(
+                fullName = fullName,
+                email = email,
+                phoneNumber = phoneNumber
+            )
+            repository.updateMember(updatedUser)
+            currentUser = updatedUser
+            _currentUserFlow.value = updatedUser
         }
     }
 

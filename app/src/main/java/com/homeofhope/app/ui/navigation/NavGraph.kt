@@ -22,6 +22,7 @@ import com.homeofhope.app.ui.screens.member.LoginScreen
 import com.homeofhope.app.ui.screens.member.MemberDashboardScreen
 import com.homeofhope.app.ui.screens.member.MembershipCardScreen
 import com.homeofhope.app.ui.screens.member.RegisterScreen
+import com.homeofhope.app.ui.screens.member.SettingsScreen
 import com.homeofhope.app.ui.screens.community.CommunityWallScreen
 import com.homeofhope.app.ui.screens.services.ServicesScreen
 import com.homeofhope.app.ui.screens.donation.DonationScreen
@@ -151,7 +152,7 @@ fun HomeOfHopeNavGraph(
                 },
                 onVolunteerClick = { navController.navigate(Screen.Events.route) },
                 onEventsClick = { navController.navigate(Screen.Events.route) },
-                onProfileClick = { /* Navigate to profile if it exists */ },
+                onProfileClick = { navController.navigate(Screen.Settings.route) },
                 onLogoutClick = {
                     navController.navigate(Screen.Home.route) {
                         popUpTo(Screen.Home.route) { inclusive = true }
@@ -171,6 +172,13 @@ fun HomeOfHopeNavGraph(
 
         composable(Screen.CommunityWall.route) {
             CommunityWallScreen(
+                viewModel = memberViewModel,
+                onBackClick = { navController.popBackStack() }
+            )
+        }
+
+        composable(Screen.Settings.route) {
+            SettingsScreen(
                 viewModel = memberViewModel,
                 onBackClick = { navController.popBackStack() }
             )
