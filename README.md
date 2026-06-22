@@ -59,5 +59,3 @@ To access the Admin Management System:
 3. Sync Project with Gradle Files.
 4. Run the app on an emulator or physical device.
 
-## 📝 License
-This project is for use by Home of Hope NGO. All rights reserved.

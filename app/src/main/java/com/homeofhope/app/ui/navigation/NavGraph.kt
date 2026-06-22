@@ -23,6 +23,7 @@ import com.homeofhope.app.ui.screens.member.MemberDashboardScreen
 import com.homeofhope.app.ui.screens.member.MembershipCardScreen
 import com.homeofhope.app.ui.screens.member.RegisterScreen
 import com.homeofhope.app.ui.screens.member.SettingsScreen
+import com.homeofhope.app.ui.screens.member.SuspendedScreen
 import com.homeofhope.app.ui.screens.community.CommunityWallScreen
 import com.homeofhope.app.ui.screens.services.ServicesScreen
 import com.homeofhope.app.ui.screens.donation.DonationScreen
@@ -159,7 +160,12 @@ fun HomeOfHopeNavGraph(
                     }
                 },
                 onMembershipCardClick = { navController.navigate(Screen.MembershipCard.route) },
-                onCommunityWallClick = { navController.navigate(Screen.CommunityWall.route) }
+                onCommunityWallClick = { navController.navigate(Screen.CommunityWall.route) },
+                onSuspended = {
+                    navController.navigate(Screen.Suspended.route) {
+                        popUpTo(Screen.MemberDashboard.route) { inclusive = true }
+                    }
+                }
             )
         }
 
@@ -202,6 +208,20 @@ fun HomeOfHopeNavGraph(
                     navController.navigate(Screen.MemberDashboard.route) {
                         popUpTo(Screen.MemberDashboard.route) { inclusive = true }
                     }
+                }
+            )
+        }
+
+        composable(Screen.Suspended.route) {
+            SuspendedScreen(
+                onLogoutClick = {
+                    memberViewModel.logout()
+                    navController.navigate(Screen.Home.route) {
+                        popUpTo(Screen.Home.route) { inclusive = true }
+                    }
+                },
+                onContactSupportClick = {
+                    navController.navigate(Screen.Contact.route)
                 }
             )
         }

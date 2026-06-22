@@ -52,6 +52,11 @@ class MemberViewModel(
     var currentUser by mutableStateOf<Member?>(null)
         private set
 
+    @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
+    val currentMemberStatus: StateFlow<String> = _currentUserFlow.flatMapLatest { user ->
+        user?.let { repository.getMemberStatus(it.id).map { status -> status ?: "Active" } } ?: flowOf("Active")
+    }.stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), "Active")
+
     val upcomingEvents: StateFlow<List<Event>> = eventRepository.getAllUpcomingEvents()
         .stateIn(viewModelScope, SharingStarted.WhileSubscribed(5000), emptyList())
 
@@ -211,9 +216,13 @@ class MemberViewModel(
             _authState.value = AuthState.Loading
             val member = repository.getMemberByUsername(username)
             if (member != null && member.password == password) {
-                currentUser = member
-                _currentUserFlow.value = member
-                _authState.value = AuthState.Success(member)
+                if (member.status == "Suspended") {
+                    _authState.value = AuthState.Error("Your account has been suspended. Please contact support.")
+                } else {
+                    currentUser = member
+                    _currentUserFlow.value = member
+                    _authState.value = AuthState.Success(member)
+                }
             } else {
                 _authState.value = AuthState.Error("Invalid username or password")
             }

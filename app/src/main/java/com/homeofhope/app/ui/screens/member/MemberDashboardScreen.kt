@@ -50,7 +50,8 @@ fun MemberDashboardScreen(
     onProfileClick: () -> Unit,
     onLogoutClick: () -> Unit,
     onMembershipCardClick: () -> Unit,
-    onCommunityWallClick: () -> Unit
+    onCommunityWallClick: () -> Unit,
+    onSuspended: () -> Unit
 ) {
     val user = viewModel?.currentUser
     val donations by if (user != null && donationViewModel != null) {
@@ -66,6 +67,14 @@ fun MemberDashboardScreen(
     val badges by viewModel?.badges?.collectAsState() ?: remember { mutableStateOf(emptyList<Badge>()) }
     val announcements by viewModel?.announcements?.collectAsState() ?: remember { mutableStateOf(emptyList()) }
     val impactStories by viewModel?.impactStories?.collectAsState() ?: remember { mutableStateOf(emptyList()) }
+
+    val currentStatus by viewModel?.currentMemberStatus?.collectAsState() ?: remember { mutableStateOf("Active") }
+
+    LaunchedEffect(currentStatus) {
+        if (currentStatus == "Suspended") {
+            onSuspended()
+        }
+    }
 
     var showAllReceipts by remember { mutableStateOf(false) }
 
@@ -726,7 +735,8 @@ fun MemberDashboardPreview() {
             onProfileClick = {},
             onLogoutClick = {},
             onMembershipCardClick = {},
-            onCommunityWallClick = {}
+            onCommunityWallClick = {},
+            onSuspended = {}
         )
     }
 }

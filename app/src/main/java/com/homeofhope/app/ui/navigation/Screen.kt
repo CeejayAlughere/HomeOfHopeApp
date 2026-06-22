@@ -32,6 +32,7 @@ sealed class Screen(val route: String, val label: String, val icon: ImageVector)
     object MembershipCard : Screen("membership_card", "Membership Card", Icons.Default.Badge)
     object CommunityWall : Screen("community_wall", "Community Wall", Icons.Default.Forum)
     object Settings : Screen("settings", "Settings", Icons.Default.Settings)
+    object Suspended : Screen("suspended", "Suspended", Icons.Default.Block)
 
     // Admin
     object AdminDashboard : Screen("admin_dashboard", "Admin Dashboard", Icons.Default.AdminPanelSettings)

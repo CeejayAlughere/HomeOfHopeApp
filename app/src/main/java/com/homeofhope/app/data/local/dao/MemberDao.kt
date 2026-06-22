@@ -21,6 +21,9 @@ interface MemberDao {
     @Query("SELECT * FROM members")
     suspend fun getAllMembersOnce(): List<Member>
 
+    @Query("SELECT status FROM members WHERE id = :memberId")
+    fun getMemberStatus(memberId: Int): Flow<String?>
+
     @Delete
     suspend fun deleteMember(member: Member)
 
