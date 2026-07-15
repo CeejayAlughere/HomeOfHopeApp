@@ -76,7 +76,7 @@ To access the Admin Management System:
 ### Installation
 1. Clone the repository:
    ```bash
-   git clone https://github.com/yourusername/HomeOfHopeApp.git
+   git clone https://github.com/CeejayAlughere/HomeOfHopeApp.git
    ```
 2. Open the project in Android Studio.
 3. Sync Project with Gradle Files.
