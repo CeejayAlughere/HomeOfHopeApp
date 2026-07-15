@@ -16,33 +16,41 @@ import androidx.compose.ui.platform.LocalView
 import androidx.core.view.WindowCompat
 
 private val DarkColorScheme = darkColorScheme(
-    primary = HopeGreen,
-    secondary = HopeGrey,
-    tertiary = Pink80,
-    background = HopeDark,
-    surface = HopeDark,
-    surfaceVariant = HopeDarkContainer,
-    onPrimary = HopeWhite,
-    onSecondary = HopeWhite,
-    onTertiary = HopeWhite,
-    onBackground = HopeWhite,
-    onSurface = HopeWhite,
-    onSurfaceVariant = HopeWhite
+    primary = DarkPrimary,
+    onPrimary = DarkOnPrimary,
+    primaryContainer = DarkPrimaryContainer,
+    onPrimaryContainer = DarkOnPrimaryContainer,
+    secondary = DarkSecondary,
+    onSecondary = DarkOnSecondary,
+    secondaryContainer = DarkSecondaryContainer,
+    onSecondaryContainer = DarkOnSecondaryContainer,
+    background = DarkBackground,
+    onBackground = DarkOnBackground,
+    surface = DarkSurface,
+    onSurface = DarkOnSurface,
+    surfaceVariant = DarkSurfaceVariant,
+    onSurfaceVariant = DarkOnSurfaceVariant,
+    error = HopeDanger,
+    onError = HopeWhite
 )
 
 private val LightColorScheme = lightColorScheme(
-    primary = HopeGreen,
-    secondary = HopeGrey,
-    tertiary = Pink40,
-    background = HopeLight,
-    surface = HopeWhite,
-    surfaceVariant = HopeLight,
-    onPrimary = HopeWhite,
-    onSecondary = HopeWhite,
-    onTertiary = HopeWhite,
-    onBackground = HopeDark,
-    onSurface = HopeDark,
-    onSurfaceVariant = HopeGrey
+    primary = LightPrimary,
+    onPrimary = LightOnPrimary,
+    primaryContainer = LightPrimaryContainer,
+    onPrimaryContainer = LightOnPrimaryContainer,
+    secondary = LightSecondary,
+    onSecondary = LightOnSecondary,
+    secondaryContainer = LightSecondaryContainer,
+    onSecondaryContainer = LightOnSecondaryContainer,
+    background = LightBackground,
+    onBackground = LightOnBackground,
+    surface = LightSurface,
+    onSurface = LightOnSurface,
+    surfaceVariant = LightSurfaceVariant,
+    onSurfaceVariant = LightOnSurfaceVariant,
+    error = HopeDanger,
+    onError = HopeWhite
 )
 
 @Composable
@@ -65,8 +73,9 @@ fun HomeOfHopeTheme(
     if (!view.isInEditMode) {
         SideEffect {
             val window = (view.context as Activity).window
-            window.statusBarColor = colorScheme.primary.toArgb()
-            WindowCompat.getInsetsController(window, view).isAppearanceLightStatusBars = darkTheme
+            window.statusBarColor = colorScheme.surface.toArgb()
+            val insetsController = WindowCompat.getInsetsController(window, view)
+            insetsController.isAppearanceLightStatusBars = !darkTheme
         }
     }
 

@@ -1,5 +1,6 @@
 package com.homeofhope.app.ui.screens.home
 
+import androidx.compose.animation.*
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -31,6 +32,8 @@ import com.google.accompanist.pager.HorizontalPager
 import com.google.accompanist.pager.HorizontalPagerIndicator
 import com.google.accompanist.pager.rememberPagerState
 import com.homeofhope.app.R
+import com.homeofhope.app.ui.components.HopeButton
+import com.homeofhope.app.ui.components.HopeCard
 import com.homeofhope.app.ui.components.SectionHeader
 import com.homeofhope.app.ui.theme.*
 import kotlinx.coroutines.delay
@@ -45,28 +48,28 @@ fun HomeScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(MaterialTheme.colorScheme.surface)
+            .background(MaterialTheme.colorScheme.background)
             .verticalScroll(rememberScrollState())
     ) {
         HomeCarousel()
         
-        Spacer(modifier = Modifier.height(16.dp))
+        Spacer(modifier = Modifier.height(24.dp))
         
         ImpactStatsSection()
         
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(32.dp))
         
         QuickActionButtons(onBecomeMemberClick)
         
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(32.dp))
         
         FeaturedCausesSection(onViewAllCausesClick)
         
-        Spacer(modifier = Modifier.height(24.dp))
+        Spacer(modifier = Modifier.height(32.dp))
         
         UpcomingEventsSection(onViewAllEventsClick)
         
-        Spacer(modifier = Modifier.height(32.dp))
+        Spacer(modifier = Modifier.height(48.dp))
     }
 }
 
@@ -76,11 +79,11 @@ fun ImpactStatsSection() {
         Text(
             text = "OUR REAL WORLD IMPACT",
             style = MaterialTheme.typography.labelLarge,
-            color = HopeGreen,
+            color = MaterialTheme.colorScheme.primary,
             fontWeight = FontWeight.Bold,
-            letterSpacing = 1.2.sp
+            letterSpacing = 1.2.sp,
+            modifier = Modifier.padding(bottom = 16.dp)
         )
-        Spacer(modifier = Modifier.height(12.dp))
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
@@ -109,33 +112,40 @@ fun ImpactStatsSection() {
 
 @Composable
 fun ImpactCard(count: String, label: String, icon: ImageVector, modifier: Modifier) {
-    Surface(
+    HopeCard(
         modifier = modifier,
-        shape = RoundedCornerShape(16.dp),
-        color = HopeGreen.copy(alpha = 0.05f),
-        border = BorderStroke(1.dp, HopeGreen.copy(alpha = 0.1f))
+        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f),
+        elevation = 0.dp
     ) {
         Column(
-            modifier = Modifier.padding(12.dp),
+            modifier = Modifier.padding(16.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Icon(
-                imageVector = icon,
-                contentDescription = null,
-                tint = HopeGreen,
-                modifier = Modifier.size(24.dp)
-            )
-            Spacer(modifier = Modifier.height(8.dp))
+            Box(
+                modifier = Modifier
+                    .size(40.dp)
+                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), CircleShape),
+                contentAlignment = Alignment.Center
+            ) {
+                Icon(
+                    imageVector = icon,
+                    contentDescription = null,
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(20.dp)
+                )
+            }
+            Spacer(modifier = Modifier.height(12.dp))
             Text(
                 text = count,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onSurface
+                color = MaterialTheme.colorScheme.onPrimaryContainer
             )
             Text(
                 text = label,
                 style = MaterialTheme.typography.labelSmall,
-                color = HopeGrey
+                color = MaterialTheme.colorScheme.onSurfaceVariant,
+                textAlign = TextAlign.Center
             )
         }
     }
@@ -150,22 +160,12 @@ fun FeaturedCausesSection(onViewAllCausesClick: () -> Unit) {
     )
 
     Column {
-        PaddingValues(horizontal = 16.dp).let {
-            Row(
-                modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-                horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                Text(
-                    text = "Featured Causes",
-                    style = MaterialTheme.typography.headlineSmall,
-                    fontWeight = FontWeight.Bold
-                )
-                TextButton(onClick = onViewAllCausesClick) {
-                    Text("View All", color = HopeGreen)
-                }
-            }
-        }
+        SectionHeader(
+            subtitle = "Featured",
+            title = "Current Causes",
+            actionText = "View All",
+            onActionClick = onViewAllCausesClick
+        )
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -179,11 +179,9 @@ fun FeaturedCausesSection(onViewAllCausesClick: () -> Unit) {
 
 @Composable
 fun FeaturedCauseCard(cause: HomeCause) {
-    Card(
-        modifier = Modifier.width(260.dp),
-        shape = RoundedCornerShape(24.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+    HopeCard(
+        modifier = Modifier.width(280.dp),
+        elevation = 4.dp
     ) {
         Column {
             AsyncImage(
@@ -194,30 +192,57 @@ fun FeaturedCauseCard(cause: HomeCause) {
                 contentDescription = null,
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(140.dp),
+                    .height(160.dp),
                 contentScale = ContentScale.Crop
             )
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
                     text = cause.title,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(12.dp))
                 
                 val progress = (cause.raised / cause.goal).toFloat()
                 LinearProgressIndicator(
                     progress = { progress },
-                    modifier = Modifier.fillMaxWidth().height(6.dp).clip(CircleShape),
-                    color = HopeGreen,
-                    trackColor = HopeGreen.copy(alpha = 0.1f)
+                    modifier = Modifier.fillMaxWidth().height(8.dp).clip(CircleShape),
+                    color = MaterialTheme.colorScheme.primary,
+                    trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
                 )
-                Spacer(modifier = Modifier.height(8.dp))
-                Row(horizontalArrangement = Arrangement.SpaceBetween, modifier = Modifier.fillMaxWidth()) {
-                    Text("R${cause.raised.toInt()} raised", style = MaterialTheme.typography.labelSmall, color = HopeGreen, fontWeight = FontWeight.Bold)
-                    Text("Target R${cause.goal.toInt()}", style = MaterialTheme.typography.labelSmall, color = HopeGrey)
+                Spacer(modifier = Modifier.height(12.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
+                ) {
+                    Column {
+                        Text(
+                            text = "RAISED",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.primary,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "R${cause.raised.toInt()}",
+                            style = MaterialTheme.typography.titleMedium,
+                            fontWeight = FontWeight.Bold
+                        )
+                    }
+                    Column(horizontalAlignment = Alignment.End) {
+                        Text(
+                            text = "GOAL",
+                            style = MaterialTheme.typography.labelSmall,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            fontWeight = FontWeight.Bold
+                        )
+                        Text(
+                            text = "R${cause.goal.toInt()}",
+                            style = MaterialTheme.typography.titleMedium,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant
+                        )
+                    }
                 }
             }
         }
@@ -233,22 +258,12 @@ fun UpcomingEventsSection(onViewAllEventsClick: () -> Unit) {
     )
 
     Column {
-        Row(
-            modifier = Modifier.fillMaxWidth().padding(horizontal = 16.dp),
-            horizontalArrangement = Arrangement.SpaceBetween,
-            verticalAlignment = Alignment.CenterVertically
-        ) {
-            Text(
-                text = "Upcoming Events",
-                style = MaterialTheme.typography.headlineSmall,
-                fontWeight = FontWeight.Bold
-            )
-            TextButton(onClick = onViewAllEventsClick) {
-                Text("View All", color = HopeGreen)
-            }
-        }
-        
-        Spacer(modifier = Modifier.height(8.dp))
+        SectionHeader(
+            subtitle = "Get Involved",
+            title = "Upcoming Events",
+            actionText = "View All",
+            onActionClick = onViewAllEventsClick
+        )
         
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
@@ -260,17 +275,15 @@ fun UpcomingEventsSection(onViewAllEventsClick: () -> Unit) {
         }
     }
 }
+
 @Composable
 fun HomeEventCard(event: HomeEvent) {
-    Card(
-        modifier = Modifier
-            .width(280.dp),
-        shape = RoundedCornerShape(24.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
+    HopeCard(
+        modifier = Modifier.width(300.dp),
+        elevation = 4.dp
     ) {
         Column {
-            Box(modifier = Modifier.height(140.dp)) {
+            Box(modifier = Modifier.height(160.dp)) {
                 AsyncImage(
                     model = ImageRequest.Builder(LocalContext.current)
                         .data(event.imageUrl)
@@ -284,33 +297,53 @@ fun HomeEventCard(event: HomeEvent) {
                 // Date Badge
                 Surface(
                     modifier = Modifier
-                        .padding(12.dp)
+                        .padding(16.dp)
                         .align(Alignment.TopEnd),
-                    color = HopeGreen,
-                    shape = RoundedCornerShape(12.dp)
+                    color = MaterialTheme.colorScheme.primary,
+                    shape = RoundedCornerShape(12.dp),
+                    shadowElevation = 4.dp
                 ) {
                     Column(
-                        modifier = Modifier.padding(horizontal = 10.dp, vertical = 6.dp),
+                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
-                        Text(text = event.day, color = HopeWhite, fontWeight = FontWeight.Bold, style = MaterialTheme.typography.titleMedium)
-                        Text(text = event.month, color = HopeWhite, style = MaterialTheme.typography.labelSmall)
+                        Text(
+                            text = event.day,
+                            color = MaterialTheme.colorScheme.onPrimary,
+                            fontWeight = FontWeight.Bold,
+                            style = MaterialTheme.typography.titleLarge
+                        )
+                        Text(
+                            text = event.month,
+                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
+                            style = MaterialTheme.typography.labelLarge,
+                            fontWeight = FontWeight.Bold
+                        )
                     }
                 }
             }
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
                     text = event.title,
-                    style = MaterialTheme.typography.titleMedium,
+                    style = MaterialTheme.typography.titleLarge,
                     fontWeight = FontWeight.Bold,
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
-                Spacer(modifier = Modifier.height(4.dp))
+                Spacer(modifier = Modifier.height(8.dp))
                 Row(verticalAlignment = Alignment.CenterVertically) {
-                    Icon(imageVector = Icons.Default.Schedule, contentDescription = null, tint = HopeGreen, modifier = Modifier.size(14.dp))
-                    Spacer(modifier = Modifier.width(4.dp))
-                    Text(text = event.timeLocation, style = MaterialTheme.typography.bodySmall, color = HopeGrey)
+                    Icon(
+                        imageVector = Icons.Default.Schedule,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(16.dp)
+                    )
+                    Spacer(modifier = Modifier.width(6.dp))
+                    Text(
+                        text = event.timeLocation,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
                 }
             }
         }
@@ -325,12 +358,12 @@ fun HomeCarousel() {
         CarouselItem(
             imageUrl = "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=2070",
             heading = "Every child deserves a safe place to call home",
-            subtext = "At Siyazigabisa Home Of Hope, we provide shelter, nourishment and care to vulnerable children and families who need it most."
+            subtext = "At Siyazigabisa Home Of Hope, we provide shelter, nourishment and care to vulnerable children."
         ),
         CarouselItem(
             imageUrl = "https://images.unsplash.com/photo-1509099836639-18ba1795216d?q=80&w=2062",
             heading = "Together we can break the cycle of poverty",
-            subtext = "Your support helps us deliver food, healthcare and education to disadvantaged communities across South Africa."
+            subtext = "Your support helps us deliver food, healthcare and education to disadvantaged communities."
         ),
         CarouselItem(
             imageUrl = "https://images.unsplash.com/photo-1593113598332-cd288d649433?q=80&w=2070",
@@ -346,7 +379,7 @@ fun HomeCarousel() {
         }
     }
 
-    Box(modifier = Modifier.height(350.dp)) {
+    Box(modifier = Modifier.height(400.dp)) {
         HorizontalPager(
             count = carouselItems.size,
             state = pagerState,
@@ -358,10 +391,11 @@ fun HomeCarousel() {
             pagerState = pagerState,
             modifier = Modifier
                 .align(Alignment.BottomCenter)
-                .padding(24.dp),
-            activeColor = HopeGreen,
-            inactiveColor = HopeWhite.copy(alpha = 0.3f),
-            indicatorWidth = 24.dp,
+                .padding(32.dp),
+            activeColor = MaterialTheme.colorScheme.primary,
+            inactiveColor = Color.White.copy(alpha = 0.3f),
+            indicatorWidth = 32.dp,
+            indicatorHeight = 6.dp,
             spacing = 8.dp
         )
     }
@@ -386,8 +420,8 @@ fun CarouselSlide(item: CarouselItem) {
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
-                        colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.8f)),
-                        startY = 300f
+                        colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.85f)),
+                        startY = 400f
                     )
                 )
         )
@@ -395,34 +429,35 @@ fun CarouselSlide(item: CarouselItem) {
             modifier = Modifier
                 .align(Alignment.BottomStart)
                 .padding(24.dp)
-                .padding(bottom = 32.dp)
+                .padding(bottom = 48.dp)
         ) {
             Surface(
-                color = HopeGreen,
-                shape = RoundedCornerShape(4.dp),
-                modifier = Modifier.padding(bottom = 8.dp)
+                color = MaterialTheme.colorScheme.primary,
+                shape = RoundedCornerShape(8.dp),
+                modifier = Modifier.padding(bottom = 12.dp)
             ) {
                 Text(
-                    text = "FEATURED",
-                    modifier = Modifier.padding(horizontal = 8.dp, vertical = 2.dp),
-                    style = MaterialTheme.typography.labelSmall,
-                    color = HopeWhite,
-                    fontWeight = FontWeight.Bold
+                    text = "FEATURED IMPACT",
+                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                    style = MaterialTheme.typography.labelMedium,
+                    color = MaterialTheme.colorScheme.onPrimary,
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 1.sp
                 )
             }
             Text(
                 text = item.heading,
-                color = HopeWhite,
-                style = MaterialTheme.typography.headlineMedium,
+                color = Color.White,
+                style = MaterialTheme.typography.displaySmall,
                 fontWeight = FontWeight.Bold,
-                lineHeight = 34.sp
+                lineHeight = 42.sp
             )
-            Spacer(modifier = Modifier.height(8.dp))
+            Spacer(modifier = Modifier.height(12.dp))
             Text(
                 text = item.subtext,
-                color = HopeWhite.copy(alpha = 0.9f),
-                style = MaterialTheme.typography.bodyMedium,
-                lineHeight = 22.sp,
+                color = Color.White.copy(alpha = 0.8f),
+                style = MaterialTheme.typography.bodyLarge,
+                lineHeight = 24.sp,
                 maxLines = 2,
                 overflow = TextOverflow.Ellipsis
             )
@@ -434,42 +469,16 @@ fun CarouselSlide(item: CarouselItem) {
 fun QuickActionButtons(
     onBecomeMemberClick: () -> Unit
 ) {
-    Row(
+    Column(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp),
-        horizontalArrangement = Arrangement.spacedBy(12.dp)
+            .padding(horizontal = 16.dp)
     ) {
-        ModernActionButton(
+        HopeButton(
             text = "Become a Member",
             icon = Icons.Default.Favorite,
-            containerColor = HopeGreen,
-            contentColor = HopeWhite,
-            modifier = Modifier.fillMaxWidth(),
             onClick = onBecomeMemberClick
         )
-    }
-}
-
-@Composable
-fun ModernActionButton(
-    text: String,
-    icon: ImageVector,
-    containerColor: Color,
-    contentColor: Color,
-    modifier: Modifier,
-    onClick: () -> Unit
-) {
-    Button(
-        onClick = onClick,
-        modifier = modifier.height(56.dp),
-        colors = ButtonDefaults.buttonColors(containerColor = containerColor, contentColor = contentColor),
-        shape = RoundedCornerShape(16.dp),
-        elevation = ButtonDefaults.buttonElevation(defaultElevation = 4.dp)
-    ) {
-        Icon(imageVector = icon, contentDescription = null, modifier = Modifier.size(20.dp))
-        Spacer(modifier = Modifier.width(8.dp))
-        Text(text = text, fontWeight = FontWeight.Bold)
     }
 }
 

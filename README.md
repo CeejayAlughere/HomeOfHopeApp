@@ -19,7 +19,7 @@ A comprehensive mobile platform designed for **Home of Hope NGO** (Siyazigabisa)
   - Track donation history and receive instant confirmation.
 - **Support & FAQ**: Comprehensive help center with FAQs and a direct contact system.
 
-### 🛡️ Admin Management System
+###  Admin Management System
 - **Secure Admin Portal**: Dedicated access for NGO administrators (`admin@hoh.org`).
 - **Dashboard Analytics**: Real-time stats on membership growth, total donations, and volunteer impact.
 - **Member Management**: 
@@ -30,12 +30,12 @@ A comprehensive mobile platform designed for **Home of Hope NGO** (Siyazigabisa)
   - Manually log and verify volunteer service hours.
   - Audit and update service records.
 
-### ⚖️ Legal & Privacy
+###  Legal & Privacy
 - **Privacy Policy**: Clear disclosure of data handling practices.
 - **Terms of Service**: Defined guidelines for app and community usage.
 - **Cookie Policy**: Information on local data storage and preferences.
 
-## 🛠️ Technical Stack
+##  Technical Stack
 - **Language**: [Kotlin](https://kotlinlang.org/)
 - **UI Framework**: [Jetpack Compose](https://developer.android.com/jetpack/compose) (Material 3)
 - **Architecture**: MVVM (Model-View-ViewModel) with Clean Architecture principles.
@@ -48,7 +48,7 @@ A comprehensive mobile platform designed for **Home of Hope NGO** (Siyazigabisa)
 - **Animations**: [Lottie for Android](https://github.com/airbnb/lottie-android)
 - **Splash Screen**: [AndroidX SplashScreen API](https://developer.android.com/develop/ui/views/launch/splash-screen)
 
-## 📁 Project Structure
+## Project Structure
 - `data/`:
   - `local/`: Room database entities, DAOs, and configuration.
   - `model/`: Data classes for API responses and local entities.
@@ -61,7 +61,7 @@ A comprehensive mobile platform designed for **Home of Hope NGO** (Siyazigabisa)
   - `theme/`: Material 3 design system implementation (Colors, Typography, Shapes).
 - `utils/`: Helper classes and extension functions.
 
-## 🚀 Getting Started
+##  Getting Started
 
 ### Admin Credentials
 To access the Admin Management System:

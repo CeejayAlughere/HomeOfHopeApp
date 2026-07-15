@@ -1,10 +1,13 @@
 package com.homeofhope.app.ui.screens.member
 
+import androidx.compose.animation.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
@@ -18,23 +21,23 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.homeofhope.app.R
-import com.homeofhope.app.ui.theme.HopeDark
-import com.homeofhope.app.ui.theme.HopeGreen
-import com.homeofhope.app.ui.theme.HopeGrey
-import com.homeofhope.app.ui.theme.HopeWhite
+import com.homeofhope.app.ui.components.HopeButton
+import com.homeofhope.app.ui.components.HopeTextField
 import com.homeofhope.app.ui.viewmodel.*
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun LoginScreen(
     viewModel: MemberViewModel,
@@ -48,6 +51,7 @@ fun LoginScreen(
     var passwordVisible by remember { mutableStateOf(false) }
 
     val authState by viewModel.authState.collectAsState()
+    val focusManager = LocalFocusManager.current
 
     LaunchedEffect(authState) {
         if (authState is AuthState.Success) {
@@ -56,213 +60,201 @@ fun LoginScreen(
         }
     }
 
-    // Admin Login Logic
     var adminError by remember { mutableStateOf<String?>(null) }
 
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(HopeGreen.copy(alpha = 0.1f), Color.White)
-                )
-            )
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues = PaddingValues(bottom = 16.dp))
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Branding Section
+            // Modern Header Section
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(280.dp)
-                    .clip(RoundedCornerShape(bottomStart = 64.dp, bottomEnd = 64.dp))
-                    .background(HopeDark)
+                    .height(320.dp)
+                    .clip(RoundedCornerShape(bottomStart = 48.dp, bottomEnd = 48.dp))
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(MaterialTheme.colorScheme.secondary, MaterialTheme.colorScheme.primary)
+                        )
+                    )
                     .padding(32.dp),
                 contentAlignment = Alignment.Center
             ) {
                 Column(horizontalAlignment = Alignment.CenterHorizontally) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_logo),
-                        contentDescription = "App Logo",
-                        modifier = Modifier.size(100.dp)
-                    )
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Surface(
+                        modifier = Modifier.size(120.dp),
+                        shape = RoundedCornerShape(32.dp),
+                        color = Color.White.copy(alpha = 0.15f)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_logo),
+                                contentDescription = "App Logo",
+                                modifier = Modifier.size(80.dp)
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.height(24.dp))
                     Text(
                         text = "HOME OF HOPE",
-                        color = HopeWhite,
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
+                        color = Color.White,
+                        style = MaterialTheme.typography.headlineMedium,
+                        fontWeight = FontWeight.ExtraBold,
                         letterSpacing = 2.sp
                     )
                     Text(
-                        text = "Siyazigabisa",
-                        color = HopeGreen,
-                        fontSize = 14.sp,
+                        text = "Empowering Communities Since 1994",
+                        color = Color.White.copy(alpha = 0.8f),
+                        style = MaterialTheme.typography.labelLarge,
                         fontWeight = FontWeight.Medium
                     )
                 }
             }
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(40.dp))
 
             // Login Form
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 32.dp),
+                    .padding(horizontal = 24.dp),
                 horizontalAlignment = Alignment.Start
             ) {
                 Text(
                     text = "Welcome Back",
-                    fontSize = 28.sp,
+                    style = MaterialTheme.typography.displaySmall,
                     fontWeight = FontWeight.Bold,
-                    color = HopeDark
+                    color = MaterialTheme.colorScheme.onBackground
                 )
                 Text(
-                    text = "Sign in to continue your journey with us",
-                    fontSize = 14.sp,
-                    color = HopeGrey,
-                    modifier = Modifier.padding(top = 4.dp)
+                    text = "Sign in to your member account",
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // Username Field
-                OutlinedTextField(
+                HopeTextField(
                     value = username,
-                    onValueChange = { username = it },
-                    label = { Text("Username") },
-                    leadingIcon = { Icon(Icons.Default.Email, contentDescription = null, tint = HopeGreen) },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
-                    singleLine = true,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = HopeGreen,
-                        unfocusedBorderColor = HopeGrey.copy(alpha = 0.3f)
+                    onValueChange = { 
+                        username = it
+                        adminError = null
+                        viewModel.clearAuthState()
+                    },
+                    label = "Email Address",
+                    leadingIcon = Icons.Default.Email,
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Email,
+                        imeAction = ImeAction.Next
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onNext = { focusManager.moveFocus(FocusDirection.Down) }
                     )
                 )
 
                 Spacer(modifier = Modifier.height(16.dp))
 
-                // Password Field
-                OutlinedTextField(
+                HopeTextField(
                     value = password,
-                    onValueChange = { password = it },
-                    label = { Text("Password") },
-                    leadingIcon = { Icon(Icons.Default.Lock, contentDescription = null, tint = HopeGreen) },
+                    onValueChange = { 
+                        password = it
+                        adminError = null
+                        viewModel.clearAuthState()
+                    },
+                    label = "Password",
+                    leadingIcon = Icons.Default.Lock,
                     trailingIcon = {
                         val image = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
                         IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                            Icon(imageVector = image, contentDescription = null, tint = HopeGrey)
+                            Icon(imageVector = image, contentDescription = null)
                         }
                     },
-                    modifier = Modifier.fillMaxWidth(),
-                    shape = RoundedCornerShape(12.dp),
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password),
-                    singleLine = true,
-                    colors = OutlinedTextFieldDefaults.colors(
-                        focusedBorderColor = HopeGreen,
-                        unfocusedBorderColor = HopeGrey.copy(alpha = 0.3f)
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Password,
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = { focusManager.clearFocus() }
                     )
                 )
 
-                if (authState is AuthState.Error) {
-                    Spacer(modifier = Modifier.height(8.dp))
+                Spacer(modifier = Modifier.height(12.dp))
+
+                AnimatedVisibility(visible = authState is AuthState.Error || adminError != null) {
+                    val error = (authState as? AuthState.Error)?.message ?: adminError ?: ""
                     Text(
-                        text = (authState as AuthState.Error).message,
+                        text = error,
                         color = MaterialTheme.colorScheme.error,
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(start = 4.dp)
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(start = 8.dp)
                     )
                 }
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // Login Button
-                Button(
+                HopeButton(
+                    text = "SIGN IN",
                     onClick = {
+                        focusManager.clearFocus()
                         if (username == "admin@hoh.org") {
-                            // Check admin credentials
-                            // Using the seeded admin info
                             if (password == "Admin@123") {
                                 onAdminLoginSuccess()
                             } else {
-                                adminError = "Invalid admin password"
+                                adminError = "Invalid administrator password"
                             }
                         } else {
                             viewModel.login(username, password)
                         }
                     },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = HopeGreen),
-                    enabled = authState !is AuthState.Loading
-                ) {
-                    if (authState is AuthState.Loading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(24.dp),
-                            color = HopeWhite,
-                            strokeWidth = 2.dp
-                        )
-                    } else {
-                        Text(
-                            "SIGN IN",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp,
-                            letterSpacing = 1.sp
-                        )
-                    }
-                }
-
-                if (adminError != null) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = adminError!!,
-                        color = MaterialTheme.colorScheme.error,
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(start = 4.dp)
-                    )
-                }
+                    isLoading = authState is AuthState.Loading
+                )
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Register Link
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = "Don't have an account?", color = HopeGrey, fontSize = 14.sp)
+                    Text(
+                        text = "New to the community?",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                     TextButton(onClick = onRegisterClick) {
                         Text(
                             text = "Register Now",
-                            color = HopeGreen,
                             fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
             }
+            Spacer(modifier = Modifier.height(40.dp))
         }
 
-        // Back Button
+        // Animated Back Button
         IconButton(
             onClick = onBackClick,
             modifier = Modifier
-                .padding(top = 40.dp, start = 16.dp)
-                .size(40.dp)
-                .clip(RoundedCornerShape(8.dp))
-                .background(HopeWhite.copy(alpha = 0.2f))
+                .padding(top = 48.dp, start = 16.dp)
+                .size(44.dp)
+                .clip(CircleShape)
+                .background(Color.White.copy(alpha = 0.2f))
         ) {
-            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = HopeWhite)
+            Icon(
+                Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Back",
+                tint = Color.White
+            )
         }
     }
 }

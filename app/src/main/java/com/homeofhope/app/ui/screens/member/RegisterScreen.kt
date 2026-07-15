@@ -1,43 +1,41 @@
 package com.homeofhope.app.ui.screens.member
 
+import androidx.compose.animation.*
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.filled.ArrowBack
-import androidx.compose.material.icons.filled.Badge
-import androidx.compose.material.icons.filled.Email
-import androidx.compose.material.icons.filled.Lock
-import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.Visibility
-import androidx.compose.material.icons.filled.VisibilityOff
+import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.focus.FocusDirection
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.text.input.PasswordVisualTransformation
 import androidx.compose.ui.text.input.VisualTransformation
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.homeofhope.app.R
-import com.homeofhope.app.ui.theme.HopeDark
-import com.homeofhope.app.ui.theme.HopeGreen
-import com.homeofhope.app.ui.theme.HopeGrey
-import com.homeofhope.app.ui.theme.HopeWhite
+import com.homeofhope.app.ui.components.HopeButton
+import com.homeofhope.app.ui.components.HopeTextField
 import com.homeofhope.app.ui.viewmodel.AuthState
 import com.homeofhope.app.ui.viewmodel.MemberViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RegisterScreen(
     viewModel: MemberViewModel,
@@ -52,6 +50,7 @@ fun RegisterScreen(
     var passwordVisible by remember { mutableStateOf(false) }
 
     val authState by viewModel.authState.collectAsState()
+    val focusManager = LocalFocusManager.current
 
     LaunchedEffect(authState) {
         if (authState is AuthState.Registered) {
@@ -63,26 +62,25 @@ fun RegisterScreen(
     Box(
         modifier = Modifier
             .fillMaxSize()
-            .background(
-                Brush.verticalGradient(
-                    colors = listOf(HopeGreen.copy(alpha = 0.1f), Color.White)
-                )
-            )
+            .background(MaterialTheme.colorScheme.background)
     ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(paddingValues = PaddingValues(bottom = 16.dp))
                 .verticalScroll(rememberScrollState()),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Branding Section
+            // Modern Header Section
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .height(200.dp)
+                    .height(240.dp)
                     .clip(RoundedCornerShape(bottomStart = 48.dp, bottomEnd = 48.dp))
-                    .background(HopeDark)
+                    .background(
+                        Brush.verticalGradient(
+                            colors = listOf(MaterialTheme.colorScheme.primary, MaterialTheme.colorScheme.secondary)
+                        )
+                    )
                     .padding(24.dp),
                 contentAlignment = Alignment.Center
             ) {
@@ -90,216 +88,181 @@ fun RegisterScreen(
                     verticalAlignment = Alignment.CenterVertically,
                     horizontalArrangement = Arrangement.Center
                 ) {
-                    Image(
-                        painter = painterResource(id = R.drawable.ic_logo),
-                        contentDescription = "App Logo",
-                        modifier = Modifier.size(60.dp)
-                    )
-                    Spacer(modifier = Modifier.width(16.dp))
+                    Surface(
+                        modifier = Modifier.size(72.dp),
+                        shape = RoundedCornerShape(20.dp),
+                        color = Color.White.copy(alpha = 0.15f)
+                    ) {
+                        Box(contentAlignment = Alignment.Center) {
+                            Image(
+                                painter = painterResource(id = R.drawable.ic_logo),
+                                contentDescription = "App Logo",
+                                modifier = Modifier.size(48.dp)
+                            )
+                        }
+                    }
+                    Spacer(modifier = Modifier.width(20.dp))
                     Column {
                         Text(
                             text = "HOME OF HOPE",
-                            color = HopeWhite,
-                            fontSize = 20.sp,
+                            color = Color.White,
+                            style = MaterialTheme.typography.titleLarge,
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 1.sp
                         )
                         Text(
-                            text = "Become a Member",
-                            color = HopeGreen,
-                            fontSize = 12.sp,
+                            text = "Join Our Global Mission",
+                            color = Color.White.copy(alpha = 0.8f),
+                            style = MaterialTheme.typography.labelMedium,
                             fontWeight = FontWeight.Medium
                         )
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.height(24.dp))
+            Spacer(modifier = Modifier.height(32.dp))
 
             // Register Form
             Column(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(horizontal = 32.dp),
+                    .padding(horizontal = 24.dp),
                 horizontalAlignment = Alignment.Start
             ) {
                 Text(
                     text = "Create Account",
-                    fontSize = 28.sp,
+                    style = MaterialTheme.typography.headlineMedium,
                     fontWeight = FontWeight.Bold,
-                    color = HopeDark
+                    color = MaterialTheme.colorScheme.onBackground
                 )
                 Text(
-                    text = "Join our community and make a difference",
-                    fontSize = 14.sp,
-                    color = HopeGrey,
-                    modifier = Modifier.padding(top = 4.dp)
+                    text = "Fill in your details to start making an impact.",
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
-
-                Spacer(modifier = Modifier.height(24.dp))
-
-                // Full Name
-                RegisterField(
-                    value = fullName,
-                    onValueChange = { fullName = it },
-                    label = "Full Name",
-                    icon = Icons.Default.Person
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // ID Number
-                RegisterField(
-                    value = idNumber,
-                    onValueChange = { if (it.length <= 13) idNumber = it },
-                    label = "ID Number (13 digits)",
-                    icon = Icons.Default.Badge,
-                    keyboardType = KeyboardType.Number
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Username
-                RegisterField(
-                    value = username,
-                    onValueChange = { username = it },
-                    label = "Username",
-                    icon = Icons.Default.Email
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Password
-                RegisterField(
-                    value = password,
-                    onValueChange = { password = it },
-                    label = "Password",
-                    icon = Icons.Default.Lock,
-                    isPassword = true,
-                    passwordVisible = passwordVisible,
-                    onTogglePassword = { passwordVisible = !passwordVisible }
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                // Confirm Password
-                RegisterField(
-                    value = confirmPassword,
-                    onValueChange = { confirmPassword = it },
-                    label = "Confirm Password",
-                    icon = Icons.Default.Lock,
-                    isPassword = true,
-                    passwordVisible = passwordVisible,
-                    onTogglePassword = { passwordVisible = !passwordVisible }
-                )
-
-                if (authState is AuthState.Error) {
-                    Spacer(modifier = Modifier.height(8.dp))
-                    Text(
-                        text = (authState as AuthState.Error).message,
-                        color = MaterialTheme.colorScheme.error,
-                        fontSize = 12.sp,
-                        modifier = Modifier.padding(start = 4.dp)
-                    )
-                }
 
                 Spacer(modifier = Modifier.height(32.dp))
 
-                // Register Button
-                Button(
+                HopeTextField(
+                    value = fullName,
+                    onValueChange = { fullName = it },
+                    label = "Full Name",
+                    leadingIcon = Icons.Default.Person,
+                    keyboardOptions = KeyboardOptions(imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                HopeTextField(
+                    value = idNumber,
+                    onValueChange = { if (it.length <= 13) idNumber = it },
+                    label = "South African ID Number",
+                    leadingIcon = Icons.Default.Badge,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number, imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                HopeTextField(
+                    value = username,
+                    onValueChange = { username = it },
+                    label = "Email Address",
+                    leadingIcon = Icons.Default.Email,
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                HopeTextField(
+                    value = password,
+                    onValueChange = { password = it },
+                    label = "Create Password",
+                    leadingIcon = Icons.Default.Lock,
+                    trailingIcon = {
+                        val image = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
+                        IconButton(onClick = { passwordVisible = !passwordVisible }) {
+                            Icon(imageVector = image, contentDescription = null)
+                        }
+                    },
+                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Next),
+                    keyboardActions = KeyboardActions(onNext = { focusManager.moveFocus(FocusDirection.Down) })
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                HopeTextField(
+                    value = confirmPassword,
+                    onValueChange = { confirmPassword = it },
+                    label = "Confirm Password",
+                    leadingIcon = Icons.Default.Lock,
+                    visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
+                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Password, imeAction = ImeAction.Done),
+                    keyboardActions = KeyboardActions(onDone = { focusManager.clearFocus() })
+                )
+
+                AnimatedVisibility(visible = authState is AuthState.Error) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = (authState as? AuthState.Error)?.message ?: "",
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        modifier = Modifier.padding(start = 8.dp)
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(40.dp))
+
+                HopeButton(
+                    text = "REGISTER NOW",
                     onClick = {
+                        focusManager.clearFocus()
                         viewModel.register(fullName, idNumber, username, password, confirmPassword)
                     },
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(56.dp),
-                    shape = RoundedCornerShape(16.dp),
-                    colors = ButtonDefaults.buttonColors(containerColor = HopeGreen),
-                    enabled = authState !is AuthState.Loading
-                ) {
-                    if (authState is AuthState.Loading) {
-                        CircularProgressIndicator(
-                            modifier = Modifier.size(24.dp),
-                            color = HopeWhite,
-                            strokeWidth = 2.dp
-                        )
-                    } else {
-                        Text(
-                            "REGISTER",
-                            fontWeight = FontWeight.Bold,
-                            fontSize = 16.sp,
-                            letterSpacing = 1.sp
-                        )
-                    }
-                }
+                    isLoading = authState is AuthState.Loading
+                )
 
                 Spacer(modifier = Modifier.height(24.dp))
 
-                // Login Link
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.Center,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    Text(text = "Already have an account?", color = HopeGrey, fontSize = 14.sp)
+                    Text(
+                        text = "Already a member?",
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
                     TextButton(onClick = onBackClick) {
                         Text(
-                            text = "Login",
-                            color = HopeGreen,
+                            text = "Sign In",
                             fontWeight = FontWeight.Bold,
-                            fontSize = 14.sp
+                            color = MaterialTheme.colorScheme.primary
                         )
                     }
                 }
             }
+            Spacer(modifier = Modifier.height(48.dp))
         }
 
         // Back Button
         IconButton(
             onClick = onBackClick,
             modifier = Modifier
-                .padding(top = 40.dp, start = 16.dp)
-                .size(40.dp)
-                .clip(RoundedCornerShape(8.dp))
-                .background(HopeWhite.copy(alpha = 0.2f))
+                .padding(top = 48.dp, start = 16.dp)
+                .size(44.dp)
+                .clip(CircleShape)
+                .background(Color.White.copy(alpha = 0.2f))
         ) {
-            Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = HopeWhite)
+            Icon(
+                Icons.AutoMirrored.Filled.ArrowBack,
+                contentDescription = "Back",
+                tint = Color.White
+            )
         }
     }
-}
-
-@Composable
-fun RegisterField(
-    value: String,
-    onValueChange: (String) -> Unit,
-    label: String,
-    icon: androidx.compose.ui.graphics.vector.ImageVector,
-    keyboardType: KeyboardType = KeyboardType.Text,
-    isPassword: Boolean = false,
-    passwordVisible: Boolean = false,
-    onTogglePassword: () -> Unit = {}
-) {
-    OutlinedTextField(
-        value = value,
-        onValueChange = onValueChange,
-        label = { Text(label) },
-        leadingIcon = { Icon(icon, contentDescription = null, tint = HopeGreen) },
-        trailingIcon = if (isPassword) {
-            {
-                val image = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
-                IconButton(onClick = onTogglePassword) {
-                    Icon(imageVector = image, contentDescription = null, tint = HopeGrey)
-                }
-            }
-        } else null,
-        modifier = Modifier.fillMaxWidth(),
-        shape = RoundedCornerShape(12.dp),
-        visualTransformation = if (isPassword && !passwordVisible) PasswordVisualTransformation() else VisualTransformation.None,
-        keyboardOptions = KeyboardOptions(keyboardType = keyboardType),
-        singleLine = true,
-        colors = OutlinedTextFieldDefaults.colors(
-            focusedBorderColor = HopeGreen,
-            unfocusedBorderColor = HopeGrey.copy(alpha = 0.3f)
-        )
-    )
 }

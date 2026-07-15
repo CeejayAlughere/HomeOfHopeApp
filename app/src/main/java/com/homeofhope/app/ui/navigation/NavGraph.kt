@@ -1,5 +1,7 @@
 package com.homeofhope.app.ui.navigation
 
+import androidx.compose.animation.*
+import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
@@ -47,7 +49,31 @@ fun HomeOfHopeNavGraph(
     NavHost(
         navController = navController,
         startDestination = Screen.Home.route,
-        modifier = modifier
+        modifier = modifier,
+        enterTransition = {
+            fadeIn(animationSpec = tween(400)) + slideIntoContainer(
+                AnimatedContentTransitionScope.SlideDirection.Left,
+                animationSpec = tween(400)
+            )
+        },
+        exitTransition = {
+            fadeOut(animationSpec = tween(400)) + slideOutOfContainer(
+                AnimatedContentTransitionScope.SlideDirection.Left,
+                animationSpec = tween(400)
+            )
+        },
+        popEnterTransition = {
+            fadeIn(animationSpec = tween(400)) + slideIntoContainer(
+                AnimatedContentTransitionScope.SlideDirection.Right,
+                animationSpec = tween(400)
+            )
+        },
+        popExitTransition = {
+            fadeOut(animationSpec = tween(400)) + slideOutOfContainer(
+                AnimatedContentTransitionScope.SlideDirection.Right,
+                animationSpec = tween(400)
+            )
+        }
     ) {
         composable(Screen.Home.route) { 
             HomeScreen(
