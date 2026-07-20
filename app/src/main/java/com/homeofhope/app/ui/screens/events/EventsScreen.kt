@@ -40,10 +40,10 @@ fun EventsScreen() {
         
         Column(modifier = Modifier.padding(16.dp)) {
             val events = listOf(
-                Event("Community Food Drive", "21 July 2026", "08:00 – 10:00", "Thembisa", "Join us as we collect and distribute food parcels to vulnerable families in Thembisa. Every donation of non-perishable food items makes a real difference.", "https://images.unsplash.com/photo-1593113598332-cd288d649433?q=80&w=2070"),
-                Event("New Year Outreach Programme", "01 January 2026", "09:00 – 12:00", "Thembisa", "Start the new year by giving back. We will be visiting local shelters and distributing care packages to individuals and families starting the year in hardship.", "https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?q=80&w=2070"),
-                Event("Youth Skills & Empowerment Day", "01 April 2026", "11:00 – 15:00", "Thembisa", "A full afternoon of workshops, mentorship sessions and career guidance designed to equip the youth of Thembisa with practical skills for a better future.", "https://images.unsplash.com/photo-1529070538774-1843cb3265df?q=80&w=2070"),
-                Event("Winter Blanket Drive", "04 May 2026", "10:00 – 14:00", "Thembisa", "As winter approaches, many of our community members are without warm clothing and blankets. Join us to help distribute warmth to those who need it most.", "https://images.unsplash.com/photo-1542810634-71277d95dcbb?q=80&w=2070")
+                Event("Community Food Drive", "21 July 2026", "08:00 – 10:00", "Tembisa", "Join us as we collect and distribute food parcels to vulnerable families in Tembisa. Every donation of non-perishable food items makes a real difference.", "https://images.unsplash.com/photo-1593113598332-cd288d649433?q=80&w=2070"),
+                Event("New Year Outreach Programme", "01 January 2026", "09:00 – 12:00", "Tembisa", "Start the new year by giving back. We will be visiting local shelters and distributing care packages to individuals and families starting the year in hardship.", "https://images.unsplash.com/photo-1469571486292-0ba58a3f068b?q=80&w=2070"),
+                Event("Youth Skills & Empowerment Day", "01 April 2026", "11:00 – 15:00", "Tembisa", "A full afternoon of workshops, mentorship sessions and career guidance designed to equip the youth of Tembisa with practical skills for a better future.", "https://images.unsplash.com/photo-1529070538774-1843cb3265df?q=80&w=2070"),
+                Event("Winter Blanket Drive", "04 May 2026", "10:00 – 14:00", "Tembisa", "As winter approaches, many of our community members are without warm clothing and blankets. Join us to help distribute warmth to those who need it most.", "https://images.unsplash.com/photo-1542810634-71277d95dcbb?q=80&w=2070")
             )
             
             events.forEach { event ->

@@ -30,7 +30,7 @@ fun FaqScreen() {
         
         Column(modifier = Modifier.padding(16.dp)) {
             val faqs = listOf(
-                FAQItem("What is Siyazigabisa Home Of Hope?", "Siyazigabisa Home Of Hope is a non-profit organisation based in Thembisa that provides shelter, food, healthcare, education and social support to vulnerable individuals and families in our community."),
+                FAQItem("What is Siyazigabisa Home Of Hope?", "Siyazigabisa Home Of Hope is a non-profit organisation based in Tembisa that provides shelter, food, healthcare, education and social support to vulnerable individuals and families in our community."),
                 FAQItem("How do I find out about upcoming events?", "All upcoming events are listed in the Events section of this app. You can also subscribe to our newsletter to receive event announcements directly to your inbox."),
                 FAQItem("Is my personal information safe?", "Yes. We take your privacy seriously. Your personal information is stored securely and is never shared or sold to third parties. Please read our Privacy Policy for full details."),
                 FAQItem("How can I contact the organisation directly?", "You can reach us through the Contact page in this app, or call us directly on 084 212 4937. You can also email us at info@homeofhope.com. We aim to respond within 24 hours."),

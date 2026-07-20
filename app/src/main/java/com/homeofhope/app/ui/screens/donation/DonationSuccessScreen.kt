@@ -58,7 +58,7 @@ fun DonationSuccessScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Your generosity helps us bring hope and support to those who need it most in Thembisa. Together, we are making a real difference.",
+            text = "Your generosity helps us bring hope and support to those who need it most in Tembisa. Together, we are making a real difference.",
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,

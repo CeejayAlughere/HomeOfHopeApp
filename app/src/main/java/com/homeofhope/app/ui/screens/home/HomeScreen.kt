@@ -252,9 +252,9 @@ fun FeaturedCauseCard(cause: HomeCause) {
 @Composable
 fun UpcomingEventsSection(onViewAllEventsClick: () -> Unit) {
     val homeEvents = listOf(
-        HomeEvent("Community Food Drive", "21", "JUL", "08:00 AM • Thembisa", "https://images.unsplash.com/photo-1593113598332-cd288d649433?q=80&w=2070"),
-        HomeEvent("Youth Skills Day", "01", "APR", "11:00 AM • Thembisa", "https://images.unsplash.com/photo-1529070538774-1843cb3265df?q=80&w=2070"),
-        HomeEvent("Winter Blanket Drive", "04", "MAY", "10:00 AM • Thembisa", "https://images.unsplash.com/photo-1542810634-71277d95dcbb?q=80&w=2070")
+        HomeEvent("Community Food Drive", "21", "JUL", "08:00 AM • Tembisa", "https://images.unsplash.com/photo-1593113598332-cd288d649433?q=80&w=2070"),
+        HomeEvent("Youth Skills Day", "01", "APR", "11:00 AM • Tembisa", "https://images.unsplash.com/photo-1529070538774-1843cb3265df?q=80&w=2070"),
+        HomeEvent("Winter Blanket Drive", "04", "MAY", "10:00 AM • Tembisa", "https://images.unsplash.com/photo-1542810634-71277d95dcbb?q=80&w=2070")
     )
 
     Column {
