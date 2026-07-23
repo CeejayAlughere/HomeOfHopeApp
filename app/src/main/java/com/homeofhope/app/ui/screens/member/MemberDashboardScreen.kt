@@ -212,7 +212,7 @@ fun HeaderSection(name: String, totalDonations: Int, totalEvents: Int) {
 fun ImpactSummaryCard(donations: List<DonationRecord>, joinedEvents: List<Event>, totalHours: Double) {
     HopeCard(
         modifier = Modifier.padding(horizontal = 16.dp),
-        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.5f),
+        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.7f),
         elevation = 0.dp
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
@@ -365,7 +365,8 @@ fun DashboardEventCard(event: Event, isJoined: Boolean, onJoinClick: () -> Unit)
     val dateString = sdf.format(Date(event.date))
 
     HopeCard(
-        containerColor = if (isJoined) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.3f) else MaterialTheme.colorScheme.surface
+        containerColor = if (isJoined) MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.15f) else MaterialTheme.colorScheme.surface,
+        elevation = 1.dp
     ) {
         Column(modifier = Modifier.padding(16.dp)) {
             Row(verticalAlignment = Alignment.CenterVertically) {
@@ -500,7 +501,8 @@ fun MembershipProgressCard(currentLevel: MembershipLevel, totalDonated: Double, 
     
     HopeCard(
         modifier = Modifier.padding(horizontal = 16.dp),
-        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)
+        containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.5f),
+        elevation = 0.dp
     ) {
         Column(modifier = Modifier.padding(20.dp)) {
             Row(
@@ -631,7 +633,7 @@ fun AchievementsSection(badges: List<Badge>) {
 
 @Composable
 fun BadgeItem(label: String, icon: ImageVector, isUnlocked: Boolean) {
-    val color = if (isUnlocked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha = 0.3f)
+    val color = if (isUnlocked) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.outline.copy(alpha = 0.5f)
     Column(
         horizontalAlignment = Alignment.CenterHorizontally,
         modifier = Modifier.width(80.dp)
@@ -639,8 +641,8 @@ fun BadgeItem(label: String, icon: ImageVector, isUnlocked: Boolean) {
         Surface(
             modifier = Modifier.size(64.dp),
             shape = CircleShape,
-            color = if (isUnlocked) MaterialTheme.colorScheme.primary.copy(alpha = 0.1f) else MaterialTheme.colorScheme.surfaceVariant,
-            border = if (isUnlocked) androidx.compose.foundation.BorderStroke(2.dp, color) else null
+            color = if (isUnlocked) MaterialTheme.colorScheme.primary.copy(alpha = 0.1f) else MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.8f),
+            border = if (isUnlocked) androidx.compose.foundation.BorderStroke(2.dp, color) else androidx.compose.foundation.BorderStroke(1.dp, color.copy(alpha = 0.2f))
         ) {
             Box(contentAlignment = Alignment.Center) {
                 Icon(icon, contentDescription = null, tint = color, modifier = Modifier.size(32.dp))
