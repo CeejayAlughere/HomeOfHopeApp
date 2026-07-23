@@ -20,11 +20,15 @@ import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import coil.compose.AsyncImage
+import coil.request.ImageRequest
 import com.homeofhope.app.data.local.entity.*
 import com.homeofhope.app.data.model.Badge
 import com.homeofhope.app.data.model.MembershipLevel
@@ -458,10 +462,12 @@ fun ImpactStoriesSection(stories: List<ImpactStory>) {
             modifier = Modifier.height(150.dp)
         )
     } else {
-        Column(modifier = Modifier.padding(horizontal = 16.dp)) {
-            stories.distinctBy { it.title }.take(2).forEach { story ->
+        LazyRow(
+            contentPadding = PaddingValues(horizontal = 16.dp),
+            horizontalArrangement = Arrangement.spacedBy(16.dp)
+        ) {
+            items(stories.distinctBy { it.title }) { story ->
                 StoryCard(story)
-                Spacer(modifier = Modifier.height(12.dp))
             }
         }
     }
@@ -469,22 +475,62 @@ fun ImpactStoriesSection(stories: List<ImpactStory>) {
 
 @Composable
 fun StoryCard(story: ImpactStory) {
-    HopeCard(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f)) {
-        Column(modifier = Modifier.padding(16.dp)) {
-            Text(text = story.title, style = MaterialTheme.typography.titleMedium, fontWeight = FontWeight.Bold)
-            Spacer(modifier = Modifier.height(8.dp))
-            Text(
-                text = story.description,
-                style = MaterialTheme.typography.bodyMedium,
-                color = MaterialTheme.colorScheme.onSurfaceVariant
-            )
-            Spacer(modifier = Modifier.height(12.dp))
-            Text(
-                text = SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(Date(story.date)),
-                style = MaterialTheme.typography.labelLarge,
-                fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.primary
-            )
+    HopeCard(
+        modifier = Modifier.width(300.dp),
+        containerColor = MaterialTheme.colorScheme.surface,
+        elevation = 2.dp
+    ) {
+        Column {
+            if (story.imageUrl != null) {
+                AsyncImage(
+                    model = ImageRequest.Builder(LocalContext.current)
+                        .data(story.imageUrl)
+                        .crossfade(true)
+                        .build(),
+                    contentDescription = null,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(160.dp),
+                    contentScale = ContentScale.Crop
+                )
+            }
+            Column(modifier = Modifier.padding(16.dp)) {
+                Text(
+                    text = story.title,
+                    style = MaterialTheme.typography.titleMedium,
+                    fontWeight = FontWeight.Bold,
+                    maxLines = 1,
+                    overflow = TextOverflow.Ellipsis
+                )
+                Spacer(modifier = Modifier.height(8.dp))
+                Text(
+                    text = story.description,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    maxLines = 3,
+                    overflow = TextOverflow.Ellipsis,
+                    minLines = 2
+                )
+                Spacer(modifier = Modifier.height(16.dp))
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween,
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Text(
+                        text = SimpleDateFormat("MMMM yyyy", Locale.getDefault()).format(Date(story.date)),
+                        style = MaterialTheme.typography.labelLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                    Icon(
+                        imageVector = Icons.Default.ArrowForward,
+                        contentDescription = null,
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(16.dp)
+                    )
+                }
+            }
         }
     }
 }
