@@ -1,6 +1,10 @@
+
 package com.homeofhope.app.ui.screens.home
 
 import androidx.compose.animation.*
+import androidx.compose.animation.core.Animatable
+import androidx.compose.animation.core.FastOutSlowInEasing
+import androidx.compose.animation.core.tween
 import androidx.compose.foundation.*
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyRow
@@ -37,6 +41,9 @@ import com.homeofhope.app.ui.components.HopeCard
 import com.homeofhope.app.ui.components.SectionHeader
 import com.homeofhope.app.ui.theme.*
 import kotlinx.coroutines.delay
+import java.text.NumberFormat
+import java.util.Locale
+import kotlin.math.roundToInt
 
 @Composable
 fun HomeScreen(
@@ -52,30 +59,32 @@ fun HomeScreen(
             .verticalScroll(rememberScrollState())
     ) {
         HomeCarousel()
-        
+
         Spacer(modifier = Modifier.height(24.dp))
-        
+
         ImpactStatsSection()
-        
+
         Spacer(modifier = Modifier.height(32.dp))
-        
+
         QuickActionButtons(onBecomeMemberClick)
-        
+
         Spacer(modifier = Modifier.height(32.dp))
-        
+
         FeaturedCausesSection(onViewAllCausesClick)
-        
+
         Spacer(modifier = Modifier.height(32.dp))
-        
+
         UpcomingEventsSection(onViewAllEventsClick)
-        
+
         Spacer(modifier = Modifier.height(48.dp))
     }
 }
 
+// IMPACT STATISTICS WITH ANIMATED COUNTERS
 @Composable
 fun ImpactStatsSection() {
     Column(modifier = Modifier.padding(horizontal = 16.dp)) {
+
         Text(
             text = "OUR REAL WORLD IMPACT",
             style = MaterialTheme.typography.labelLarge,
@@ -84,24 +93,30 @@ fun ImpactStatsSection() {
             letterSpacing = 1.2.sp,
             modifier = Modifier.padding(bottom = 16.dp)
         )
+
         Row(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.spacedBy(12.dp)
         ) {
             ImpactCard(
-                count = "5,240+",
+                count = 5240,
+                suffix = "+",
                 label = "Lives Impacted",
                 icon = Icons.Default.Favorite,
                 modifier = Modifier.weight(1f)
             )
+
             ImpactCard(
-                count = "12.5k",
+                count = 12500,
+                compactThousands = true,
                 label = "Meals Served",
                 icon = Icons.Default.Restaurant,
                 modifier = Modifier.weight(1f)
             )
+
             ImpactCard(
-                count = "75%",
+                count = 75,
+                suffix = "%",
                 label = "Goal Reached",
                 icon = Icons.Default.TrendingUp,
                 modifier = Modifier.weight(1f)
@@ -110,11 +125,55 @@ fun ImpactStatsSection() {
     }
 }
 
+// ANIMATED IMPACT CARD
 @Composable
-fun ImpactCard(count: String, label: String, icon: ImageVector, modifier: Modifier) {
+fun ImpactCard(
+    count: Int,
+    label: String,
+    icon: ImageVector,
+    modifier: Modifier,
+    suffix: String = "",
+    compactThousands: Boolean = false
+) {
+    val animatedCount = remember(count) {
+        Animatable(0f)
+    }
+
+    LaunchedEffect(count) {
+        animatedCount.animateTo(
+            targetValue = count.toFloat(),
+            animationSpec = tween(
+                durationMillis = 2000,
+                easing = FastOutSlowInEasing
+            )
+        )
+    }
+
+    val currentCount = animatedCount.value.roundToInt()
+
+    val formattedCount = when {
+        compactThousands && currentCount >= 1000 -> {
+            String.format(
+                Locale.US,
+                "%.1fk",
+                currentCount / 1000f
+            )
+        }
+
+        compactThousands -> {
+            currentCount.toString()
+        }
+
+        else -> {
+            NumberFormat.getIntegerInstance(Locale.US)
+                .format(currentCount) + suffix
+        }
+    }
+
     HopeCard(
         modifier = modifier,
-        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f),
+        containerColor = MaterialTheme.colorScheme.primaryContainer
+            .copy(alpha = 0.4f),
         elevation = 0.dp
     ) {
         Column(
@@ -124,7 +183,11 @@ fun ImpactCard(count: String, label: String, icon: ImageVector, modifier: Modifi
             Box(
                 modifier = Modifier
                     .size(40.dp)
-                    .background(MaterialTheme.colorScheme.primary.copy(alpha = 0.1f), CircleShape),
+                    .background(
+                        MaterialTheme.colorScheme.primary
+                            .copy(alpha = 0.1f),
+                        CircleShape
+                    ),
                 contentAlignment = Alignment.Center
             ) {
                 Icon(
@@ -134,13 +197,16 @@ fun ImpactCard(count: String, label: String, icon: ImageVector, modifier: Modifi
                     modifier = Modifier.size(20.dp)
                 )
             }
+
             Spacer(modifier = Modifier.height(12.dp))
+
             Text(
-                text = count,
+                text = formattedCount,
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = MaterialTheme.colorScheme.onPrimaryContainer
             )
+
             Text(
                 text = label,
                 style = MaterialTheme.typography.labelSmall,
@@ -151,12 +217,30 @@ fun ImpactCard(count: String, label: String, icon: ImageVector, modifier: Modifi
     }
 }
 
+// FEATURED CAUSES
 @Composable
-fun FeaturedCausesSection(onViewAllCausesClick: () -> Unit) {
+fun FeaturedCausesSection(
+    onViewAllCausesClick: () -> Unit
+) {
     val featuredCauses = listOf(
-        HomeCause("Feed A Hungry Child", 6000.0, 10000.0, "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=2070"),
-        HomeCause("Clean Water For All", 8500.0, 10000.0, "https://images.unsplash.com/photo-1594708767771-a7502209ff51?q=80&w=2070"),
-        HomeCause("Safe Shelter Facilities", 4500.0, 15000.0, "https://images.unsplash.com/photo-1460317442991-0ec209397118?q=80&w=2070")
+        HomeCause(
+            "Feed A Hungry Child",
+            6000.0,
+            10000.0,
+            "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=2070"
+        ),
+        HomeCause(
+            "Clean Water For All",
+            8500.0,
+            10000.0,
+            "https://images.unsplash.com/photo-1594708767771-a7502209ff51?q=80&w=2070"
+        ),
+        HomeCause(
+            "Safe Shelter Facilities",
+            4500.0,
+            15000.0,
+            "https://images.unsplash.com/photo-1460317442991-0ec209397118?q=80&w=2070"
+        )
     )
 
     Column {
@@ -166,6 +250,7 @@ fun FeaturedCausesSection(onViewAllCausesClick: () -> Unit) {
             actionText = "View All",
             onActionClick = onViewAllCausesClick
         )
+
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -195,6 +280,7 @@ fun FeaturedCauseCard(cause: HomeCause) {
                     .height(160.dp),
                 contentScale = ContentScale.Crop
             )
+
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
                     text = cause.title,
@@ -203,16 +289,25 @@ fun FeaturedCauseCard(cause: HomeCause) {
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
+
                 Spacer(modifier = Modifier.height(12.dp))
-                
-                val progress = (cause.raised / cause.goal).toFloat()
+
+                val progress =
+                    (cause.raised / cause.goal).toFloat()
+
                 LinearProgressIndicator(
                     progress = { progress },
-                    modifier = Modifier.fillMaxWidth().height(8.dp).clip(CircleShape),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(8.dp)
+                        .clip(CircleShape),
                     color = MaterialTheme.colorScheme.primary,
-                    trackColor = MaterialTheme.colorScheme.primary.copy(alpha = 0.1f)
+                    trackColor = MaterialTheme.colorScheme.primary
+                        .copy(alpha = 0.1f)
                 )
+
                 Spacer(modifier = Modifier.height(12.dp))
+
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.SpaceBetween
@@ -224,19 +319,24 @@ fun FeaturedCauseCard(cause: HomeCause) {
                             color = MaterialTheme.colorScheme.primary,
                             fontWeight = FontWeight.Bold
                         )
+
                         Text(
                             text = "R${cause.raised.toInt()}",
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
                     }
-                    Column(horizontalAlignment = Alignment.End) {
+
+                    Column(
+                        horizontalAlignment = Alignment.End
+                    ) {
                         Text(
                             text = "GOAL",
                             style = MaterialTheme.typography.labelSmall,
                             color = MaterialTheme.colorScheme.onSurfaceVariant,
                             fontWeight = FontWeight.Bold
                         )
+
                         Text(
                             text = "R${cause.goal.toInt()}",
                             style = MaterialTheme.typography.titleMedium,
@@ -249,12 +349,33 @@ fun FeaturedCauseCard(cause: HomeCause) {
     }
 }
 
+// UPCOMING EVENTS
 @Composable
-fun UpcomingEventsSection(onViewAllEventsClick: () -> Unit) {
+fun UpcomingEventsSection(
+    onViewAllEventsClick: () -> Unit
+) {
     val homeEvents = listOf(
-        HomeEvent("Community Food Drive", "21", "JUL", "08:00 AM • Tembisa", "https://images.unsplash.com/photo-1593113598332-cd288d649433?q=80&w=2070"),
-        HomeEvent("Youth Skills Day", "01", "APR", "11:00 AM • Tembisa", "https://images.unsplash.com/photo-1529070538774-1843cb3265df?q=80&w=2070"),
-        HomeEvent("Winter Blanket Drive", "04", "MAY", "10:00 AM • Tembisa", "https://images.unsplash.com/photo-1542810634-71277d95dcbb?q=80&w=2070")
+        HomeEvent(
+            "Community Food Drive",
+            "21",
+            "JUL",
+            "08:00 AM • Tembisa",
+            "https://images.unsplash.com/photo-1593113598332-cd288d649433?q=80&w=2070"
+        ),
+        HomeEvent(
+            "Youth Skills Day",
+            "01",
+            "APR",
+            "11:00 AM • Tembisa",
+            "https://images.unsplash.com/photo-1529070538774-1843cb3265df?q=80&w=2070"
+        ),
+        HomeEvent(
+            "Winter Blanket Drive",
+            "04",
+            "MAY",
+            "10:00 AM • Tembisa",
+            "https://images.unsplash.com/photo-1542810634-71277d95dcbb?q=80&w=2070"
+        )
     )
 
     Column {
@@ -264,7 +385,7 @@ fun UpcomingEventsSection(onViewAllEventsClick: () -> Unit) {
             actionText = "View All",
             onActionClick = onViewAllEventsClick
         )
-        
+
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
             horizontalArrangement = Arrangement.spacedBy(16.dp)
@@ -293,8 +414,8 @@ fun HomeEventCard(event: HomeEvent) {
                     modifier = Modifier.fillMaxSize(),
                     contentScale = ContentScale.Crop
                 )
-                
-                // Date Badge
+
+                // DATE BADGE
                 Surface(
                     modifier = Modifier
                         .padding(16.dp)
@@ -304,7 +425,10 @@ fun HomeEventCard(event: HomeEvent) {
                     shadowElevation = 4.dp
                 ) {
                     Column(
-                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 8.dp),
+                        modifier = Modifier.padding(
+                            horizontal = 12.dp,
+                            vertical = 8.dp
+                        ),
                         horizontalAlignment = Alignment.CenterHorizontally
                     ) {
                         Text(
@@ -313,15 +437,18 @@ fun HomeEventCard(event: HomeEvent) {
                             fontWeight = FontWeight.Bold,
                             style = MaterialTheme.typography.titleLarge
                         )
+
                         Text(
                             text = event.month,
-                            color = MaterialTheme.colorScheme.onPrimary.copy(alpha = 0.8f),
+                            color = MaterialTheme.colorScheme.onPrimary
+                                .copy(alpha = 0.8f),
                             style = MaterialTheme.typography.labelLarge,
                             fontWeight = FontWeight.Bold
                         )
                     }
                 }
             }
+
             Column(modifier = Modifier.padding(16.dp)) {
                 Text(
                     text = event.title,
@@ -330,15 +457,21 @@ fun HomeEventCard(event: HomeEvent) {
                     maxLines = 1,
                     overflow = TextOverflow.Ellipsis
                 )
+
                 Spacer(modifier = Modifier.height(8.dp))
-                Row(verticalAlignment = Alignment.CenterVertically) {
+
+                Row(
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
                     Icon(
                         imageVector = Icons.Default.Schedule,
                         contentDescription = null,
                         tint = MaterialTheme.colorScheme.primary,
                         modifier = Modifier.size(16.dp)
                     )
+
                     Spacer(modifier = Modifier.width(6.dp))
+
                     Text(
                         text = event.timeLocation,
                         style = MaterialTheme.typography.bodyMedium,
@@ -350,10 +483,12 @@ fun HomeEventCard(event: HomeEvent) {
     }
 }
 
+// HOME CAROUSEL
 @OptIn(ExperimentalPagerApi::class)
 @Composable
 fun HomeCarousel() {
     val pagerState = rememberPagerState()
+
     val carouselItems = listOf(
         CarouselItem(
             imageUrl = "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=2070",
@@ -371,10 +506,14 @@ fun HomeCarousel() {
             subtext = "Join our community and help make a real, lasting difference in the lives of others."
         )
     )
+
     LaunchedEffect(pagerState) {
         while (true) {
             delay(9000)
-            val nextPage = (pagerState.currentPage + 1) % carouselItems.size
+
+            val nextPage =
+                (pagerState.currentPage + 1) % carouselItems.size
+
             pagerState.animateScrollToPage(nextPage)
         }
     }
@@ -387,6 +526,7 @@ fun HomeCarousel() {
         ) { page ->
             CarouselSlide(carouselItems[page])
         }
+
         HorizontalPagerIndicator(
             pagerState = pagerState,
             modifier = Modifier
@@ -401,6 +541,7 @@ fun HomeCarousel() {
     }
 }
 
+// CAROUSEL SLIDE
 @Composable
 fun CarouselSlide(item: CarouselItem) {
     Box(modifier = Modifier.fillMaxSize()) {
@@ -415,16 +556,21 @@ fun CarouselSlide(item: CarouselItem) {
             modifier = Modifier.fillMaxSize(),
             contentScale = ContentScale.Crop
         )
+
         Box(
             modifier = Modifier
                 .fillMaxSize()
                 .background(
                     Brush.verticalGradient(
-                        colors = listOf(Color.Transparent, Color.Black.copy(alpha = 0.85f)),
+                        colors = listOf(
+                            Color.Transparent,
+                            Color.Black.copy(alpha = 0.85f)
+                        ),
                         startY = 400f
                     )
                 )
         )
+
         Column(
             modifier = Modifier
                 .align(Alignment.BottomStart)
@@ -438,13 +584,17 @@ fun CarouselSlide(item: CarouselItem) {
             ) {
                 Text(
                     text = "FEATURED IMPACT",
-                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                    modifier = Modifier.padding(
+                        horizontal = 12.dp,
+                        vertical = 4.dp
+                    ),
                     style = MaterialTheme.typography.labelMedium,
                     color = MaterialTheme.colorScheme.onPrimary,
                     fontWeight = FontWeight.Bold,
                     letterSpacing = 1.sp
                 )
             }
+
             Text(
                 text = item.heading,
                 color = Color.White,
@@ -452,7 +602,9 @@ fun CarouselSlide(item: CarouselItem) {
                 fontWeight = FontWeight.Bold,
                 lineHeight = 42.sp
             )
+
             Spacer(modifier = Modifier.height(12.dp))
+
             Text(
                 text = item.subtext,
                 color = Color.White.copy(alpha = 0.8f),
@@ -465,6 +617,7 @@ fun CarouselSlide(item: CarouselItem) {
     }
 }
 
+// QUICK ACTION BUTTONS
 @Composable
 fun QuickActionButtons(
     onBecomeMemberClick: () -> Unit
@@ -482,9 +635,21 @@ fun QuickActionButtons(
     }
 }
 
-data class HomeCause(val title: String, val raised: Double, val goal: Double, val imageUrl: String)
+// DATA CLASSES
+data class HomeCause(
+    val title: String,
+    val raised: Double,
+    val goal: Double,
+    val imageUrl: String
+)
 
-data class HomeEvent(val title: String, val day: String, val month: String, val timeLocation: String, val imageUrl: String)
+data class HomeEvent(
+    val title: String,
+    val day: String,
+    val month: String,
+    val timeLocation: String,
+    val imageUrl: String
+)
 
 data class CarouselItem(
     val imageUrl: String,
