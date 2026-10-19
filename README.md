@@ -83,3 +83,35 @@ To access the Admin Management System:
 2. Open the project in Android Studio.
 3. Sync Project with Gradle Files.
 4. Run the app on an emulator or physical device.
+
+## Development and Testing
+
+### Prerequisites
+
+Before building and testing the application, ensure you have the following installed:
+
+- Android Studio
+- JDK version compatible with the project's Gradle configuration
+- Git
+
+### Build the Android Application
+
+Run the following command from the repository root to build the Android application:
+
+```bash
+./gradlew assembleDebug
+```
+
+### Run Unit Tests
+
+Run the following command from the repository root to execute the unit tests:
+
+```bash
+./gradlew testDebugUnitTest
+```
+
+## Team Collaboration
+
+The team uses **Azure Repos** for source control, **Azure Boards** to track assigned work items, and **Azure Pipelines** to automate the Android build and validation process.
+
+Contributions should be developed on feature branches and submitted through pull requests for review before being merged into the `main` branch.
