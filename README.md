@@ -109,9 +109,3 @@ Run the following command from the repository root to execute the unit tests:
 ```bash
 ./gradlew testDebugUnitTest
 ```
-
-## Team Collaboration
-
-The team uses **Azure Repos** for source control, **Azure Boards** to track assigned work items, and **Azure Pipelines** to automate the Android build and validation process.
-
-Contributions should be developed on feature branches and submitted through pull requests for review before being merged into the `main` branch.
