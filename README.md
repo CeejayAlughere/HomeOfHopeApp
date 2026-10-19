@@ -154,6 +154,7 @@ app/build/outputs/apk/debug/
 ```bash
 ./gradlew testDebugUnitTest
 ```
+<<<<<<< HEAD
 
 This command runs the debug unit-test task configured by Gradle. The actual test coverage depends on the tests present in the project.
 
@@ -206,3 +207,5 @@ The repository includes an Android application, Gradle build configuration, and 
 ## 📄 Licence
 
 Refer to the repository's `LICENSE` file for the applicable licence terms.
+=======
+>>>>>>> d292b96 (updated ReadMe.md)
