@@ -24,4 +24,16 @@ class MemberRepository(private val memberDao: MemberDao) {
     fun getMemberStatus(id: Int): Flow<String?> = memberDao.getMemberStatus(id)
 
     val allMembers: Flow<List<Member>> = memberDao.getAllMembers()
+
+    suspend fun getMemberByFirebaseUid(firebaseUid: String): Member? {
+        return memberDao.getMemberByFirebaseUid(firebaseUid)
+    }
+
+    suspend fun getMemberByEmail(email: String): Member? {
+        return memberDao.getMemberByEmail(email)
+    }
+
+    suspend fun getMemberByIdNumber(idNumber: String): Member? {
+        return memberDao.getMemberByIdNumber(idNumber)
+    }
 }

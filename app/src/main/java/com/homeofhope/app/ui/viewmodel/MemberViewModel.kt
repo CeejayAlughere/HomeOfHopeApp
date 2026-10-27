@@ -26,13 +26,32 @@ import kotlinx.coroutines.flow.flowOf
 import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import android.content.Context
+import com.homeofhope.app.auth.GoogleIdentity
+import com.homeofhope.app.auth.GoogleSignInHelper
+import com.google.firebase.auth.FirebaseAuth
 
 sealed class AuthState {
     object Idle : AuthState()
     object Loading : AuthState()
     data class Success(val member: Member) : AuthState()
-    data class Error(val message: String) : AuthState()
+    data
+    class Error(val message: String) : AuthState()
     object Registered : AuthState()
+}
+
+sealed class GoogleAuthState {
+    object Idle : GoogleAuthState()
+    object Loading : GoogleAuthState()
+
+    data class ExistingMember(val member: Member) : GoogleAuthState()
+
+    data class ProfileRequired(
+        val email: String,
+        val displayName: String
+    ) : GoogleAuthState()
+
+    data class Error(val message: String) : GoogleAuthState()
 }
 
 class MemberViewModel(
@@ -47,6 +66,14 @@ class MemberViewModel(
 
     private val _authState = MutableStateFlow<AuthState>(AuthState.Idle)
     val authState: StateFlow<AuthState> = _authState.asStateFlow()
+
+    private val _googleAuthState =
+        MutableStateFlow<GoogleAuthState>(GoogleAuthState.Idle)
+
+    val googleAuthState: StateFlow<GoogleAuthState> =
+        _googleAuthState.asStateFlow()
+
+    private var pendingGoogleIdentity: GoogleIdentity? = null
 
     private val _currentUserFlow = MutableStateFlow<Member?>(null)
     var currentUser by mutableStateOf<Member?>(null)
@@ -227,6 +254,137 @@ class MemberViewModel(
                 _authState.value = AuthState.Error("Invalid username or password")
             }
         }
+    }
+
+
+
+    fun signInWithGoogle(context: Context) {
+        viewModelScope.launch {
+            _googleAuthState.value = GoogleAuthState.Loading
+
+            try {
+                val identity = GoogleSignInHelper.signIn(context)
+
+                // Match returning Google members by Firebase UID.
+                val existing = repository.getMemberByFirebaseUid(identity.uid)
+
+                if (existing != null) {
+                    if (existing.status == "Suspended") {
+                        FirebaseAuth.getInstance().signOut()
+                        _googleAuthState.value = GoogleAuthState.Error(
+                            "Your account has been suspended. Please contact support."
+                        )
+                    } else {
+                        currentUser = existing
+                        _currentUserFlow.value = existing
+                        _googleAuthState.value =
+                            GoogleAuthState.ExistingMember(existing)
+                    }
+                    return@launch
+                }
+
+                // Never silently link a Google account to an old account
+                // using email alone.
+                val emailMember = repository.getMemberByEmail(identity.email)
+
+                if (emailMember != null) {
+                    FirebaseAuth.getInstance().signOut()
+                    _googleAuthState.value = GoogleAuthState.Error(
+                        "An account already uses this email. Sign in with your existing account or contact support to link it."
+                    )
+                    return@launch
+                }
+
+                pendingGoogleIdentity = identity
+
+                _googleAuthState.value = GoogleAuthState.ProfileRequired(
+                    email = identity.email,
+                    displayName = identity.displayName
+                )
+            } catch (e: Exception) {
+                _googleAuthState.value = GoogleAuthState.Error(
+                    e.localizedMessage ?: "Google sign-in failed. Please try again."
+                )
+            }
+        }
+    }
+
+    fun completeGoogleProfile(
+        fullName: String,
+        idNumber: String
+    ) {
+        viewModelScope.launch {
+            val identity = pendingGoogleIdentity
+
+            if (identity == null) {
+                _googleAuthState.value = GoogleAuthState.Error(
+                    "Your Google sign-in session has expired. Please try again."
+                )
+                return@launch
+            }
+
+            val cleanedName = fullName.trim()
+            val cleanedId = idNumber.trim()
+
+            if (cleanedName.isBlank()) {
+                _googleAuthState.value =
+                    GoogleAuthState.Error("Please enter your full name.")
+                return@launch
+            }
+
+            if (cleanedId.length != 13 || !cleanedId.all { it.isDigit() }) {
+                _googleAuthState.value =
+                    GoogleAuthState.Error("ID number must be 13 digits.")
+                return@launch
+            }
+
+            try {
+                _googleAuthState.value = GoogleAuthState.Loading
+
+                val existingIdMember = repository.getMemberByIdNumber(cleanedId)
+
+                if (existingIdMember != null) {
+                    _googleAuthState.value = GoogleAuthState.Error(
+                        "This ID number is already registered. Please sign in to your existing account or contact support."
+                    )
+                    return@launch
+                }
+
+                val member = Member(
+                    fullName = cleanedName,
+                    email = identity.email,
+                    idNumber = cleanedId,
+                    username = identity.email,
+                    password = "",
+                    memberNumber = MembershipCalculator.generateMemberId(),
+                    joinDate = System.currentTimeMillis(),
+                    firebaseUid = identity.uid
+                )
+
+                repository.registerMember(member)
+
+                val savedMember =
+                    repository.getMemberByFirebaseUid(identity.uid)
+                        ?: throw IllegalStateException(
+                            "Your profile was saved, but could not be loaded."
+                        )
+
+                currentUser = savedMember
+                _currentUserFlow.value = savedMember
+                pendingGoogleIdentity = null
+
+                _googleAuthState.value =
+                    GoogleAuthState.ExistingMember(savedMember)
+            } catch (e: Exception) {
+                _googleAuthState.value = GoogleAuthState.Error(
+                    e.localizedMessage ?: "Could not save your member profile."
+                )
+            }
+        }
+    }
+
+    fun clearGoogleAuthState() {
+        _googleAuthState.value = GoogleAuthState.Idle
     }
 
     fun clearAuthState() {

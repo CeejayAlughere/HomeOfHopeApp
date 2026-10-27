@@ -1,0 +1,47 @@
+{
+  "project_info": {
+    "project_number": "684071644834",
+    "project_id": "home-of-hope-app",
+    "storage_bucket": "home-of-hope-app.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:684071644834:android:794918a4c17492abe831fb",
+        "android_client_info": {
+          "package_name": "com.homeofhope.app"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "684071644834-cehcri1lo78n9nhtpi21r3q6um9eotf2.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.homeofhope.app",
+            "certificate_hash": "36af913e08848a2e8ed94257b8793730a923dda5"
+          }
+        },
+        {
+          "client_id": "684071644834-98vsaqa3lu0lfob4kj8jm1nfu2itlndc.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAHChUnNDOr5r1uyngoxZTCM7GzXDbxh2w"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": [
+            {
+              "client_id": "684071644834-98vsaqa3lu0lfob4kj8jm1nfu2itlndc.apps.googleusercontent.com",
+              "client_type": 3
+            }
+          ]
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

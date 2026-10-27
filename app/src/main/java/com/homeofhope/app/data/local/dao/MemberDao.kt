@@ -29,4 +29,13 @@ interface MemberDao {
 
     @Query("SELECT COUNT(*) FROM members")
     fun getMemberCount(): Flow<Int>
+
+    @Query("SELECT * FROM members WHERE firebaseUid = :firebaseUid LIMIT 1")
+    suspend fun getMemberByFirebaseUid(firebaseUid: String): Member?
+
+    @Query("SELECT * FROM members WHERE email = :email LIMIT 1")
+    suspend fun getMemberByEmail(email: String): Member?
+
+    @Query("SELECT * FROM members WHERE idNumber = :idNumber LIMIT 1")
+    suspend fun getMemberByIdNumber(idNumber: String): Member?
 }

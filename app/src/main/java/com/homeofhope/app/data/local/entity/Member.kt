@@ -20,5 +20,6 @@ data class Member(
     // Saved payment info
     val savedBankName: String? = null,
     val savedCardNumber: String? = null,
-    val savedExpiryDate: String? = null
+    val savedExpiryDate: String? = null,
+    val firebaseUid: String? = null
 )
