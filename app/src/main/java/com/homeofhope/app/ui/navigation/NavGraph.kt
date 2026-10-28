@@ -37,6 +37,8 @@ import com.homeofhope.app.ui.viewmodel.MemberViewModel
 import com.homeofhope.app.ui.screens.admin.*
 import com.homeofhope.app.ui.viewmodel.AdminViewModel
 
+import com.homeofhope.app.ui.screens.member.GoogleProfileCompletionScreen
+
 @Composable
 fun HomeOfHopeNavGraph(
     navController: NavHostController,
@@ -152,7 +154,7 @@ fun HomeOfHopeNavGraph(
         composable(Screen.Login.route) {
             LoginScreen(
                 viewModel = memberViewModel,
-                onLoginSuccess = { 
+                onLoginSuccess = {
                     navController.navigate(Screen.MemberDashboard.route) {
                         popUpTo(Screen.Home.route)
                     }
@@ -162,8 +164,30 @@ fun HomeOfHopeNavGraph(
                         popUpTo(Screen.Home.route)
                     }
                 },
-                onRegisterClick = { navController.navigate(Screen.Register.route) },
-                onBackClick = { navController.popBackStack() }
+                onRegisterClick = {
+                    navController.navigate(Screen.Register.route)
+                },
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onGoogleProfileRequired = {
+                    navController.navigate(Screen.GoogleProfileCompletion.route) {
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+        composable(Screen.GoogleProfileCompletion.route) {
+            GoogleProfileCompletionScreen(
+                viewModel = memberViewModel,
+                onProfileComplete = {
+                    navController.navigate(Screen.MemberDashboard.route) {
+                        popUpTo(Screen.Home.route) {
+                            inclusive = false
+                        }
+                        launchSingleTop = true
+                    }
+                }
             )
         }
         composable(Screen.MemberDashboard.route) {

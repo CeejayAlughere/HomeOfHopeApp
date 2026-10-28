@@ -25,6 +25,11 @@ sealed class Screen(val route: String, val label: String, val icon: ImageVector)
     // Membership
     object Register : Screen("register", "Become a Member", Icons.Default.PersonAdd)
     object Login : Screen("login", "Login", Icons.AutoMirrored.Filled.Login)
+    object GoogleProfileCompletion : Screen(
+        "google_profile_completion",
+        "Complete Your Profile",
+        Icons.Default.PersonAdd
+    )
     object MemberDashboard : Screen("member_dashboard", "Member Dashboard", Icons.Default.Dashboard)
     object MemberDonate : Screen("member_donate", "Donate", Icons.Default.VolunteerActivism)
     object MemberVolunteer : Screen("member_volunteer", "Volunteer", Icons.Default.Groups)

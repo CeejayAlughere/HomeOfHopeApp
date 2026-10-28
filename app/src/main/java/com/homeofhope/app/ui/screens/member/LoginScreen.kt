@@ -37,6 +37,13 @@ import com.homeofhope.app.R
 import com.homeofhope.app.ui.components.HopeButton
 import com.homeofhope.app.ui.components.HopeTextField
 import com.homeofhope.app.ui.viewmodel.*
+import androidx.compose.ui.platform.LocalContext
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.ui.text.style.TextAlign
+import com.homeofhope.app.ui.screens.member.GoogleProfileCompletionScreen
+import androidx.compose.foundation.layout.size
+import androidx.compose.material3.ButtonDefaults
+
 
 @Composable
 fun LoginScreen(
@@ -44,19 +51,37 @@ fun LoginScreen(
     onLoginSuccess: () -> Unit,
     onAdminLoginSuccess: () -> Unit,
     onRegisterClick: () -> Unit,
-    onBackClick: () -> Unit
+    onBackClick: () -> Unit,
+    onGoogleProfileRequired: () -> Unit
 ) {
     var username by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
     val authState by viewModel.authState.collectAsState()
+    val googleAuthState by viewModel.googleAuthState.collectAsState()
+    val context = LocalContext.current
     val focusManager = LocalFocusManager.current
 
     LaunchedEffect(authState) {
         if (authState is AuthState.Success) {
             onLoginSuccess()
             viewModel.clearAuthState()
+        }
+    }
+
+    LaunchedEffect(googleAuthState) {
+        when (googleAuthState) {
+            is GoogleAuthState.ExistingMember -> {
+                onLoginSuccess()
+                viewModel.clearGoogleAuthState()
+            }
+
+            is GoogleAuthState.ProfileRequired -> {
+                onGoogleProfileRequired()
+            }
+
+            else -> Unit
         }
     }
 
@@ -216,6 +241,69 @@ fun LoginScreen(
                     },
                     isLoading = authState is AuthState.Loading
                 )
+
+
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                OutlinedButton(
+                    onClick = {
+                        focusManager.clearFocus()
+                        viewModel.signInWithGoogle(context)
+                    },
+                    enabled = googleAuthState !is GoogleAuthState.Loading &&
+                            authState !is AuthState.Loading,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(54.dp),
+                    shape = RoundedCornerShape(12.dp),
+                    border = BorderStroke(
+                        1.dp,
+                        MaterialTheme.colorScheme.outline
+                    ),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        contentColor = MaterialTheme.colorScheme.onSurface
+                    )
+                ) {
+                    if (googleAuthState is GoogleAuthState.Loading) {
+                        CircularProgressIndicator(
+                            modifier = Modifier.size(20.dp),
+                            strokeWidth = 2.dp
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text("Connecting to Google...")
+                    } else {
+                        Text(
+                            text = "G",
+                            fontSize = 21.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = Color(0xFF4285F4)
+                        )
+                        Spacer(modifier = Modifier.width(12.dp))
+                        Text(
+                            text = "Sign in with Google",
+                            fontWeight = FontWeight.Medium
+                        )
+                    }
+                }
+
+                AnimatedVisibility(
+                    visible = googleAuthState is GoogleAuthState.Error
+                ) {
+                    Text(
+                        text = (googleAuthState as? GoogleAuthState.Error)
+                            ?.message.orEmpty(),
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall,
+                        textAlign = TextAlign.Center,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .padding(top = 12.dp)
+                    )
+                }
+
+
 
                 Spacer(modifier = Modifier.height(24.dp))
 
