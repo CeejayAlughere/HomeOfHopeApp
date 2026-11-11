@@ -11,7 +11,7 @@ The application aims to connect the NGO with its community and encourage partici
 ### 👤 Member Features
 
 - **Registration and Login:** Multi-step member registration and authentication.
-- **Personal Dashboard:** View donation totals, volunteer hours, and membership progress.
+- **Personal Dashboard:admin@hoh.org** View donation totals, volunteer hours, and membership progress.
 - **Membership Levels:** Membership tiers such as Seed, Hope, Silver, Gold, and Legacy.
 - **Community Wall:** Share and view community news and updates.
 - **Digital Membership Card:** Access a digital membership card containing membership details.
