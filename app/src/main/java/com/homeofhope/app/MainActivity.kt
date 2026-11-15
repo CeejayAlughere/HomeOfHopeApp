@@ -35,6 +35,8 @@ import com.homeofhope.app.ui.theme.HopeGreen
 import com.homeofhope.app.ui.theme.HopeWhite
 import com.homeofhope.app.ui.viewmodel.*
 import kotlinx.coroutines.launch
+import com.homeofhope.app.data.local.AuthSessionStore
+import com.homeofhope.app.data.network.AuthRetrofitClient
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -87,7 +89,13 @@ class MainActivity : ComponentActivity() {
         val donationRepository = DonationRepository(database.donationDao())
         val donationViewModel = DonationViewModel(repository, donationRepository)
 
-        val memberRepository = MemberRepository(database.memberDao())
+        val authSessionStore = AuthSessionStore(applicationContext)
+
+        val memberRepository = MemberRepository(
+            database.memberDao(),
+            AuthRetrofitClient.instance,
+            authSessionStore
+        )
         val eventRepository = EventRepository(database.eventDao())
         val communityRepository = CommunityRepository(database.communityDao())
         val announcementRepository = AnnouncementRepository(database.announcementDao())

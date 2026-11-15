@@ -27,6 +27,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
 import android.content.Context
+import android.util.Patterns
 import com.homeofhope.app.auth.GoogleIdentity
 import com.homeofhope.app.auth.GoogleSignInHelper
 import com.google.firebase.auth.FirebaseAuth
@@ -197,14 +198,24 @@ class MemberViewModel(
         }
     }
 
-    fun register(fullName: String, idNumber: String, username: String, password: String, confirmPass: String) {
-        if (fullName.isBlank() || idNumber.isBlank() || username.isBlank() || password.isBlank() || confirmPass.isBlank()) {
+    fun register(fullName: String, idNumber: String, email: String, password: String, confirmPass: String) {
+        if (fullName.isBlank() || idNumber.isBlank() || email.isBlank() || password.isBlank() || confirmPass.isBlank()) {
             _authState.value = AuthState.Error("All fields are required")
             return
         }
 
         if (idNumber.length != 13 || !idNumber.all { it.isDigit() }) {
             _authState.value = AuthState.Error("ID number must be 13 digits")
+            return
+        }
+
+        if (!Patterns.EMAIL_ADDRESS.matcher(email.trim()).matches()) {
+            _authState.value = AuthState.Error("Please enter a valid email address")
+            return
+        }
+
+        if (password.length < 8) {
+            _authState.value = AuthState.Error("Password must contain at least 8 characters")
             return
         }
 
@@ -215,34 +226,34 @@ class MemberViewModel(
 
         viewModelScope.launch {
             _authState.value = AuthState.Loading
-            val existing = repository.getMemberByUsername(username)
-            if (existing != null) {
-                _authState.value = AuthState.Error("Username already exists")
-            } else {
-                val newMember = Member(
+            try {
+                repository.registerAccount(
                     fullName = fullName,
                     idNumber = idNumber,
-                    username = username,
-                    password = password,
-                    memberNumber = MembershipCalculator.generateMemberId(),
-                    joinDate = System.currentTimeMillis()
+                    email = email,
+                    password = password
                 )
-                repository.registerMember(newMember)
                 _authState.value = AuthState.Registered
+            } catch (e: Exception) {
+                _authState.value = AuthState.Error(
+                    e.message ?: "Registration failed. Please try again."
+                )
             }
         }
     }
 
-    fun login(username: String, password: String) {
-        if (username.isBlank() || password.isBlank()) {
-            _authState.value = AuthState.Error("Please enter username and password")
+    fun login(identifier: String, password: String) {
+        if (identifier.isBlank() || password.isBlank()) {
+            _authState.value = AuthState.Error(
+                "Please enter your username/email and password"
+            )
             return
         }
 
         viewModelScope.launch {
             _authState.value = AuthState.Loading
-            val member = repository.getMemberByUsername(username)
-            if (member != null && member.password == password) {
+            try {
+                val member = repository.loginAccount(identifier, password)
                 if (member.status == "Suspended") {
                     _authState.value = AuthState.Error("Your account has been suspended. Please contact support.")
                 } else {
@@ -250,8 +261,10 @@ class MemberViewModel(
                     _currentUserFlow.value = member
                     _authState.value = AuthState.Success(member)
                 }
-            } else {
-                _authState.value = AuthState.Error("Invalid username or password")
+            } catch (e: Exception) {
+                _authState.value = AuthState.Error(
+                    e.message ?: "Login failed. Please try again."
+                )
             }
         }
     }
@@ -395,5 +408,9 @@ class MemberViewModel(
         currentUser = null
         _currentUserFlow.value = null
         _authState.value = AuthState.Idle
+        FirebaseAuth.getInstance().signOut()
+        viewModelScope.launch {
+            repository.clearSession()
+        }
     }
 }
