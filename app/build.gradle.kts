@@ -24,10 +24,25 @@ android {
     }
 
     buildTypes {
+        debug {
+            buildConfigField(
+                "String",
+                "API_BASE_URL",
+                "\"http://10.0.2.2/HomeOfHopeProject/api/\""
+            )
+        }
+
         release {
             optimization {
                 enable = false
             }
+
+            // Replace this before creating a production release build.
+            buildConfigField(
+                "String",
+                "API_BASE_URL",
+                "\"https://example.com/HomeOfHopeProject/api/\""
+            )
         }
     }
 
@@ -38,6 +53,7 @@ android {
 
     buildFeatures {
         compose = true
+        buildConfig = true
     }
 }
 

@@ -54,7 +54,7 @@ fun LoginScreen(
     onBackClick: () -> Unit,
     onGoogleProfileRequired: () -> Unit
 ) {
-    var username by remember { mutableStateOf("") }
+    var identifier by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
 
@@ -167,13 +167,13 @@ fun LoginScreen(
                 Spacer(modifier = Modifier.height(32.dp))
 
                 HopeTextField(
-                    value = username,
+                    value = identifier,
                     onValueChange = { 
-                        username = it
+                        identifier = it
                         adminError = null
                         viewModel.clearAuthState()
                     },
-                    label = "Email Address",
+                    label = "Username or Email Address",
                     leadingIcon = Icons.Default.Email,
                     keyboardOptions = KeyboardOptions(
                         keyboardType = KeyboardType.Email,
@@ -229,14 +229,14 @@ fun LoginScreen(
                     text = "SIGN IN",
                     onClick = {
                         focusManager.clearFocus()
-                        if (username == "admin@hoh.org") {
+                        if (identifier == "admin@hoh.org") {
                             if (password == "Admin@123") {
                                 onAdminLoginSuccess()
                             } else {
                                 adminError = "Invalid administrator password"
                             }
                         } else {
-                            viewModel.login(username, password)
+                            viewModel.login(identifier, password)
                         }
                     },
                     isLoading = authState is AuthState.Loading

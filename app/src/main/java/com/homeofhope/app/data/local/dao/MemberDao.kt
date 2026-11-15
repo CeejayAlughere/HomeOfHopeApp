@@ -12,7 +12,10 @@ interface MemberDao {
     @androidx.room.Update
     suspend fun updateMember(member: Member)
 
-    @Query("SELECT * FROM members WHERE username = :username LIMIT 1")
+    @Query(
+        "SELECT * FROM members " +
+            "WHERE LOWER(username) = LOWER(:username) LIMIT 1"
+    )
     suspend fun getMemberByUsername(username: String): Member?
 
     @Query("SELECT * FROM members")
@@ -33,7 +36,10 @@ interface MemberDao {
     @Query("SELECT * FROM members WHERE firebaseUid = :firebaseUid LIMIT 1")
     suspend fun getMemberByFirebaseUid(firebaseUid: String): Member?
 
-    @Query("SELECT * FROM members WHERE email = :email LIMIT 1")
+    @Query(
+        "SELECT * FROM members " +
+            "WHERE LOWER(email) = LOWER(:email) LIMIT 1"
+    )
     suspend fun getMemberByEmail(email: String): Member?
 
     @Query("SELECT * FROM members WHERE idNumber = :idNumber LIMIT 1")
