@@ -13,6 +13,18 @@ import retrofit2.http.Header
 import retrofit2.http.POST
 
 interface AuthApiService {
+    @GET("profile.php")
+    suspend fun profile(@Header("Authorization") authorization: String): Response<AuthResponse>
+
+    @POST("profile.php")
+    suspend fun updateProfile(@Header("Authorization") authorization: String, @Body body: com.homeofhope.app.data.model.ProfileUpdateRequest): Response<AuthResponse>
+
+    @POST("google_login.php")
+    suspend fun googleLogin(@Body body: com.homeofhope.app.data.model.GoogleLoginRequest): Response<AuthResponse>
+
+    @GET("my_donations.php")
+    suspend fun donationHistory(@Header("Authorization") authorization: String): Response<com.homeofhope.app.data.model.DonationHistoryResponse>
+
 
     @POST("login.php")
     suspend fun login(@Body body: LoginRequest): Response<AuthResponse>

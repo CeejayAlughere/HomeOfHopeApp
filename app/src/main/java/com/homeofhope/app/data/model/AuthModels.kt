@@ -21,12 +21,41 @@ data class AuthUserDto(
     val email: String,
     val memberNumber: String,
     val status: String,
-    val joinDate: Long
+    val joinDate: Long,
+    val phoneNumber: String = ""
 )
 
 data class AuthResponse(
     val success: Boolean = false,
     val message: String = "",
     val token: String? = null,
-    val user: AuthUserDto? = null
+    val user: AuthUserDto? = null,
+    val action: String? = null,
+    val email: String? = null,
+    val displayName: String? = null
 )
+
+
+data class GoogleLoginRequest(
+    val idToken: String,
+    val fullName: String = "",
+    val idNumber: String = "",
+    val password: String = ""
+)
+
+data class RemoteDonation(
+    val id: Int,
+    val amount: Double,
+    val bankName: String,
+    val date: Long,
+    val causeTitle: String = ""
+)
+
+data class DonationHistoryResponse(
+    val success: Boolean = false,
+    val message: String = "",
+    val user: AuthUserDto? = null,
+    val donations: List<RemoteDonation> = emptyList()
+)
+
+data class ProfileUpdateRequest(val fullName: String, val phoneNumber: String)

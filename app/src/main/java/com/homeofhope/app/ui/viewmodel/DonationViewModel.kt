@@ -17,6 +17,20 @@ class DonationViewModel(
     var uiState by mutableStateOf<UiState>(UiState.Idle)
         private set
 
+    var historyError by mutableStateOf<String?>(null)
+        private set
+    var historyLoading by mutableStateOf(false)
+        private set
+
+    fun refreshHistory(memberId: Int) {
+        if (historyLoading) return
+        historyLoading = true
+        historyError = null
+        viewModelScope.launch {
+            try { donationRepository.refreshHistory(memberId) } catch (e: kotlinx.coroutines.CancellationException) { throw e } catch (e: Exception) { historyError = e.message ?: "Unable to load history." } finally { historyLoading = false }
+        }
+    }
+
     fun submitDonation(
         causeId: Int?,
         bankName: String,
@@ -27,7 +41,7 @@ class DonationViewModel(
         val donationAmount = amount.toDoubleOrNull()
 
         if (!isWebsiteSession || memberId == null) {
-            uiState = UiState.Error("Please sign in with your website account to record a donation. Google sign-in is not linked to website donations yet.")
+            uiState = UiState.Error("Please sign in to record a donation.")
             return
         }
 
@@ -55,18 +69,8 @@ class DonationViewModel(
                     bankName = bankName,
                     amount = donationAmount
                 )
-                // The server has accepted the record. Cache it for this device only.
-                // A cache failure must not report server failure and invite a duplicate.
-                runCatching {
-                    donationRepository.saveDonation(
-                        DonationRecord(
-                            memberId = memberId,
-                            amount = donationAmount,
-                            date = System.currentTimeMillis(),
-                            bankName = bankName
-                        )
-                    )
-                }
+                // A failed history refresh must not invite resubmitting an accepted donation.
+                refreshHistory(memberId)
                 uiState = UiState.Success
             } catch (e: Exception) {
                 uiState = UiState.Error(

@@ -197,7 +197,7 @@ fun DonationScreen(
                 if (!memberViewModel.isWebsiteSession) {
                     Spacer(modifier = Modifier.height(12.dp))
                     Text(
-                        text = "Please sign out and sign in with your website account to record a donation. Google sign-in is not linked to website donations yet.",
+                        text = "Please sign in to your Home of Hope account to record a donation.",
                         color = MaterialTheme.colorScheme.error,
                         style = MaterialTheme.typography.bodyMedium
                     )

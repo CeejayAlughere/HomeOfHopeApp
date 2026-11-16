@@ -33,6 +33,15 @@ class AuthSessionStore(private val context: Context) {
 
     suspend fun currentToken(): String? = token.first()
 
+    suspend fun clearIfToken(expectedToken: String?) {
+        context.authSessionDataStore.edit { preferences ->
+            if (preferences[Keys.token] == expectedToken) {
+                preferences.remove(Keys.token)
+                preferences.remove(Keys.serverUserId)
+            }
+        }
+    }
+
     suspend fun clear() {
         context.authSessionDataStore.edit { preferences ->
             preferences.remove(Keys.token)
