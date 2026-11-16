@@ -106,6 +106,12 @@ fun MemberDashboardScreen(
             
             HeaderSection(user?.fullName ?: "Member", donations.size, joinedEvents.size)
 
+            Text(
+                text = "Donation totals on this device may include earlier test records and are not payment confirmation. Website donations from other devices are not shown here.",
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
+            )
+
             Spacer(modifier = Modifier.height(32.dp))
 
             ImpactSummaryCard(donations, joinedEvents, totalHours)

@@ -42,7 +42,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         val splashScreen = installSplashScreen()
         super.onCreate(savedInstanceState)
-        
+
         // Add a custom exit animation for the splash screen
         splashScreen.setOnExitAnimationListener { splashScreenView ->
             // Create a fade out and scale up animation
@@ -75,32 +75,40 @@ class MainActivity : ComponentActivity() {
 
             // Run animations together and remove splash screen view when finished
             fadeOut.doOnEnd { splashScreenView.remove() }
-            
+
             fadeOut.start()
             scaleX.start()
             scaleY.start()
         }
-        
+
         val repository = HomeRepository(RetrofitClient.instance)
         val contactViewModel = ContactViewModel(repository)
-        
+
         // Room Database Setup
         val database = AppDatabase.getDatabase(this)
-        val donationRepository = DonationRepository(database.donationDao())
-        val donationViewModel = DonationViewModel(repository, donationRepository)
-
         val authSessionStore = AuthSessionStore(applicationContext)
+        val sharedApi = AuthRetrofitClient.instance
+
+        val causeRepository = CauseRepository(sharedApi)
+        val causeViewModel = CauseViewModel(causeRepository)
+
+        val donationRepository = DonationRepository(
+            database.donationDao(),
+            sharedApi,
+            authSessionStore
+        )
+        val donationViewModel = DonationViewModel(donationRepository)
 
         val memberRepository = MemberRepository(
             database.memberDao(),
-            AuthRetrofitClient.instance,
+            sharedApi,
             authSessionStore
         )
         val eventRepository = EventRepository(database.eventDao())
         val communityRepository = CommunityRepository(database.communityDao())
         val announcementRepository = AnnouncementRepository(database.announcementDao())
         val impactStoryRepository = ImpactStoryRepository(database.impactStoryDao())
-        
+
         val adminRepository = AdminRepository(
             database.adminDao(),
             database.memberDao(),
@@ -145,9 +153,9 @@ class MainActivity : ComponentActivity() {
                             drawerContentColor = HopeWhite
                         ) {
                             Text(
-                                text = "Navigation Drawer", 
-                                modifier = Modifier.padding(24.dp), 
-                                style = MaterialTheme.typography.headlineSmall, 
+                                text = "Navigation Drawer",
+                                modifier = Modifier.padding(24.dp),
+                                style = MaterialTheme.typography.headlineSmall,
                                 fontWeight = FontWeight.Bold,
                                 color = HopeGreen
                             )
@@ -202,13 +210,13 @@ class MainActivity : ComponentActivity() {
                                 currentRoute == Screen.Register.route -> "Become a Member"
                                 currentRoute == Screen.Login.route -> "Login"
                                 currentRoute == Screen.MemberDashboard.route -> "Member Dashboard"
-                                currentRoute == Screen.Donation.route -> "Make a Donation"
+                                currentRoute?.startsWith("donation?") == true -> "Make a Donation"
                                 currentRoute?.startsWith("cause_detail") == true -> "Cause Details"
                                 currentRoute?.startsWith("blog_detail") == true -> "Article"
                                 else -> "Home Of Hope"
                             }
                             val canNavigateBack = currentRoute != Screen.Home.route && currentRoute != null
-                            
+
                             AppTopBar(
                                 title = title,
                                 canNavigateBack = canNavigateBack,
@@ -227,6 +235,7 @@ class MainActivity : ComponentActivity() {
                             navController = navController,
                             contactViewModel = contactViewModel,
                             memberViewModel = memberViewModel,
+                            causeViewModel = causeViewModel,
                             donationViewModel = donationViewModel,
                             adminViewModel = adminViewModel,
                             modifier = Modifier.padding(padding)

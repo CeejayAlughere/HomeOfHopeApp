@@ -1,30 +1,63 @@
 package com.homeofhope.app.ui.screens.donation
 
-import androidx.compose.animation.*
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.*
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material.icons.filled.AccountBalance
+import androidx.compose.material.icons.filled.Payments
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.VolunteerActivism
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
+import androidx.compose.material3.DropdownMenuItem
+import androidx.compose.material3.ExposedDropdownMenuBox
+import androidx.compose.material3.ExposedDropdownMenuDefaults
+import androidx.compose.material3.ExperimentalMaterial3Api
+import androidx.compose.material3.Icon
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedTextField
+import androidx.compose.material3.OutlinedTextFieldDefaults
+import androidx.compose.material3.Scaffold
+import androidx.compose.material3.Surface
+import androidx.compose.material3.Text
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableIntStateOf
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.saveable.rememberSaveable
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
-import com.homeofhope.app.ui.components.*
-import com.homeofhope.app.ui.theme.*
+import com.homeofhope.app.ui.components.AppTopBar
+import com.homeofhope.app.ui.components.HopeButton
+import com.homeofhope.app.ui.components.HopeTextField
+import com.homeofhope.app.ui.components.SectionHeader
+import com.homeofhope.app.ui.viewmodel.CauseViewModel
 import com.homeofhope.app.ui.viewmodel.DonationViewModel
 import com.homeofhope.app.ui.viewmodel.MemberViewModel
 import com.homeofhope.app.ui.viewmodel.UiState
@@ -34,26 +67,47 @@ import com.homeofhope.app.ui.viewmodel.UiState
 fun DonationScreen(
     viewModel: DonationViewModel,
     memberViewModel: MemberViewModel,
+    causeViewModel: CauseViewModel,
+    initialCauseId: Int?,
+    onBackClick: () -> Unit,
     onDonationSuccess: () -> Unit
 ) {
     val currentMember = memberViewModel.currentUser
-    
-    var fullName by remember { mutableStateOf(currentMember?.fullName ?: "") }
-    var selectedBank by remember { mutableStateOf(currentMember?.savedBankName ?: "") }
-    var cardNumber by remember { mutableStateOf(currentMember?.savedCardNumber ?: "") }
-    var expiryDate by remember { mutableStateOf(currentMember?.savedExpiryDate ?: "") }
-    var cvv by remember { mutableStateOf("") }
-    var amount by remember { mutableStateOf("") }
-    
-    var expanded by remember { mutableStateOf(false) }
-    val banks = listOf("Standard Bank", "Absa", "FNB", "Nedbank", "Capitec", "Investec")
-    val presetAmounts = listOf("100", "250", "500", "1000")
+    val causeState = causeViewModel.uiState
 
+    var selectedCauseId by rememberSaveable(initialCauseId) {
+        mutableIntStateOf(initialCauseId ?: 0)
+    }
+    var selectedBank by rememberSaveable {
+        mutableStateOf(currentMember?.savedBankName ?: "")
+    }
+    var amount by rememberSaveable { mutableStateOf("") }
+    var causeMenuExpanded by remember { mutableStateOf(false) }
+    var bankMenuExpanded by remember { mutableStateOf(false) }
+
+    val banks = listOf(
+        "Standard Bank",
+        "Absa",
+        "FNB",
+        "Nedbank",
+        "Capitec",
+        "Investec",
+        "Other"
+    )
+    val presetAmounts = listOf("100", "250", "500", "1000")
+    val selectedCause = causeState.causes.firstOrNull { it.id == selectedCauseId }
     val uiState = viewModel.uiState
+
+    LaunchedEffect(causeState.causes, initialCauseId) {
+        if (selectedCauseId == 0 && causeState.causes.isNotEmpty()) {
+            selectedCauseId = initialCauseId
+                ?.takeIf { requested -> causeState.causes.any { it.id == requested } }
+                ?: causeState.causes.first().id
+        }
+    }
 
     LaunchedEffect(uiState) {
         if (uiState is UiState.Success) {
-            memberViewModel.updatePaymentInfo(selectedBank, cardNumber, expiryDate)
             onDonationSuccess()
             viewModel.resetState()
         }
@@ -62,9 +116,12 @@ fun DonationScreen(
     Scaffold(
         topBar = {
             AppTopBar(
-                title = "Support Us",
+                title = "Support a Cause",
                 canNavigateBack = true,
-                onBack = { viewModel.resetState() }
+                onBack = {
+                    viewModel.resetState()
+                    onBackClick()
+                }
             )
         }
     ) { padding ->
@@ -75,14 +132,16 @@ fun DonationScreen(
                 .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(rememberScrollState())
         ) {
-            // Header Card
             Box(
                 modifier = Modifier
                     .fillMaxWidth()
                     .height(200.dp)
                     .background(
                         Brush.verticalGradient(
-                            colors = listOf(MaterialTheme.colorScheme.secondary, MaterialTheme.colorScheme.primary)
+                            colors = listOf(
+                                MaterialTheme.colorScheme.secondary,
+                                MaterialTheme.colorScheme.primary
+                            )
                         )
                     ),
                 contentAlignment = Alignment.Center
@@ -121,60 +180,98 @@ fun DonationScreen(
                     .padding(24.dp)
                     .fillMaxWidth()
             ) {
-                if (currentMember?.savedCardNumber != null) {
-                    HopeCard(
-                        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.4f),
-                        elevation = 0.dp,
-                        modifier = Modifier.padding(bottom = 24.dp)
+                Card(
+                    colors = CardDefaults.cardColors(
+                        containerColor = MaterialTheme.colorScheme.primaryContainer.copy(alpha = 0.45f)
+                    ),
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    Text(
+                        text = "Your donation record will be added to the cause total. " +
+                            "No payment is processed in this version.",
+                        modifier = Modifier.padding(16.dp),
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+
+                if (!memberViewModel.isWebsiteSession) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    Text(
+                        text = "Please sign out and sign in with your website account to record a donation. Google sign-in is not linked to website donations yet.",
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodyMedium
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(24.dp))
+                SectionHeader(subtitle = "Donor", title = "Member Details")
+
+                OutlinedTextField(
+                    value = currentMember?.fullName ?: "",
+                    onValueChange = {},
+                    readOnly = true,
+                    label = { Text("Full Name") },
+                    leadingIcon = {
+                        Icon(Icons.Default.Person, contentDescription = null)
+                    },
+                    modifier = Modifier.fillMaxWidth(),
+                    shape = RoundedCornerShape(16.dp)
+                )
+
+                Spacer(modifier = Modifier.height(32.dp))
+                SectionHeader(subtitle = "Impact", title = "Choose a Cause")
+
+                ExposedDropdownMenuBox(
+                    expanded = causeMenuExpanded,
+                    onExpandedChange = { causeMenuExpanded = !causeMenuExpanded },
+                    modifier = Modifier.fillMaxWidth()
+                ) {
+                    OutlinedTextField(
+                        value = selectedCause?.title.orEmpty(),
+                        onValueChange = {},
+                        readOnly = true,
+                        label = { Text("Cause") },
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(
+                                expanded = causeMenuExpanded
+                            )
+                        },
+                        modifier = Modifier
+                            .menuAnchor()
+                            .fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp)
+                    )
+                    ExposedDropdownMenu(
+                        expanded = causeMenuExpanded,
+                        onDismissRequest = { causeMenuExpanded = false }
                     ) {
-                        Row(
-                            modifier = Modifier.padding(16.dp),
-                            verticalAlignment = Alignment.CenterVertically
-                        ) {
-                            Icon(Icons.Default.CreditCard, contentDescription = null, tint = MaterialTheme.colorScheme.primary)
-                            Spacer(modifier = Modifier.width(16.dp))
-                            Column(modifier = Modifier.weight(1f)) {
-                                Text(
-                                    text = "Saved Payment Method",
-                                    style = MaterialTheme.typography.labelLarge,
-                                    fontWeight = FontWeight.Bold,
-                                    color = MaterialTheme.colorScheme.primary
-                                )
-                                Text(
-                                    text = "Card ending in ${cardNumber.takeLast(4)}",
-                                    style = MaterialTheme.typography.bodySmall,
-                                    color = MaterialTheme.colorScheme.onSurfaceVariant
-                                )
-                            }
-                            TextButton(onClick = {
-                                selectedBank = ""
-                                cardNumber = ""
-                                expiryDate = ""
-                                cvv = ""
-                            }) {
-                                Text("Change", fontWeight = FontWeight.Bold)
-                            }
+                        causeState.causes.forEach { cause ->
+                            DropdownMenuItem(
+                                text = { Text(cause.title) },
+                                onClick = {
+                                    selectedCauseId = cause.id
+                                    causeMenuExpanded = false
+                                }
+                            )
                         }
                     }
                 }
 
-                SectionHeader(subtitle = "Donor Info", title = "Personal Details")
-                
-                HopeTextField(
-                    value = fullName,
-                    onValueChange = { fullName = it },
-                    label = "Full Name",
-                    leadingIcon = Icons.Default.Person
-                )
+                if (causeState.errorMessage != null) {
+                    Spacer(modifier = Modifier.height(8.dp))
+                    Text(
+                        text = causeState.errorMessage,
+                        color = MaterialTheme.colorScheme.error,
+                        style = MaterialTheme.typography.bodySmall
+                    )
+                }
 
                 Spacer(modifier = Modifier.height(32.dp))
+                SectionHeader(subtitle = "Donation", title = "Donation Details")
 
-                SectionHeader(subtitle = "Payment", title = "Payment Information")
-
-                // Bank Selection
                 ExposedDropdownMenuBox(
-                    expanded = expanded,
-                    onExpandedChange = { expanded = !expanded },
+                    expanded = bankMenuExpanded,
+                    onExpandedChange = { bankMenuExpanded = !bankMenuExpanded },
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     OutlinedTextField(
@@ -182,8 +279,18 @@ fun DonationScreen(
                         onValueChange = {},
                         readOnly = true,
                         label = { Text("Select Your Bank") },
-                        leadingIcon = { Icon(Icons.Default.AccountBalance, contentDescription = null, tint = MaterialTheme.colorScheme.primary) },
-                        trailingIcon = { ExposedDropdownMenuDefaults.TrailingIcon(expanded = expanded) },
+                        leadingIcon = {
+                            Icon(
+                                Icons.Default.AccountBalance,
+                                contentDescription = null,
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        },
+                        trailingIcon = {
+                            ExposedDropdownMenuDefaults.TrailingIcon(
+                                expanded = bankMenuExpanded
+                            )
+                        },
                         modifier = Modifier
                             .menuAnchor()
                             .fillMaxWidth(),
@@ -194,55 +301,23 @@ fun DonationScreen(
                         )
                     )
                     ExposedDropdownMenu(
-                        expanded = expanded,
-                        onDismissRequest = { expanded = false }
+                        expanded = bankMenuExpanded,
+                        onDismissRequest = { bankMenuExpanded = false }
                     ) {
                         banks.forEach { bank ->
                             DropdownMenuItem(
                                 text = { Text(bank) },
                                 onClick = {
                                     selectedBank = bank
-                                    expanded = false
+                                    bankMenuExpanded = false
                                 }
                             )
                         }
                     }
                 }
 
-                Spacer(modifier = Modifier.height(16.dp))
+                Spacer(modifier = Modifier.height(24.dp))
 
-                HopeTextField(
-                    value = cardNumber,
-                    onValueChange = { if (it.length <= 16) cardNumber = it },
-                    label = "Card Number",
-                    leadingIcon = Icons.Default.CreditCard,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                )
-
-                Spacer(modifier = Modifier.height(16.dp))
-
-                Row(modifier = Modifier.fillMaxWidth(), horizontalArrangement = Arrangement.spacedBy(16.dp)) {
-                    HopeTextField(
-                        value = expiryDate,
-                        onValueChange = { if (it.length <= 5) expiryDate = it },
-                        label = "Expiry (MM/YY)",
-                        modifier = Modifier.weight(1f),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                    )
-                    HopeTextField(
-                        value = cvv,
-                        onValueChange = { if (it.length <= 3) cvv = it },
-                        label = "CVV",
-                        modifier = Modifier.weight(1f),
-                        keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
-                    )
-                }
-
-                Spacer(modifier = Modifier.height(32.dp))
-
-                SectionHeader(subtitle = "Impact", title = "Donation Amount")
-
-                // Preset Amounts
                 Row(
                     modifier = Modifier.fillMaxWidth(),
                     horizontalArrangement = Arrangement.spacedBy(8.dp)
@@ -255,14 +330,27 @@ fun DonationScreen(
                                 .height(48.dp)
                                 .clickable { amount = preset },
                             shape = RoundedCornerShape(12.dp),
-                            color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant,
-                            border = if (isSelected) null else BorderStroke(1.dp, MaterialTheme.colorScheme.outline.copy(alpha = 0.2f))
+                            color = if (isSelected) {
+                                MaterialTheme.colorScheme.primary
+                            } else {
+                                MaterialTheme.colorScheme.surfaceVariant
+                            },
+                            border = if (isSelected) null else {
+                                BorderStroke(
+                                    1.dp,
+                                    MaterialTheme.colorScheme.outline.copy(alpha = 0.2f)
+                                )
+                            }
                         ) {
                             Box(contentAlignment = Alignment.Center) {
                                 Text(
                                     text = "R$preset",
                                     fontWeight = FontWeight.Bold,
-                                    color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface
+                                    color = if (isSelected) {
+                                        MaterialTheme.colorScheme.onPrimary
+                                    } else {
+                                        MaterialTheme.colorScheme.onSurface
+                                    }
                                 )
                             }
                         }
@@ -276,37 +364,39 @@ fun DonationScreen(
                     onValueChange = { amount = it },
                     label = "Custom Amount (ZAR)",
                     leadingIcon = Icons.Default.Payments,
-                    keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Decimal)
+                    keyboardOptions = KeyboardOptions(
+                        keyboardType = KeyboardType.Decimal
+                    )
                 )
 
                 AnimatedVisibility(visible = uiState is UiState.Error) {
-                    Spacer(modifier = Modifier.height(12.dp))
-                    Text(
-                        text = (uiState as? UiState.Error)?.message ?: "",
-                        color = MaterialTheme.colorScheme.error,
-                        style = MaterialTheme.typography.bodySmall,
-                        modifier = Modifier.padding(start = 8.dp)
-                    )
+                    Column {
+                        Spacer(modifier = Modifier.height(12.dp))
+                        Text(
+                            text = (uiState as? UiState.Error)?.message.orEmpty(),
+                            color = MaterialTheme.colorScheme.error,
+                            style = MaterialTheme.typography.bodySmall,
+                            modifier = Modifier.padding(start = 8.dp)
+                        )
+                    }
                 }
 
                 Spacer(modifier = Modifier.height(40.dp))
 
                 HopeButton(
-                    text = "CONFIRM DONATION",
+                    text = "SUBMIT DONATION",
                     onClick = {
                         viewModel.submitDonation(
-                            memberId = currentMember?.id,
-                            fullName = fullName,
+                            causeId = selectedCause?.id,
                             bankName = selectedBank,
-                            cardNumber = cardNumber,
-                            expiryDate = expiryDate,
-                            cvv = cvv,
-                            amount = amount
+                            amount = amount,
+                            memberId = currentMember?.id,
+                            isWebsiteSession = memberViewModel.isWebsiteSession
                         )
                     },
                     isLoading = uiState is UiState.Loading
                 )
-                
+
                 Spacer(modifier = Modifier.height(48.dp))
             }
         }

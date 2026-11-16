@@ -40,6 +40,7 @@ import com.homeofhope.app.ui.components.HopeButton
 import com.homeofhope.app.ui.components.HopeCard
 import com.homeofhope.app.ui.components.SectionHeader
 import com.homeofhope.app.ui.theme.*
+import com.homeofhope.app.ui.viewmodel.CauseViewModel
 import kotlinx.coroutines.delay
 import java.text.NumberFormat
 import java.util.Locale
@@ -47,6 +48,7 @@ import kotlin.math.roundToInt
 
 @Composable
 fun HomeScreen(
+    causeViewModel: CauseViewModel,
     onContactClick: () -> Unit,
     onBecomeMemberClick: () -> Unit,
     onViewAllCausesClick: () -> Unit,
@@ -70,7 +72,7 @@ fun HomeScreen(
 
         Spacer(modifier = Modifier.height(32.dp))
 
-        FeaturedCausesSection(onViewAllCausesClick)
+        FeaturedCausesSection(causeViewModel, onViewAllCausesClick)
 
         Spacer(modifier = Modifier.height(32.dp))
 
@@ -220,28 +222,13 @@ fun ImpactCard(
 // FEATURED CAUSES
 @Composable
 fun FeaturedCausesSection(
+    causeViewModel: CauseViewModel,
     onViewAllCausesClick: () -> Unit
 ) {
-    val featuredCauses = listOf(
-        HomeCause(
-            "Feed A Hungry Child",
-            6000.0,
-            10000.0,
-            "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=2070"
-        ),
-        HomeCause(
-            "Clean Water For All",
-            8500.0,
-            10000.0,
-            "https://images.unsplash.com/photo-1594708767771-a7502209ff51?q=80&w=2070"
-        ),
-        HomeCause(
-            "Safe Shelter Facilities",
-            4500.0,
-            15000.0,
-            "https://images.unsplash.com/photo-1460317442991-0ec209397118?q=80&w=2070"
-        )
-    )
+    val state = causeViewModel.uiState
+    val featuredCauses = state.causes.take(3).map {
+        HomeCause(it.title, it.raised, it.goal, it.imageUrl)
+    }
 
     Column {
         SectionHeader(
@@ -250,6 +237,13 @@ fun FeaturedCausesSection(
             actionText = "View All",
             onActionClick = onViewAllCausesClick
         )
+
+        if (featuredCauses.isEmpty()) {
+            Text(
+                text = if (state.isLoading) "Loading causes…" else state.errorMessage ?: "No causes available.",
+                modifier = Modifier.padding(horizontal = 16.dp)
+            )
+        }
 
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp),
@@ -293,7 +287,7 @@ fun FeaturedCauseCard(cause: HomeCause) {
                 Spacer(modifier = Modifier.height(12.dp))
 
                 val progress =
-                    (cause.raised / cause.goal).toFloat()
+                    if (cause.goal > 0) (cause.raised / cause.goal).toFloat().coerceIn(0f, 1f) else 0f
 
                 LinearProgressIndicator(
                     progress = { progress },
@@ -321,7 +315,7 @@ fun FeaturedCauseCard(cause: HomeCause) {
                         )
 
                         Text(
-                            text = "R${cause.raised.toInt()}",
+                            text = NumberFormat.getCurrencyInstance(Locale("en", "ZA")).format(cause.raised),
                             style = MaterialTheme.typography.titleMedium,
                             fontWeight = FontWeight.Bold
                         )
@@ -338,7 +332,7 @@ fun FeaturedCauseCard(cause: HomeCause) {
                         )
 
                         Text(
-                            text = "R${cause.goal.toInt()}",
+                            text = NumberFormat.getCurrencyInstance(Locale("en", "ZA")).format(cause.goal),
                             style = MaterialTheme.typography.titleMedium,
                             color = MaterialTheme.colorScheme.onSurfaceVariant
                         )

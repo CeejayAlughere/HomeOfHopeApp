@@ -49,7 +49,7 @@ fun DonationSuccessScreen(
         Spacer(modifier = Modifier.height(32.dp))
 
         Text(
-            text = "Thank You for Your Donation!",
+            text = "Donation Record Saved",
             style = MaterialTheme.typography.headlineMedium,
             fontWeight = FontWeight.Bold,
             textAlign = TextAlign.Center
@@ -58,7 +58,7 @@ fun DonationSuccessScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Your generosity helps us bring hope and support to those who need it most in Tembisa. Together, we are making a real difference.",
+            text = "Your donation record was saved. No payment was processed.",
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,

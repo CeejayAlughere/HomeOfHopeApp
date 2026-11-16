@@ -80,6 +80,10 @@ class MemberViewModel(
     var currentUser by mutableStateOf<Member?>(null)
         private set
 
+    // Only the website login supplies a token accepted by the donation API.
+    var isWebsiteSession by mutableStateOf(false)
+        private set
+
     @OptIn(kotlinx.coroutines.ExperimentalCoroutinesApi::class)
     val currentMemberStatus: StateFlow<String> = _currentUserFlow.flatMapLatest { user ->
         user?.let { repository.getMemberStatus(it.id).map { status -> status ?: "Active" } } ?: flowOf("Active")
@@ -199,6 +203,7 @@ class MemberViewModel(
     }
 
     fun register(fullName: String, idNumber: String, email: String, password: String, confirmPass: String) {
+        isWebsiteSession = false
         if (fullName.isBlank() || idNumber.isBlank() || email.isBlank() || password.isBlank() || confirmPass.isBlank()) {
             _authState.value = AuthState.Error("All fields are required")
             return
@@ -243,6 +248,7 @@ class MemberViewModel(
     }
 
     fun login(identifier: String, password: String) {
+        isWebsiteSession = false
         if (identifier.isBlank() || password.isBlank()) {
             _authState.value = AuthState.Error(
                 "Please enter your username/email and password"
@@ -259,6 +265,7 @@ class MemberViewModel(
                 } else {
                     currentUser = member
                     _currentUserFlow.value = member
+                    isWebsiteSession = true
                     _authState.value = AuthState.Success(member)
                 }
             } catch (e: Exception) {
@@ -272,6 +279,7 @@ class MemberViewModel(
 
 
     fun signInWithGoogle(context: Context) {
+        isWebsiteSession = false
         viewModelScope.launch {
             _googleAuthState.value = GoogleAuthState.Loading
 
@@ -405,6 +413,7 @@ class MemberViewModel(
     }
     
     fun logout() {
+        isWebsiteSession = false
         currentUser = null
         _currentUserFlow.value = null
         _authState.value = AuthState.Idle
