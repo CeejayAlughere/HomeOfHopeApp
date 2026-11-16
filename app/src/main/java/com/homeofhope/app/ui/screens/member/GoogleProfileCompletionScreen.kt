@@ -38,6 +38,8 @@ fun GoogleProfileCompletionScreen(
     var fullName by remember { mutableStateOf("") }
     var idNumber by remember { mutableStateOf("") }
     var googleEmail by remember { mutableStateOf("") }
+    var password by remember { mutableStateOf("") }
+    val linking = viewModel.googleNeedsPassword
 
     val profileState = googleAuthState as? GoogleAuthState.ProfileRequired
     val isLoading = googleAuthState is GoogleAuthState.Loading
@@ -69,14 +71,14 @@ fun GoogleProfileCompletionScreen(
         verticalArrangement = Arrangement.Center
     ) {
         Text(
-            text = "Complete Your Profile",
+            text = if (linking) "Link Your Website Account" else "Complete Your Profile",
             style = MaterialTheme.typography.headlineSmall
         )
 
         Spacer(modifier = Modifier.height(12.dp))
 
         Text(
-            text = "Finish setting up your Home of Hope membership.",
+            text = if (linking) "Enter your existing website password to keep your account and donation history." else "Finish setting up your shared Home of Hope membership.",
             style = MaterialTheme.typography.bodyMedium
         )
 
@@ -93,6 +95,7 @@ fun GoogleProfileCompletionScreen(
 
         Spacer(modifier = Modifier.height(12.dp))
 
+        if (!linking) {
         OutlinedTextField(
             value = fullName,
             onValueChange = { fullName = it },
@@ -120,6 +123,15 @@ fun GoogleProfileCompletionScreen(
             enabled = !isLoading
         )
 
+        } else {
+            OutlinedTextField(
+                value = password, onValueChange = { password = it },
+                label = { Text("Existing website password") },
+                visualTransformation = androidx.compose.ui.text.input.PasswordVisualTransformation(),
+                modifier = Modifier.fillMaxWidth(), singleLine = true, enabled = !isLoading
+            )
+        }
+
         if (errorMessage != null) {
             Spacer(modifier = Modifier.height(12.dp))
             Text(
@@ -134,21 +146,21 @@ fun GoogleProfileCompletionScreen(
         Button(
             onClick = {
                 viewModel.completeGoogleProfile(
-                    fullName = fullName,
-                    idNumber = idNumber
+                    fullName = if (linking) "" else fullName,
+                    idNumber = if (linking) "" else idNumber,
+                    password = password
                 )
+                password = ""
             },
             modifier = Modifier
                 .fillMaxWidth()
                 .height(52.dp),
-            enabled = !isLoading &&
-                    fullName.isNotBlank() &&
-                    idNumber.length == 13
+            enabled = !isLoading && (if (linking) password.isNotBlank() else fullName.isNotBlank() && idNumber.length == 13)
         ) {
             if (isLoading) {
                 CircularProgressIndicator()
             } else {
-                Text("COMPLETE PROFILE")
+                Text(if (linking) "LINK GOOGLE ACCOUNT" else "COMPLETE PROFILE")
             }
         }
     }

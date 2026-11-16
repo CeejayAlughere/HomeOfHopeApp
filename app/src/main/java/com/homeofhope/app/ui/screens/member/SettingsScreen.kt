@@ -30,14 +30,10 @@ fun SettingsScreen(
     var email by remember { mutableStateOf(user.email) }
     var phoneNumber by remember { mutableStateOf(user.phoneNumber) }
     
-    var showSnackbar by remember { mutableStateOf(false) }
     val snackbarHostState = remember { SnackbarHostState() }
 
-    LaunchedEffect(showSnackbar) {
-        if (showSnackbar) {
-            snackbarHostState.showSnackbar("Profile updated successfully")
-            showSnackbar = false
-        }
+    LaunchedEffect(viewModel.profileMessage) {
+        viewModel.profileMessage?.let { snackbarHostState.showSnackbar(it) }
     }
 
     Scaffold(
@@ -80,7 +76,9 @@ fun SettingsScreen(
 
             OutlinedTextField(
                 value = email,
-                onValueChange = { email = it },
+                onValueChange = {},
+                readOnly = true,
+                supportingText = { Text("Your sign-in email is managed separately from profile details.") },
                 label = { Text("Email Address") },
                 leadingIcon = { Icon(Icons.Default.Email, contentDescription = null) },
                 modifier = Modifier.fillMaxWidth(),
@@ -101,9 +99,9 @@ fun SettingsScreen(
             Spacer(modifier = Modifier.height(32.dp))
 
             Button(
+                enabled = !viewModel.profileSaving,
                 onClick = {
                     viewModel.updateProfile(fullName, email, phoneNumber)
-                    showSnackbar = true
                 },
                 modifier = Modifier
                     .fillMaxWidth()

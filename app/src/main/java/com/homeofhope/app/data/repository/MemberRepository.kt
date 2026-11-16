@@ -40,6 +40,34 @@ class MemberRepository(
         return saveAuthenticatedMember(response)
     }
 
+    suspend fun refreshProfile(): Member {
+        val token = sessionStore.currentToken() ?: error("Please sign in again.")
+        val response = callAuthApi { authApi.profile("Bearer $token") }
+        check(sessionStore.currentToken() == token) { "Account changed. Please refresh." }
+        return cacheRemoteMember(response.user ?: error("Profile missing."))
+    }
+
+    suspend fun updateSharedProfile(fullName: String, phoneNumber: String): Member {
+        val token = sessionStore.currentToken() ?: error("Please sign in again.")
+        val response = callAuthApi { authApi.updateProfile("Bearer $token", com.homeofhope.app.data.model.ProfileUpdateRequest(fullName, phoneNumber)) }
+        check(sessionStore.currentToken() == token) { "Account changed. Please refresh." }
+        return cacheRemoteMember(response.user ?: error("Profile missing."))
+    }
+
+    suspend fun googleAccount(idToken: String, uid: String, fullName: String = "", idNumber: String = "", password: String = ""): Member {
+        val response = authApi.googleLogin(com.homeofhope.app.data.model.GoogleLoginRequest(idToken, fullName, idNumber, password))
+        val body = response.body() ?: runCatching {
+            Gson().fromJson(response.errorBody()?.string(), AuthResponse::class.java)
+        }.getOrNull()
+        if (!response.isSuccessful || body?.success != true) {
+            throw GoogleAccountException(body?.action, body?.message ?: "Unable to sign in to your website account.")
+        }
+        val member = saveAuthenticatedMember(body)
+        val linked = member.copy(firebaseUid = uid)
+        memberDao.updateMember(linked)
+        return linked
+    }
+
     suspend fun loginAccount(identifier: String, password: String): Member {
         val response = callAuthApi {
             authApi.login(
@@ -123,7 +151,8 @@ class MemberRepository(
                 password = "",
                 memberNumber = remote.memberNumber,
                 status = remote.status,
-                joinDate = remote.joinDate
+                joinDate = remote.joinDate,
+                phoneNumber = remote.phoneNumber
             )
         } else {
             existing.copy(
@@ -134,7 +163,8 @@ class MemberRepository(
                 password = "",
                 memberNumber = remote.memberNumber,
                 status = remote.status,
-                joinDate = remote.joinDate
+                joinDate = remote.joinDate,
+                phoneNumber = remote.phoneNumber
             )
         }
 
@@ -153,14 +183,10 @@ class MemberRepository(
 
     suspend fun clearSession() {
         val token = sessionStore.currentToken()
-
+        sessionStore.clearIfToken(token)
         if (!token.isNullOrBlank()) {
-            runCatching {
-                authApi.logout("Bearer $token")
-            }
+            runCatching { authApi.logout("Bearer $token") }
         }
-
-        sessionStore.clear()
     }
 
     // Existing local profile operations remain available for the app.
@@ -199,3 +225,5 @@ class MemberRepository(
 }
 
 class AccountServiceException(message: String) : Exception(message)
+
+class GoogleAccountException(val action: String?, message: String) : Exception(message)

@@ -1,15 +1,39 @@
 package com.homeofhope.app.ui.screens.causes
 
 import androidx.compose.foundation.background
-import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.Row
+import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
+import androidx.compose.foundation.layout.padding
+import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Favorite
-import androidx.compose.material3.*
-import androidx.compose.runtime.*
+import androidx.compose.material3.AlertDialog
+import androidx.compose.material3.Button
+import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Icon
+import androidx.compose.material3.LinearProgressIndicator
+import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.Text
+import androidx.compose.material3.TextButton
+import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -20,35 +44,95 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.homeofhope.app.data.model.Cause
 import com.homeofhope.app.ui.theme.HopeDark
 import com.homeofhope.app.ui.theme.HopeGreen
 import com.homeofhope.app.ui.theme.HopeGrey
-import com.homeofhope.app.ui.theme.HopeWhite
+import com.homeofhope.app.ui.viewmodel.CauseViewModel
+import java.text.NumberFormat
+import java.util.Locale
 
 @Composable
 fun CauseDetailScreen(
-    causeId: String,
+    causeId: Int,
+    viewModel: CauseViewModel,
     isLoggedIn: Boolean,
-    onDonateClick: () -> Unit,
+    onDonateClick: (Int) -> Unit,
+    onLoginClick: () -> Unit
+) {
+    val uiState = viewModel.uiState
+    val cause = viewModel.findCause(causeId)
+
+    LaunchedEffect(causeId) {
+        if (cause == null && !uiState.isLoading) {
+            viewModel.refresh()
+        }
+    }
+
+    when {
+        cause != null -> CauseDetailContent(
+            cause = cause,
+            isLoggedIn = isLoggedIn,
+            onDonateClick = onDonateClick,
+            onLoginClick = onLoginClick
+        )
+
+        uiState.isLoading -> Box(
+            modifier = Modifier.fillMaxSize(),
+            contentAlignment = Alignment.Center
+        ) {
+            CircularProgressIndicator(color = HopeGreen)
+        }
+
+        else -> Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center
+        ) {
+            Text(
+                text = uiState.errorMessage ?: "This cause is unavailable.",
+                color = MaterialTheme.colorScheme.error
+            )
+            Spacer(modifier = Modifier.height(12.dp))
+            Button(onClick = viewModel::refresh) {
+                Text("Try Again")
+            }
+        }
+    }
+}
+
+@Composable
+private fun CauseDetailContent(
+    cause: Cause,
+    isLoggedIn: Boolean,
+    onDonateClick: (Int) -> Unit,
     onLoginClick: () -> Unit
 ) {
     var showLoginDialog by remember { mutableStateOf(false) }
-
-    // In a real app, this would come from a ViewModel or Repository
-    val cause = getCauseById(causeId) ?: return
+    val currency = NumberFormat.getCurrencyInstance(Locale("en", "ZA"))
+    val progress = (cause.progress / 100.0).toFloat().coerceIn(0f, 1f)
 
     if (showLoginDialog) {
         AlertDialog(
             onDismissRequest = { showLoginDialog = false },
             title = { Text("Membership Required") },
-            text = { Text("You need to be a member to make a donation. Joining our community helps us keep track of your impact and keep you updated on our causes.") },
+            text = {
+                Text(
+                    "You need to be a member to make a donation. " +
+                        "Log in or register to continue."
+                )
+            },
             confirmButton = {
                 Button(
                     onClick = {
                         showLoginDialog = false
                         onLoginClick()
                     },
-                    colors = ButtonDefaults.buttonColors(containerColor = HopeGreen)
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = HopeGreen
+                    )
                 ) {
                     Text("Login / Register")
                 }
@@ -66,13 +150,12 @@ fun CauseDetailScreen(
             .fillMaxSize()
             .verticalScroll(rememberScrollState())
     ) {
-        // ... (existing content) ...
         AsyncImage(
             model = ImageRequest.Builder(LocalContext.current)
                 .data(cause.imageUrl)
                 .crossfade(true)
                 .build(),
-            contentDescription = null,
+            contentDescription = cause.title,
             modifier = Modifier
                 .fillMaxWidth()
                 .height(250.dp),
@@ -86,10 +169,9 @@ fun CauseDetailScreen(
                 fontWeight = FontWeight.Bold,
                 color = HopeDark
             )
-            
+
             Spacer(modifier = Modifier.height(16.dp))
-            
-            val progress = (cause.raised / cause.goal).toFloat()
+
             LinearProgressIndicator(
                 progress = { progress },
                 modifier = Modifier
@@ -99,37 +181,62 @@ fun CauseDetailScreen(
                 color = HopeGreen,
                 trackColor = HopeGreen.copy(alpha = 0.1f)
             )
-            
+
             Row(
-                modifier = Modifier.fillMaxWidth().padding(vertical = 12.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 12.dp),
                 horizontalArrangement = Arrangement.SpaceBetween
             ) {
                 Column {
-                    Text(text = "Raised", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.outline)
-                    Text(text = "R${cause.raised.toInt()}", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold, color = HopeGreen)
+                    Text(
+                        text = "Raised",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.outline
+                    )
+                    Text(
+                        text = currency.format(cause.raised),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold,
+                        color = HopeGreen
+                    )
                 }
                 Column(horizontalAlignment = Alignment.End) {
-                    Text(text = "Goal", style = MaterialTheme.typography.labelMedium, color = MaterialTheme.colorScheme.outline)
-                    Text(text = "R${cause.goal.toInt()}", style = MaterialTheme.typography.titleLarge, fontWeight = FontWeight.Bold)
+                    Text(
+                        text = "Goal",
+                        style = MaterialTheme.typography.labelMedium,
+                        color = MaterialTheme.colorScheme.outline
+                    )
+                    Text(
+                        text = currency.format(cause.goal),
+                        style = MaterialTheme.typography.titleLarge,
+                        fontWeight = FontWeight.Bold
+                    )
                 }
             }
 
             HorizontalDivider(modifier = Modifier.padding(vertical = 16.dp))
-            
-            // Donation Button
+
             Button(
                 onClick = {
                     if (isLoggedIn) {
-                        onDonateClick()
+                        onDonateClick(cause.id)
                     } else {
                         showLoginDialog = true
                     }
                 },
-                modifier = Modifier.fillMaxWidth().height(56.dp),
-                colors = ButtonDefaults.buttonColors(containerColor = HopeGreen),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(56.dp),
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = HopeGreen
+                ),
                 shape = RoundedCornerShape(16.dp)
             ) {
-                Icon(imageVector = Icons.Default.Favorite, contentDescription = null)
+                Icon(
+                    imageVector = Icons.Default.Favorite,
+                    contentDescription = null
+                )
                 Spacer(modifier = Modifier.width(8.dp))
                 Text("DONATE TO THIS CAUSE", fontWeight = FontWeight.Bold)
             }
@@ -142,30 +249,26 @@ fun CauseDetailScreen(
                 fontWeight = FontWeight.Bold,
                 color = HopeDark
             )
-            
             Spacer(modifier = Modifier.height(8.dp))
-            
             Text(
                 text = cause.description,
                 style = MaterialTheme.typography.bodyLarge,
                 color = MaterialTheme.colorScheme.onSurfaceVariant,
                 lineHeight = 26.sp
             )
-            
+
             Spacer(modifier = Modifier.height(24.dp))
-            
+
             Text(
                 text = "Project Impact",
                 style = MaterialTheme.typography.titleLarge,
                 fontWeight = FontWeight.Bold,
                 color = HopeDark
             )
-            
             Spacer(modifier = Modifier.height(12.dp))
-            
-            ImpactPoint("R100 provides 5 warm meals for a child")
-            ImpactPoint("R500 supports a child's school supplies for a term")
-            ImpactPoint("R1000 contributes to safe shelter and healthcare")
+            ImpactPoint("R100 provides practical support to this cause")
+            ImpactPoint("R500 helps the project reach more people")
+            ImpactPoint("R1000 supports long-term community impact")
 
             Spacer(modifier = Modifier.height(32.dp))
         }
@@ -187,15 +290,4 @@ fun ImpactPoint(text: String) {
         Spacer(modifier = Modifier.width(12.dp))
         Text(text = text, style = MaterialTheme.typography.bodyMedium)
     }
-}
-
-// Helper to get cause data - in real app this would be in a ViewModel/Repo
-fun getCauseById(id: String): Cause? {
-    val causes = listOf(
-        Cause("Feed A Hungry Child", 6000.0, 10000.0, "Thousands of children in our community go to school on an empty stomach. Help us provide daily nutritious meals to keep them focused and healthy. Our feeding program aims to reach over 500 children daily across three local schools.", "https://images.unsplash.com/photo-1488521787991-ed7bbaae773c?q=80&w=2070"),
-        Cause("Clean Water For All", 8500.0, 10000.0, "Many families still lack access to safe drinking water. Your donation brings us closer to installing clean water facilities in communities that need them most. We are currently working on a borehole project that will serve 200 households.", "https://images.unsplash.com/photo-1594708767771-a7502209ff51?q=80&w=2070"),
-        Cause("Education For Every Child", 14000.0, 20000.0, "A lack of school supplies and resources should never stand between a child and their future. Help us equip learners with the tools they need to succeed. We provide stationery, textbooks, and school uniforms to underprivileged students.", "https://images.unsplash.com/photo-1497633762265-9d179a990aa6?q=80&w=2073"),
-        Cause("Safe Shelter For Families", 4500.0, 15000.0, "No family should sleep without a roof over their heads. We are raising funds to expand our shelter facilities and offer more families a safe place to stay. Our goal is to add 5 new family units and a community counseling room.", "https://images.unsplash.com/photo-1460317442991-0ec209397118?q=80&w=2070")
-    )
-    return causes.find { it.title == id }
 }
