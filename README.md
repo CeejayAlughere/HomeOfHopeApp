@@ -83,3 +83,7 @@ To access the Admin Management System:
 2. Open the project in Android Studio.
 3. Sync Project with Gradle Files.
 4. Run the app on an emulator or physical device.
+
+
+#  Demonstration link
+https://youtu.be/nTzSagurRYw?si=3KbYH4IJGE84doZ4 
