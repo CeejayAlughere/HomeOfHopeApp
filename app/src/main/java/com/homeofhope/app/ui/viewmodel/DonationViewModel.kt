@@ -36,9 +36,10 @@ class DonationViewModel(
         bankName: String,
         amount: String,
         memberId: Int?,
-        isWebsiteSession: Boolean
+        isWebsiteSession: Boolean,
+        clientRequestId: String
     ) {
-        val donationAmount = amount.toDoubleOrNull()
+        if (uiState is UiState.Loading || uiState is UiState.Success) return
 
         if (!isWebsiteSession || memberId == null) {
             uiState = UiState.Error("Please sign in to record a donation.")
@@ -46,32 +47,42 @@ class DonationViewModel(
         }
 
         if (causeId == null || causeId <= 0) {
-            uiState = UiState.Error("Please select a cause")
+            uiState = UiState.Error("Please select a cause.")
             return
         }
 
         if (bankName.isBlank()) {
-            uiState = UiState.Error("Please select your bank")
+            uiState = UiState.Error("Please select your bank.")
             return
         }
 
-        if (donationAmount == null || !donationAmount.isFinite() || donationAmount <= 0 || donationAmount > 1_000_000) {
-            uiState = UiState.Error("Enter an amount greater than R0 and up to R1,000,000")
+        val donationAmount = amount.trim().toBigDecimalOrNull()
+        if (donationAmount == null ||
+            donationAmount.signum() <= 0 ||
+            donationAmount > 1_000_000.toBigDecimal() ||
+            donationAmount.stripTrailingZeros().scale() > 2
+        ) {
+            uiState = UiState.Error(
+                "Enter an amount up to R1,000,000 using no more than two decimal places."
+            )
             return
         }
+
+        // Set this before launching so a second click sees Loading immediately.
+        uiState = UiState.Loading
 
         viewModelScope.launch {
-            uiState = UiState.Loading
-
             try {
                 donationRepository.submitCauseDonation(
                     causeId = causeId,
                     bankName = bankName,
-                    amount = donationAmount
+                    amount = donationAmount.toDouble(),
+                    clientRequestId = clientRequestId
                 )
-                // A failed history refresh must not invite resubmitting an accepted donation.
-                refreshHistory(memberId)
                 uiState = UiState.Success
+                refreshHistory(memberId)
+            } catch (e: kotlinx.coroutines.CancellationException) {
+                throw e
             } catch (e: Exception) {
                 uiState = UiState.Error(
                     e.message ?: "Unable to submit your donation. Please try again."
@@ -85,6 +96,8 @@ class DonationViewModel(
     }
 
     fun resetState() {
-        uiState = UiState.Idle
+        if (uiState !is UiState.Loading) {
+            uiState = UiState.Idle
+        }
     }
 }
