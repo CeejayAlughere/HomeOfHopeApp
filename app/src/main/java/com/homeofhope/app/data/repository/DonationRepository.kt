@@ -43,7 +43,8 @@ class DonationRepository(
     suspend fun submitCauseDonation(
         causeId: Int,
         bankName: String,
-        amount: Double
+        amount: Double,
+        clientRequestId: String
     ): CauseDonationResponse {
         val token = sessionStore.currentToken()
             ?: throw IOException("Please log in before making a donation.")
@@ -54,7 +55,8 @@ class DonationRepository(
                 body = CauseDonationRequest(
                     causeId = causeId,
                     bankName = bankName,
-                    amount = amount
+                    amount = amount,
+                    clientRequestId = clientRequestId
                 )
             )
         } catch (e: IOException) {

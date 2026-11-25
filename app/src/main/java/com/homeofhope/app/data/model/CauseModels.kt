@@ -20,7 +20,8 @@ data class CausesResponse(
 data class CauseDonationRequest(
     val causeId: Int,
     val bankName: String,
-    val amount: Double
+    val amount: Double,
+    val clientRequestId: String
 )
 
 data class CauseDonationResponse(

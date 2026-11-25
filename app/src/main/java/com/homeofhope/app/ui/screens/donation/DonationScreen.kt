@@ -14,6 +14,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import java.util.UUID
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
@@ -97,6 +98,15 @@ fun DonationScreen(
     val presetAmounts = listOf("100", "250", "500", "1000")
     val selectedCause = causeState.causes.firstOrNull { it.id == selectedCauseId }
     val uiState = viewModel.uiState
+
+    val clientRequestId = rememberSaveable(
+        currentMember?.id,
+        selectedCauseId,
+        selectedBank,
+        amount.toDoubleOrNull()
+    ) {
+        UUID.randomUUID().toString()
+    }
 
     LaunchedEffect(causeState.causes, initialCauseId) {
         if (selectedCauseId == 0 && causeState.causes.isNotEmpty()) {
@@ -391,7 +401,8 @@ fun DonationScreen(
                             bankName = selectedBank,
                             amount = amount,
                             memberId = currentMember?.id,
-                            isWebsiteSession = memberViewModel.isWebsiteSession
+                            isWebsiteSession = memberViewModel.isWebsiteSession,
+                            clientRequestId = clientRequestId
                         )
                     },
                     isLoading = uiState is UiState.Loading
