@@ -1,212 +1,59 @@
-# Home of Hope NGO Android Application
+# Home of Hope Android
 
-## XISD6329
+[![Android CI](https://github.com/CeejayAlughere/HomeOfHopeApp/actions/workflows/android-ci.yml/badge.svg?branch=main)](https://github.com/CeejayAlughere/HomeOfHopeApp/actions/workflows/android-ci.yml)
 
-The Home of Hope NGO Android application is designed to support **Home of Hope NGO (Siyazigabisa)** by providing a mobile platform for member engagement, donations, community support, and volunteer activities.
+Home of Hope is a Kotlin Android app built for the XISD6329 team project supporting **Home of Hope NGO (Siyazigabisa)**. Members can sign in, browse fundraising causes, record a donation in South African rand and view their donation history.
 
-The application aims to connect the NGO with its community and encourage participation, transparency, and access to information.
+The Android app connects to the same PHP and MySQL backend as the Home of Hope website. When a member records a donation on their phone, the NGO can see the selected cause and amount in the website’s admin dashboard. The app records contributions without charging the member’s bank account.
 
-## 🌟 Key Features
+**[Watch the project demonstration on YouTube](https://youtu.be/nTzSagurRYw?si=3KbYH4IJGE84doZ4)**
 
-### 👤 Member Features
+## How a donation works
 
-- **Registration and Login:** Multi-step member registration and authentication.
-- **Personal Dashboard:admin@hoh.org** View donation totals, volunteer hours, and membership progress.
-- **Membership Levels:** Membership tiers such as Seed, Hope, Silver, Gold, and Legacy.
-- **Community Wall:** Share and view community news and updates.
-- **Digital Membership Card:** Access a digital membership card containing membership details.
-- **Causes and Events:** Browse NGO causes, impact information, volunteer events, and community gatherings.
-- **Blog and News:** Read NGO articles, success stories, and newsletters.
-- **Donations:** Access donation functionality and donation history.
-- **Support and FAQs:** Find help information and contact support.
+1. A member signs in, opens the causes list and chooses a fundraiser.
+2. They select their bank, enter an amount in rand and tap **Record donation**.
+3. The app submits the record to the website API. Once the API confirms it was saved, the app shows a confirmation and refreshes the member’s donation history.
+4. The donation appears in the website’s admin dashboard against the same cause.
 
-### 🛡️ Administration Features
+If connectivity drops, the form shows an error and the member can retry. The form keeps the same request ID for that retry. Opening a fresh form creates a new ID, so a member can make a second contribution for the same amount.
 
-- **Admin Portal:** Dedicated access for authorised NGO administrators.
-- **Dashboard Analytics:** View information about membership, donations, and volunteer activity.
-- **Member Management:** Search and manage member profiles and account status.
-- **Volunteer Hours Management:** Record, verify, and update volunteer service hours.
+## Inside the Android app
 
-### 🔒 Legal and Privacy Features
+The screens use **Kotlin, Jetpack Compose and Material 3**. ViewModels manage form validation and screen state. Repositories use **Retrofit and OkHttp** to call the PHP API. The app also uses **Room** for local data and **DataStore** for session information.
 
-- **Privacy Policy:** Information about personal data handling.
-- **Terms of Service:** Guidelines for using the application and community features.
-- **Cookie Policy:** Information about local storage and preferences, where applicable.
+Google sign-in uses Android Credential Manager and Firebase Authentication. Members can also use their Home of Hope website account to sign in to the app.
 
-> Feature descriptions represent the intended application functionality. Actual availability depends on the current implementation and configuration.
+Three files show how the donation flow fits together:
 
-## 🧰 Technical Stack
+- [DonationScreen.kt](app/src/main/java/com/homeofhope/app/ui/screens/donation/DonationScreen.kt) collects the cause, bank and amount and gives each donation attempt a request ID.
+- [DonationViewModel.kt](app/src/main/java/com/homeofhope/app/ui/viewmodel/DonationViewModel.kt) validates the form, blocks repeat taps during submission and updates the screen when the request finishes.
+- [DonationRepository.kt](app/src/main/java/com/homeofhope/app/data/repository/DonationRepository.kt) sends the authenticated request and retrieves the member’s donation history from the website API.
 
-| Component | Technology |
-|---|---|
-| Programming language | Kotlin |
-| User interface | Jetpack Compose and Material 3 |
-| Architecture | MVVM and Clean Architecture principles |
-| Networking | Retrofit and OkHttp |
-| Local database | Room |
-| Session and preference storage | DataStore Preferences |
-| Navigation | Jetpack Navigation Compose |
-| Asynchronous operations | Kotlin Coroutines and Flow |
-| Image loading | Coil |
-| Animations | Lottie for Android |
-| Splash screen | AndroidX SplashScreen API |
-| Build system | Gradle |
+## Run locally
 
-### Technology References
-
-- [Kotlin](https://kotlinlang.org/)
-- [Jetpack Compose](https://developer.android.com/jetpack/compose)
-- [Retrofit](https://square.github.io/retrofit/)
-- [OkHttp](https://square.github.io/okhttp/)
-- [Room](https://developer.android.com/training/data-storage/room)
-- [DataStore](https://developer.android.com/topic/libraries/architecture/datastore)
-- [Navigation Compose](https://developer.android.com/jetpack/compose/navigation)
-- [Kotlin Coroutines](https://kotlinlang.org/docs/coroutines-overview.html)
-- [Coil](https://coil-kt.github.io/coil/)
-- [Lottie for Android](https://github.com/airbnb/lottie-android)
-- [Android SplashScreen](https://developer.android.com/develop/ui/views/launch/splash-screen)
-
-## 📁 Project Structure
-
-The project is organised into an Android application module and Gradle configuration files.
-
-The following is a conceptual overview of the application architecture. Actual folders may differ from this example.
-
-```text
-HomeOfHopeApp/
-├── app/
-├── gradle/
-├── gradlew
-├── gradlew.bat
-├── build.gradle.kts
-├── settings.gradle.kts
-├── gradle.properties
-├── azure-pipelines.yml
-└── README.md
-```
-
-Application code may be organised into the following logical layers, depending on the current implementation:
-
-- **data/local/** — Local database entities, DAOs, and database configuration.
-- **data/model/** — Data classes and models.
-- **data/network/** — API services and network configuration.
-- **data/repository/** — Data access and repository logic.
-- **ui/screens/** — User interface screens.
-- **ui/viewmodel/** — UI state and business logic.
-- **ui/navigation/** — Navigation routes and graph.
-- **ui/theme/** — Colours, typography, shapes, and Material 3 styling.
-- **utils/** — Shared helper functions and utilities.
-
-## 🚀 Getting Started
-
-### Prerequisites
-
-Before running the application, install:
-
-- [Android Studio](https://developer.android.com/studio)
-- Git
-- A JDK version compatible with the project's Gradle and Android Gradle Plugin configuration
-- The Android SDK and any required SDK components configured by the project
-
-Check the project's Gradle configuration for the required Java version and Android minimum SDK. Do not assume these values without verifying the configuration.
-
-### Clone the Repository
+Clone the repository and open the project folder in Android Studio:
 
 ```bash
 git clone https://github.com/CeejayAlughere/HomeOfHopeApp.git
 cd HomeOfHopeApp
 ```
 
-If you are using the Azure DevOps repository instead, clone the repository URL provided by your project under **Repos → Files → Clone**.
+1. Let Gradle sync and install the Android SDK components requested by the project. The GitHub Actions build uses **JDK 17**.
+2. For live causes, member accounts and donations, run the companion Home of Hope PHP/MySQL backend. Check the API base URL in [AuthRetrofitClient.kt](app/src/main/java/com/homeofhope/app/data/network/AuthRetrofitClient.kt) and make sure your emulator or device can reach it. On the standard Android emulator, `10.0.2.2` reaches a backend running on your development machine.
+3. Select the `app` run configuration, choose an emulator or connected device, and run the app. To test Google sign-in with your own Firebase project, configure Google authentication for your Android application ID and signing certificate.
 
-### Open the Project
+## Build and test
 
-1. Open Android Studio.
-2. Select **Open** and choose the cloned project folder.
-3. Allow Gradle synchronisation to finish.
-4. Install any SDK components requested by Android Studio.
-5. Select an emulator or connected Android device.
-6. Run the application using the Android Studio Run button.
-
-### Administrator Access
-
-Use only administrator test credentials supplied through an authorised, secure channel. Do not store passwords, API keys, or other secrets in this README or source control.
-
-## 🧪 Development and Testing
-
-Run the following commands from the repository root on macOS or Linux.
-
-### Build the Debug APK
+Run the same checks as GitHub Actions from the repository root:
 
 ```bash
-chmod +x ./gradlew
-./gradlew assembleDebug
+./gradlew :app:assembleDebug :app:testDebugUnitTest :app:lintDebug
 ```
 
-The generated APK is normally located under:
+The [Android CI workflow](.github/workflows/android-ci.yml) builds the debug APK, runs unit tests and checks Android lint on pull requests to `main` and on pushes to `main`. The unit-test suite includes nine validation tests.
 
-```text
-app/build/outputs/apk/debug/
-```
+We also tested the donation flow across the Android app and website. A rapid double tap produced one record. Opening a fresh form and deliberately submitting another **R100** donation to the same cause produced a second record with a different request ID.
 
-### Run Unit Tests
+## Team project
 
-```bash
-./gradlew testDebugUnitTest
-```
-
-This command runs the debug unit-test task configured by Gradle. The actual test coverage depends on the tests present in the project.
-
-### Run the Available Verification Tasks
-
-```bash
-./gradlew test
-```
-
-Use the test tasks supported by the project configuration. Review the Gradle output to determine whether tests were discovered and executed successfully.
-
-## 🔄 Team Collaboration and CI/CD
-
-The XISD6329 team uses Azure DevOps to coordinate development and maintain the source code.
-
-### Azure Repos
-
-Azure Repos provides Git-based source control for the Android application. Team members use branches to isolate changes and commits to record their work.
-
-### Azure Boards
-
-Azure Boards is used to create, assign, and track work items. Work items help the team organise tasks, monitor progress, and associate development work with project requirements.
-
-### Azure Pipelines
-
-Azure Pipelines automates the Android build and configured validation tasks. The pipeline is defined in `azure-pipelines.yml` and can be triggered by changes to the configured branch.
-
-### Branching and Pull Requests
-
-The team workflow is:
-
-1. Create a feature branch from `main`.
-2. Make changes related to an assigned work item.
-3. Commit and push the changes to the feature branch.
-4. Create a pull request targeting `main`.
-5. Link the relevant Azure Boards work item.
-6. Request review from another team member.
-7. Wait for required reviews and build validation to pass.
-8. Merge the pull request after all required policies are satisfied.
-
-This workflow supports collaboration, traceability, and controlled integration of changes.
-
-
-Keep this section accurate and update it as work is completed.
-
-## 📌 Project Status
-
-The repository includes an Android application, Gradle build configuration, and an Azure Pipelines YAML definition. Build and test outcomes should be verified from the relevant Azure Pipeline runs and Gradle logs.
-
-## 📄 Licence
-
-Refer to the repository's `LICENSE` file for the applicable licence terms.
-
-## Project demonstration
-
-[Watch the Home of Hope demo on YouTube](https://youtu.be/nTzSagurRYw?si=3KbYH4IJGE84doZ4)
+Home of Hope was developed collaboratively for **XISD6329**. The team used Azure Boards and Azure Repos during coursework. This GitHub repository hosts the Android app, its pull requests and its automated build checks.
