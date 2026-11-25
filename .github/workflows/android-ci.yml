@@ -1,0 +1,36 @@
+name: Android CI
+
+on:
+  pull_request:
+    branches: [main]
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+jobs:
+  android-checks:
+    name: Build, unit tests and lint
+    runs-on: ubuntu-latest
+    timeout-minutes: 30
+
+    steps:
+      - name: Check out repository
+        uses: actions/checkout@v6
+
+      - name: Set up Java 17
+        uses: actions/setup-java@v5
+        with:
+          distribution: temurin
+          java-version: '17'
+          cache: gradle
+
+      - name: Build debug APK
+        run: bash ./gradlew :app:assembleDebug --console=plain
+
+      - name: Run unit tests
+        run: bash ./gradlew :app:testDebugUnitTest --console=plain
+
+      - name: Run Android lint
+        run: bash ./gradlew :app:lintDebug --console=plain
