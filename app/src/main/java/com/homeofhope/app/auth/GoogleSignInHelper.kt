@@ -5,6 +5,7 @@ import android.content.Context
 import androidx.credentials.CredentialManager
 import androidx.credentials.CustomCredential
 import androidx.credentials.GetCredentialRequest
+import androidx.credentials.exceptions.NoCredentialException
 import com.google.android.libraries.identity.googleid.GetGoogleIdOption
 import com.google.android.libraries.identity.googleid.GoogleIdTokenCredential
 import com.google.firebase.auth.FirebaseAuth
@@ -35,10 +36,17 @@ object GoogleSignInHelper {
             .build()
 
         val credentialManager = CredentialManager.create(context)
-        val result = credentialManager.getCredential(
-            context = context,
-            request = request
-        )
+        val result = try {
+            credentialManager.getCredential(
+                context = context,
+                request = request
+            )
+        } catch (e: NoCredentialException) {
+            throw NoCredentialException(
+                "No Google account is available for sign-in. " +
+                        "Add a Google account in your device settings, or sign in with email."
+            ).apply { initCause(e) }
+        }
 
         val credential = result.credential
 
