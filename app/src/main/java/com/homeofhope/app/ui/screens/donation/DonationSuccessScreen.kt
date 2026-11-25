@@ -58,7 +58,7 @@ fun DonationSuccessScreen(
         Spacer(modifier = Modifier.height(16.dp))
 
         Text(
-            text = "Your donation record was saved. No payment was processed.",
+            text = "Your donation record was saved.",
             style = MaterialTheme.typography.bodyLarge,
             color = MaterialTheme.colorScheme.onSurfaceVariant,
             textAlign = TextAlign.Center,

@@ -197,8 +197,7 @@ fun DonationScreen(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Text(
-                        text = "Your donation record will be added to the cause total. " +
-                            "No payment is processed in this version.",
+                        text = "Your donation record will be added to the cause total of your choice. ",
                         modifier = Modifier.padding(16.dp),
                         style = MaterialTheme.typography.bodyMedium
                     )
