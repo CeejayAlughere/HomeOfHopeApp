@@ -75,6 +75,11 @@ fun MemberDashboardScreen(
         }
     }
 
+    LaunchedEffect(user?.id) {
+        user?.let { donationViewModel?.refreshHistory(it.id) }
+        viewModel?.refreshSharedProfile()
+    }
+
     var showAllReceipts by remember { mutableStateOf(false) }
 
     Scaffold(
@@ -105,6 +110,18 @@ fun MemberDashboardScreen(
             Spacer(modifier = Modifier.height(24.dp))
             
             HeaderSection(user?.fullName ?: "Member", donations.size, joinedEvents.size)
+            TextButton(onClick = { user?.let { donationViewModel?.refreshHistory(it.id) } }, enabled = donationViewModel?.historyLoading != true) {
+                Text(if (donationViewModel?.historyLoading == true) "Loading donations…" else "Refresh donation history")
+            }
+            donationViewModel?.historyError?.let { message ->
+                Text(message, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(horizontal = 24.dp))
+            }
+
+            Text(
+                text = "Your website and app donation records are shared. These records are not payment confirmation.",
+                style = MaterialTheme.typography.bodySmall,
+                modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
+            )
 
             Spacer(modifier = Modifier.height(32.dp))
 

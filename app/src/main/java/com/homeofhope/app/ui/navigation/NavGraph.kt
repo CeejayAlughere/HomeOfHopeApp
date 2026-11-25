@@ -5,8 +5,10 @@ import androidx.compose.animation.core.tween
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
+import androidx.navigation.navArgument
 import com.homeofhope.app.ui.screens.about.AboutScreen
 import com.homeofhope.app.ui.screens.blog.BlogDetailScreen
 import com.homeofhope.app.ui.screens.blog.BlogScreen
@@ -31,17 +33,21 @@ import com.homeofhope.app.ui.screens.services.ServicesScreen
 import com.homeofhope.app.ui.screens.donation.DonationScreen
 import com.homeofhope.app.ui.screens.donation.DonationSuccessScreen
 import com.homeofhope.app.ui.viewmodel.ContactViewModel
+import com.homeofhope.app.ui.viewmodel.CauseViewModel
 import com.homeofhope.app.ui.viewmodel.DonationViewModel
 import com.homeofhope.app.ui.viewmodel.MemberViewModel
 
 import com.homeofhope.app.ui.screens.admin.*
 import com.homeofhope.app.ui.viewmodel.AdminViewModel
 
+import com.homeofhope.app.ui.screens.member.GoogleProfileCompletionScreen
+
 @Composable
 fun HomeOfHopeNavGraph(
     navController: NavHostController,
     contactViewModel: ContactViewModel,
     memberViewModel: MemberViewModel,
+    causeViewModel: CauseViewModel,
     donationViewModel: DonationViewModel,
     adminViewModel: AdminViewModel,
     modifier: Modifier = Modifier
@@ -75,18 +81,19 @@ fun HomeOfHopeNavGraph(
             )
         }
     ) {
-        composable(Screen.Home.route) { 
+        composable(Screen.Home.route) {
             HomeScreen(
+                causeViewModel = causeViewModel,
                 onContactClick = { navController.navigate(Screen.Contact.route) },
                 onBecomeMemberClick = { navController.navigate(Screen.Register.route) },
-                onViewAllCausesClick = { 
+                onViewAllCausesClick = {
                     navController.navigate(Screen.Causes.route) {
                         popUpTo(navController.graph.startDestinationId) { saveState = true }
                         launchSingleTop = true
                         restoreState = true
                     }
                 },
-                onViewAllEventsClick = { 
+                onViewAllEventsClick = {
                     navController.navigate(Screen.Events.route) {
                         popUpTo(navController.graph.startDestinationId) { saveState = true }
                         launchSingleTop = true
@@ -96,28 +103,37 @@ fun HomeOfHopeNavGraph(
             )
         }
         composable(Screen.About.route) { AboutScreen() }
-        composable(Screen.Causes.route) { 
-            CausesScreen { causeId ->
-                navController.navigate("cause_detail/$causeId")
-            }
+        composable(Screen.Causes.route) {
+            CausesScreen(
+                viewModel = causeViewModel,
+                onLearnMoreClick = { causeId ->
+                    navController.navigate("cause_detail/$causeId")
+                }
+            )
         }
         composable(Screen.CauseDetail.route) { backStackEntry ->
-            val causeId = backStackEntry.arguments?.getString("causeId") ?: ""
+            val causeId = backStackEntry.arguments
+                ?.getString("causeId")
+                ?.toIntOrNull()
+                ?: 0
             CauseDetailScreen(
                 causeId = causeId,
+                viewModel = causeViewModel,
                 isLoggedIn = memberViewModel.currentUser != null,
-                onDonateClick = {
-                    navController.navigate(Screen.Donation.route)
+                onDonateClick = { selectedCauseId ->
+                    navController.navigate(
+                        Screen.Donation.createRoute(selectedCauseId)
+                    )
                 },
                 onLoginClick = {
                     navController.navigate(Screen.Login.route)
                 }
             )
         }
-        composable(Screen.Events.route) { 
+        composable(Screen.Events.route) {
             EventsScreen()
         }
-        composable(Screen.Blog.route) { 
+        composable(Screen.Blog.route) {
             BlogScreen { blogId ->
                 navController.navigate("blog_detail/$blogId")
             }
@@ -131,11 +147,11 @@ fun HomeOfHopeNavGraph(
         composable(Screen.Services.route) { ServicesScreen() }
         composable(Screen.Contact.route) { ContactScreen(viewModel = contactViewModel) }
         composable(Screen.FAQ.route) { FaqScreen() }
-        composable(Screen.Help.route) { 
+        composable(Screen.Help.route) {
             HelpScreen(
                 onContactClick = { navController.navigate(Screen.Contact.route) },
                 onFaqClick = { navController.navigate(Screen.FAQ.route) }
-            ) 
+            )
         }
         composable(Screen.Privacy.route) { PrivacyScreen() }
         composable(Screen.Terms.route) { TermsScreen() }
@@ -152,7 +168,7 @@ fun HomeOfHopeNavGraph(
         composable(Screen.Login.route) {
             LoginScreen(
                 viewModel = memberViewModel,
-                onLoginSuccess = { 
+                onLoginSuccess = {
                     navController.navigate(Screen.MemberDashboard.route) {
                         popUpTo(Screen.Home.route)
                     }
@@ -162,8 +178,30 @@ fun HomeOfHopeNavGraph(
                         popUpTo(Screen.Home.route)
                     }
                 },
-                onRegisterClick = { navController.navigate(Screen.Register.route) },
-                onBackClick = { navController.popBackStack() }
+                onRegisterClick = {
+                    navController.navigate(Screen.Register.route)
+                },
+                onBackClick = {
+                    navController.popBackStack()
+                },
+                onGoogleProfileRequired = {
+                    navController.navigate(Screen.GoogleProfileCompletion.route) {
+                        launchSingleTop = true
+                    }
+                }
+            )
+        }
+        composable(Screen.GoogleProfileCompletion.route) {
+            GoogleProfileCompletionScreen(
+                viewModel = memberViewModel,
+                onProfileComplete = {
+                    navController.navigate(Screen.MemberDashboard.route) {
+                        popUpTo(Screen.Home.route) {
+                            inclusive = false
+                        }
+                        launchSingleTop = true
+                    }
+                }
             )
         }
         composable(Screen.MemberDashboard.route) {
@@ -172,7 +210,7 @@ fun HomeOfHopeNavGraph(
                 donationViewModel = donationViewModel,
                 onDonateClick = {
                     if (memberViewModel.currentUser != null) {
-                        navController.navigate(Screen.Donation.route)
+                        navController.navigate(Screen.Donation.createRoute())
                     } else {
                         navController.navigate(Screen.Login.route)
                     }
@@ -216,11 +254,27 @@ fun HomeOfHopeNavGraph(
             )
         }
 
-        composable(Screen.Donation.route) {
+        composable(
+            route = Screen.Donation.route,
+            arguments = listOf(
+                navArgument("causeId") {
+                    type = NavType.IntType
+                    defaultValue = 0
+                }
+            )
+        ) { backStackEntry ->
+            val selectedCauseId = backStackEntry.arguments
+                ?.getInt("causeId")
+                ?.takeIf { it > 0 }
+
             DonationScreen(
                 viewModel = donationViewModel,
                 memberViewModel = memberViewModel,
+                causeViewModel = causeViewModel,
+                initialCauseId = selectedCauseId,
+                onBackClick = { navController.popBackStack() },
                 onDonationSuccess = {
+                    causeViewModel.refresh()
                     navController.navigate(Screen.DonationSuccess.route) {
                         popUpTo(Screen.Donation.route) { inclusive = true }
                     }

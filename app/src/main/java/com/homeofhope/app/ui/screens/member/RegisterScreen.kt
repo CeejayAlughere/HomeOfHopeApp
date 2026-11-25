@@ -44,7 +44,7 @@ fun RegisterScreen(
 ) {
     var fullName by remember { mutableStateOf("") }
     var idNumber by remember { mutableStateOf("") }
-    var username by remember { mutableStateOf("") }
+    var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     var confirmPassword by remember { mutableStateOf("") }
     var passwordVisible by remember { mutableStateOf(false) }
@@ -166,8 +166,8 @@ fun RegisterScreen(
                 Spacer(modifier = Modifier.height(16.dp))
 
                 HopeTextField(
-                    value = username,
-                    onValueChange = { username = it },
+                    value = email,
+                    onValueChange = { email = it },
                     label = "Email Address",
                     leadingIcon = Icons.Default.Email,
                     keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Email, imeAction = ImeAction.Next),
@@ -220,7 +220,7 @@ fun RegisterScreen(
                     text = "REGISTER NOW",
                     onClick = {
                         focusManager.clearFocus()
-                        viewModel.register(fullName, idNumber, username, password, confirmPassword)
+                        viewModel.register(fullName, idNumber, email, password, confirmPassword)
                     },
                     isLoading = authState is AuthState.Loading
                 )
