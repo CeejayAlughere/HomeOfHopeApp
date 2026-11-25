@@ -117,11 +117,11 @@ fun MemberDashboardScreen(
                 Text(message, color = MaterialTheme.colorScheme.error, modifier = Modifier.padding(horizontal = 24.dp))
             }
 
-            Text(
-                text = "Your website and app donation records are shared. These records are not payment confirmation.",
-                style = MaterialTheme.typography.bodySmall,
-                modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
-            )
+//            Text(
+//                text = "Your website and app donation records are shared. These records are not payment confirmation.",
+//                style = MaterialTheme.typography.bodySmall,
+//                modifier = Modifier.padding(horizontal = 24.dp, vertical = 8.dp)
+//            )
 
             Spacer(modifier = Modifier.height(32.dp))
 
