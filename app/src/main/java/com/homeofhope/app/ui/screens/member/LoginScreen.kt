@@ -5,13 +5,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.Email
 import androidx.compose.material.icons.filled.Lock
 import androidx.compose.material.icons.filled.Visibility
@@ -51,7 +49,6 @@ fun LoginScreen(
     onLoginSuccess: () -> Unit,
     onAdminLoginSuccess: () -> Unit,
     onRegisterClick: () -> Unit,
-    onBackClick: () -> Unit,
     onGoogleProfileRequired: () -> Unit
 ) {
     var identifier by remember { mutableStateOf("") }
@@ -198,7 +195,7 @@ fun LoginScreen(
                     trailingIcon = {
                         val image = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
                         IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                            Icon(imageVector = image, contentDescription = null)
+                            Icon(imageVector = image, contentDescription = if (passwordVisible) "Hide password" else "Show password")
                         }
                     },
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -329,20 +326,5 @@ fun LoginScreen(
             Spacer(modifier = Modifier.height(40.dp))
         }
 
-        // Animated Back Button
-        IconButton(
-            onClick = onBackClick,
-            modifier = Modifier
-                .padding(top = 48.dp, start = 16.dp)
-                .size(44.dp)
-                .clip(CircleShape)
-                .background(Color.White.copy(alpha = 0.2f))
-        ) {
-            Icon(
-                Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Back",
-                tint = Color.White
-            )
-        }
     }
 }

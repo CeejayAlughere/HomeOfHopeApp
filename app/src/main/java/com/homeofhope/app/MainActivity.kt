@@ -8,6 +8,8 @@ import android.view.animation.AnticipateInterpolator
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -152,76 +154,90 @@ class MainActivity : ComponentActivity() {
                             drawerContainerColor = HopeDark,
                             drawerContentColor = HopeWhite
                         ) {
-                            Text(
-                                text = "Navigation Drawer",
-                                modifier = Modifier.padding(24.dp),
-                                style = MaterialTheme.typography.headlineSmall,
-                                fontWeight = FontWeight.Bold,
-                                color = HopeGreen
-                            )
-                            HorizontalDivider(
-                                modifier = Modifier.padding(horizontal = 24.dp),
-                                color = HopeWhite.copy(alpha = 0.1f)
-                            )
-                            Spacer(modifier = Modifier.height(16.dp))
-                            moreScreens.forEach { screen ->
-                                NavigationDrawerItem(
-                                    label = { Text(screen.label, fontWeight = FontWeight.Medium) },
-                                    icon = { Icon(screen.icon, contentDescription = null) },
-                                    selected = currentRoute == screen.route,
-                                    onClick = {
-                                        navController.navigate(screen.route) {
-                                            popUpTo(navController.graph.startDestinationId) { saveState = true }
-                                            launchSingleTop = true
-                                            restoreState = true
-                                        }
-                                        scope.launch { drawerState.close() }
-                                    },
-                                    modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
-                                    shape = RoundedCornerShape(12.dp),
-                                    colors = NavigationDrawerItemDefaults.colors(
-                                        unselectedContainerColor = Color.Transparent,
-                                        selectedContainerColor = HopeGreen.copy(alpha = 0.2f),
-                                        unselectedTextColor = HopeWhite.copy(alpha = 0.7f),
-                                        selectedTextColor = HopeGreen,
-                                        unselectedIconColor = HopeWhite.copy(alpha = 0.7f),
-                                        selectedIconColor = HopeGreen
-                                    )
+                            Column(Modifier.verticalScroll(rememberScrollState())) {
+                                Text(
+                                    text = "Home of Hope",
+                                    modifier = Modifier.padding(24.dp),
+                                    style = MaterialTheme.typography.headlineSmall,
+                                    fontWeight = FontWeight.Bold,
+                                    color = HopeGreen
                                 )
+                                HorizontalDivider(
+                                    modifier = Modifier.padding(horizontal = 24.dp),
+                                    color = HopeWhite.copy(alpha = 0.1f)
+                                )
+                                Spacer(modifier = Modifier.height(16.dp))
+                                moreScreens.forEach { screen ->
+                                    NavigationDrawerItem(
+                                        label = { Text(screen.label, fontWeight = FontWeight.Medium) },
+                                        icon = { Icon(screen.icon, contentDescription = null) },
+                                        selected = currentRoute == screen.route,
+                                        onClick = {
+                                            navController.navigate(screen.route) {
+                                                popUpTo(navController.graph.startDestinationId) { saveState = true }
+                                                launchSingleTop = true
+                                                restoreState = true
+                                            }
+                                            scope.launch { drawerState.close() }
+                                        },
+                                        modifier = Modifier.padding(horizontal = 12.dp, vertical = 4.dp),
+                                        shape = RoundedCornerShape(12.dp),
+                                        colors = NavigationDrawerItemDefaults.colors(
+                                            unselectedContainerColor = Color.Transparent,
+                                            selectedContainerColor = HopeGreen.copy(alpha = 0.2f),
+                                            unselectedTextColor = HopeWhite.copy(alpha = 0.7f),
+                                            selectedTextColor = HopeGreen,
+                                            unselectedIconColor = HopeWhite.copy(alpha = 0.7f),
+                                            selectedIconColor = HopeGreen
+                                        )
+                                    )
+                                }
                             }
                         }
                     }
                 ) {
                     Scaffold(
                         topBar = {
-                            val title = when {
-                                currentRoute == Screen.Home.route -> "Home Of Hope"
-                                currentRoute == Screen.About.route -> "About Us"
-                                currentRoute == Screen.Causes.route -> "Our Causes"
-                                currentRoute == Screen.Events.route -> "Upcoming Events"
-                                currentRoute == Screen.Blog.route -> "Blog"
-                                currentRoute == Screen.Services.route -> "Our Services"
-                                currentRoute == Screen.Contact.route -> "Contact Us"
-                                currentRoute == Screen.FAQ.route -> "FAQs"
-                                currentRoute == Screen.Help.route -> "Help"
-                                currentRoute == Screen.Privacy.route -> "Privacy Policy"
-                                currentRoute == Screen.Terms.route -> "Terms of Use"
-                                currentRoute == Screen.Cookies.route -> "Cookies Policy"
-                                currentRoute == Screen.Register.route -> "Become a Member"
-                                currentRoute == Screen.Login.route -> "Login"
-                                currentRoute == Screen.MemberDashboard.route -> "Member Dashboard"
-                                currentRoute?.startsWith("donation?") == true -> "Make a Donation"
-                                currentRoute?.startsWith("cause_detail") == true -> "Cause Details"
-                                currentRoute?.startsWith("blog_detail") == true -> "Article"
-                                else -> "Home Of Hope"
+                            val screenProvidesTopBar = when (currentRoute) {
+                                Screen.MemberDashboard.route, Screen.AdminDashboard.route,
+                                Screen.MembershipCard.route, Screen.CommunityWall.route,
+                                Screen.Settings.route, Screen.Donation.route -> true
+                                else -> false
                             }
-                            val canNavigateBack = currentRoute != Screen.Home.route && currentRoute != null
+                            if (!screenProvidesTopBar) {
+                                val title = when {
+                                    currentRoute == Screen.Home.route -> "Home of Hope"
+                                    currentRoute == Screen.About.route -> "About Us"
+                                    currentRoute == Screen.Causes.route -> "Our Causes"
+                                    currentRoute == Screen.Events.route -> "Upcoming Events"
+                                    currentRoute == Screen.Blog.route -> "Blog"
+                                    currentRoute == Screen.Services.route -> "Our Services"
+                                    currentRoute == Screen.Contact.route -> "Contact Us"
+                                    currentRoute == Screen.FAQ.route -> "FAQs"
+                                    currentRoute == Screen.Help.route -> "Help"
+                                    currentRoute == Screen.Privacy.route -> "Privacy Policy"
+                                    currentRoute == Screen.Terms.route -> "Terms of Use"
+                                    currentRoute == Screen.Cookies.route -> "Cookies Policy"
+                                    currentRoute == Screen.Register.route -> "Become a Member"
+                                    currentRoute == Screen.Login.route -> "Login"
+                                    currentRoute == Screen.MemberManagement.route -> Screen.MemberManagement.label
+                                    currentRoute == Screen.MemberDetails.route -> Screen.MemberDetails.label
+                                    currentRoute == Screen.VolunteerHoursManagement.route -> Screen.VolunteerHoursManagement.label
+                                    currentRoute == Screen.GoogleProfileCompletion.route -> Screen.GoogleProfileCompletion.label
+                                    currentRoute == Screen.Suspended.route -> "Account Suspended"
+                                    currentRoute == Screen.DonationSuccess.route -> Screen.DonationSuccess.label
+                                    currentRoute?.startsWith("cause_detail") == true -> "Cause Details"
+                                    currentRoute?.startsWith("blog_detail") == true -> "Article"
+                                    else -> "Home of Hope"
+                                }
+                                val canNavigateBack = currentRoute != Screen.Home.route && currentRoute != null
 
-                            AppTopBar(
-                                title = title,
-                                canNavigateBack = canNavigateBack,
-                                onBack = { navController.popBackStack() }
-                            )
+                                AppTopBar(
+                                    title = title,
+                                    canNavigateBack = canNavigateBack,
+                                    onBack = { navController.popBackStack() }
+                                )
+                            }
                         },
                         bottomBar = {
                             AppBottomNav(
@@ -238,7 +254,7 @@ class MainActivity : ComponentActivity() {
                             causeViewModel = causeViewModel,
                             donationViewModel = donationViewModel,
                             adminViewModel = adminViewModel,
-                            modifier = Modifier.padding(padding)
+                            modifier = Modifier.padding(padding).consumeWindowInsets(padding)
                         )
                     }
                 }

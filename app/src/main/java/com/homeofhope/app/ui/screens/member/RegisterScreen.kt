@@ -5,13 +5,11 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
-import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -40,7 +38,7 @@ import com.homeofhope.app.ui.viewmodel.MemberViewModel
 fun RegisterScreen(
     viewModel: MemberViewModel,
     onRegisterSuccess: () -> Unit,
-    onBackClick: () -> Unit
+    onSignInClick: () -> Unit
 ) {
     var fullName by remember { mutableStateOf("") }
     var idNumber by remember { mutableStateOf("") }
@@ -184,7 +182,7 @@ fun RegisterScreen(
                     trailingIcon = {
                         val image = if (passwordVisible) Icons.Default.Visibility else Icons.Default.VisibilityOff
                         IconButton(onClick = { passwordVisible = !passwordVisible }) {
-                            Icon(imageVector = image, contentDescription = null)
+                            Icon(imageVector = image, contentDescription = if (passwordVisible) "Hide password" else "Show password")
                         }
                     },
                     visualTransformation = if (passwordVisible) VisualTransformation.None else PasswordVisualTransformation(),
@@ -237,7 +235,7 @@ fun RegisterScreen(
                         color = MaterialTheme.colorScheme.onSurfaceVariant,
                         style = MaterialTheme.typography.bodyMedium
                     )
-                    TextButton(onClick = onBackClick) {
+                    TextButton(onClick = onSignInClick) {
                         Text(
                             text = "Sign In",
                             fontWeight = FontWeight.Bold,
@@ -249,20 +247,5 @@ fun RegisterScreen(
             Spacer(modifier = Modifier.height(48.dp))
         }
 
-        // Back Button
-        IconButton(
-            onClick = onBackClick,
-            modifier = Modifier
-                .padding(top = 48.dp, start = 16.dp)
-                .size(44.dp)
-                .clip(CircleShape)
-                .background(Color.White.copy(alpha = 0.2f))
-        ) {
-            Icon(
-                Icons.AutoMirrored.Filled.ArrowBack,
-                contentDescription = "Back",
-                tint = Color.White
-            )
-        }
     }
 }

@@ -10,6 +10,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
@@ -62,7 +63,7 @@ fun AppTopBar(
             if (canNavigateBack) {
                 IconButton(onClick = onBack) {
                     Icon(
-                        imageVector = Icons.Default.ArrowBack,
+                        imageVector = Icons.AutoMirrored.Filled.ArrowBack,
                         contentDescription = "Back"
                     )
                 }
@@ -174,6 +175,7 @@ fun AppBottomNav(navController: NavController, currentRoute: String?, onMoreClic
 
     Surface(
         modifier = Modifier
+            .navigationBarsPadding()
             .padding(horizontal = 16.dp, vertical = 12.dp)
             .fillMaxWidth()
             .height(80.dp),
@@ -236,11 +238,12 @@ fun BottomNavItem(
             .clip(RoundedCornerShape(24.dp))
             .background(containerColor)
             .clickable(onClick = onClick)
+            .sizeIn(minWidth = 48.dp, minHeight = 48.dp)
             .padding(horizontal = 12.dp, vertical = 8.dp)
     ) {
         Icon(
             imageVector = screenIcon,
-            contentDescription = screenLabel,
+            contentDescription = if (selected) null else screenLabel,
             tint = contentColor,
             modifier = Modifier.size(26.dp)
         )

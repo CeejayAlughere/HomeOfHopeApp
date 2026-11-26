@@ -5,7 +5,7 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.automirrored.filled.ArrowBack
 import androidx.compose.material.icons.filled.QrCode2
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -19,6 +19,7 @@ import androidx.compose.ui.unit.sp
 import com.homeofhope.app.ui.theme.HopeDark
 import com.homeofhope.app.ui.theme.HopeGreen
 import com.homeofhope.app.ui.theme.HopeWhite
+import com.homeofhope.app.ui.components.AppTopBar
 import com.homeofhope.app.ui.viewmodel.MemberViewModel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -29,7 +30,14 @@ fun MembershipCardScreen(
     viewModel: MemberViewModel,
     onBackClick: () -> Unit
 ) {
-    val user = viewModel.currentUser ?: return
+    val user = viewModel.currentUser
+    if (user == null) {
+        Column {
+            AppTopBar(title = "Digital Member Card", canNavigateBack = true, onBack = onBackClick)
+            Text("Sign in to view your profile.", modifier = Modifier.padding(16.dp))
+        }
+        return
+    }
     val level by viewModel.membershipLevel.collectAsState()
     val sdf = SimpleDateFormat("MMMM dd, yyyy", Locale.getDefault())
     val joinDate = sdf.format(Date(user.joinDate))
@@ -40,7 +48,7 @@ fun MembershipCardScreen(
                 title = { Text("Digital Member Card", color = HopeWhite) },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(Icons.Default.ArrowBack, contentDescription = "Back", tint = HopeWhite)
+                        Icon(Icons.AutoMirrored.Filled.ArrowBack, contentDescription = "Back", tint = HopeWhite)
                     }
                 },
                 colors = TopAppBarDefaults.topAppBarColors(containerColor = HopeDark)

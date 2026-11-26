@@ -48,6 +48,7 @@ fun MemberDashboardScreen(
     onVolunteerClick: () -> Unit,
     onEventsClick: () -> Unit,
     onProfileClick: () -> Unit,
+    onBackClick: () -> Unit,
     onLogoutClick: () -> Unit,
     onMembershipCardClick: () -> Unit,
     onCommunityWallClick: () -> Unit,
@@ -86,6 +87,8 @@ fun MemberDashboardScreen(
         topBar = {
             AppTopBar(
                 title = "Member Hub",
+                canNavigateBack = true,
+                onBack = onBackClick,
                 actions = {
                     IconButton(onClick = onProfileClick) {
                         Icon(Icons.Default.Settings, contentDescription = "Settings")

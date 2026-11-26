@@ -159,10 +159,19 @@ fun HomeOfHopeNavGraph(
 
         // Membership
         composable(Screen.Register.route) {
+            val openLogin: () -> Unit = {
+                if (navController.previousBackStackEntry?.destination?.route == Screen.Login.route) {
+                    navController.popBackStack()
+                } else {
+                    navController.navigate(Screen.Login.route) {
+                        popUpTo(Screen.Register.route) { inclusive = true }
+                    }
+                }
+            }
             RegisterScreen(
                 viewModel = memberViewModel,
-                onRegisterSuccess = { navController.navigate(Screen.Login.route) },
-                onBackClick = { navController.navigate(Screen.Login.route) }
+                onRegisterSuccess = openLogin,
+                onSignInClick = openLogin
             )
         }
         composable(Screen.Login.route) {
@@ -180,9 +189,6 @@ fun HomeOfHopeNavGraph(
                 },
                 onRegisterClick = {
                     navController.navigate(Screen.Register.route)
-                },
-                onBackClick = {
-                    navController.popBackStack()
                 },
                 onGoogleProfileRequired = {
                     navController.navigate(Screen.GoogleProfileCompletion.route) {
@@ -206,6 +212,7 @@ fun HomeOfHopeNavGraph(
         }
         composable(Screen.MemberDashboard.route) {
             MemberDashboardScreen(
+                onBackClick = { navController.popBackStack() },
                 viewModel = memberViewModel,
                 donationViewModel = donationViewModel,
                 onDonateClick = {
@@ -309,6 +316,7 @@ fun HomeOfHopeNavGraph(
         // Admin
         composable(Screen.AdminDashboard.route) {
             AdminDashboardScreen(
+                onBackClick = { navController.popBackStack() },
                 viewModel = adminViewModel,
                 onMemberManagementClick = { navController.navigate(Screen.MemberManagement.route) },
                 onVolunteerHoursClick = { navController.navigate(Screen.VolunteerHoursManagement.route) },
@@ -322,8 +330,7 @@ fun HomeOfHopeNavGraph(
         composable(Screen.MemberManagement.route) {
             MemberManagementScreen(
                 viewModel = adminViewModel,
-                onMemberClick = { id -> navController.navigate("member_details/$id") },
-                onBackClick = { navController.popBackStack() }
+                onMemberClick = { id -> navController.navigate("member_details/$id") }
             )
         }
         composable(Screen.MemberDetails.route) { backStackEntry ->
@@ -336,8 +343,7 @@ fun HomeOfHopeNavGraph(
         }
         composable(Screen.VolunteerHoursManagement.route) {
             VolunteerHoursManagementScreen(
-                viewModel = adminViewModel,
-                onBackClick = { navController.popBackStack() }
+                viewModel = adminViewModel
             )
         }
     }
