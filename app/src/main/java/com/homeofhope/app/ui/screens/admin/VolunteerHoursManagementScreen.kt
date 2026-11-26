@@ -20,8 +20,7 @@ import java.util.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun VolunteerHoursManagementScreen(
-    viewModel: AdminViewModel,
-    onBackClick: () -> Unit
+    viewModel: AdminViewModel
 ) {
     val members by viewModel.members.collectAsState()
     var selectedMember by remember { mutableStateOf<Member?>(null) }
@@ -34,14 +33,6 @@ fun VolunteerHoursManagementScreen(
     }
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = onBackClick) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-            }
-            Text("Volunteer Hours", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         // Member Selector
         var expanded by remember { mutableStateOf(false) }

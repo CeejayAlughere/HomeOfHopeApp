@@ -18,8 +18,7 @@ import com.homeofhope.app.ui.viewmodel.AdminViewModel
 @Composable
 fun MemberManagementScreen(
     viewModel: AdminViewModel,
-    onMemberClick: (Int) -> Unit,
-    onBackClick: () -> Unit
+    onMemberClick: (Int) -> Unit
 ) {
     val members by viewModel.members.collectAsState()
     var searchQuery by remember { mutableStateOf("") }
@@ -31,14 +30,6 @@ fun MemberManagementScreen(
     }
 
     Column(modifier = Modifier.fillMaxSize().padding(16.dp)) {
-        Row(verticalAlignment = Alignment.CenterVertically) {
-            IconButton(onClick = onBackClick) {
-                Icon(Icons.Default.ArrowBack, contentDescription = "Back")
-            }
-            Text("Member Management", style = MaterialTheme.typography.headlineSmall, fontWeight = FontWeight.Bold)
-        }
-
-        Spacer(modifier = Modifier.height(16.dp))
 
         OutlinedTextField(
             value = searchQuery,

@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import com.homeofhope.app.ui.theme.HopeGreen
+import com.homeofhope.app.ui.components.AppTopBar
 import com.homeofhope.app.ui.viewmodel.MemberViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -24,7 +25,14 @@ fun SettingsScreen(
     viewModel: MemberViewModel,
     onBackClick: () -> Unit
 ) {
-    val user = viewModel.currentUser ?: return
+    val user = viewModel.currentUser
+    if (user == null) {
+        Column {
+            AppTopBar(title = "Settings", canNavigateBack = true, onBack = onBackClick)
+            Text("Sign in to view your profile.", modifier = Modifier.padding(16.dp))
+        }
+        return
+    }
 
     var fullName by remember { mutableStateOf(user.fullName) }
     var email by remember { mutableStateOf(user.email) }

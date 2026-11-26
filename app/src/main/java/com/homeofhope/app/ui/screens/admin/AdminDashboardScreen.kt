@@ -37,6 +37,7 @@ fun AdminDashboardScreen(
     viewModel: AdminViewModel,
     onMemberManagementClick: () -> Unit,
     onVolunteerHoursClick: () -> Unit,
+    onBackClick: () -> Unit,
     onLogoutClick: () -> Unit
 ) {
     val stats by viewModel.dashboardStats.collectAsState()
@@ -45,6 +46,8 @@ fun AdminDashboardScreen(
         topBar = {
             AppTopBar(
                 title = "Admin Portal",
+                canNavigateBack = true,
+                onBack = onBackClick,
                 actions = {
                     IconButton(onClick = onLogoutClick) {
                         Icon(Icons.Default.Logout, contentDescription = "Logout")
