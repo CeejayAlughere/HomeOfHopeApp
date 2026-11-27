@@ -2,13 +2,21 @@
 
 [![Android CI](https://github.com/CeejayAlughere/HomeOfHopeApp/actions/workflows/android-ci.yml/badge.svg?branch=main)](https://github.com/CeejayAlughere/HomeOfHopeApp/actions/workflows/android-ci.yml)
 
-Members of **Home of Hope NGO (Siyazigabisa)** can use this Kotlin Android app to follow a fundraiser, record a contribution in South African rand and view their donation history. The Android app and the NGO’s website use the same PHP API and MySQL database, so staff can see which cause each contribution supports. The app records contributions without charging the member’s bank account.
+Members of **Home of Hope NGO (Siyazigabisa)** can use this Kotlin Android app to follow a fundraiser, record a contribution in South African rand and view their donation history. The Android app and the NGO’s website use the same PHP API and MySQL database, so staff can see which cause each contribution supports.
 
 [Watch the project demonstration on YouTube](https://youtu.be/nTzSagurRYw)
 
 ## My contribution
 
-I’m Ceejay Alughere, and I built most of the Android app for our XISD6329 team project. I connected member sign-in to the website’s PHP API so members could use the same account on both platforms. I also worked on the donation flow, from choosing a fundraiser in the app to checking that the contribution appeared under the right cause in the website’s admin dashboard.
+I built most of the Home of Hope Android app for our XISD6329 team project. I wrote the member screens in Kotlin with Jetpack Compose and connected them to the PHP and MySQL backend we shared with the website.
+
+- **Member accounts.** I used Retrofit to connect registration and login to the website’s PHP API, so someone who registered on the website could sign in to the app with the same credentials. I used DataStore to save the member’s session on their device and added Google sign-in with Android Credential Manager and Firebase Authentication.
+
+- **Fundraising and donations.** I built the screens where members can see how much each cause has raised towards its goal, choose a fundraiser, select their bank and enter an amount in rand. When a member taps **Submit Donation**, the app checks their entries and sends the donation under their account. Their donation history refreshes once the API confirms the record was saved.
+
+- **Preventing duplicate donations.** I disabled the submit button while a donation was being saved and reused the original request ID if the member retried after a connection error. I checked that tapping twice quickly created just one record. Then I opened a fresh form and recorded another **R100** for the same cause. That second donation appeared separately with its own request ID.
+
+- **Testing across the app and website.** I recorded a donation on my phone, opened the website’s admin dashboard and checked that the fundraiser and amount matched what I’d entered. I also set up GitHub Actions so pull requests to `main` build the debug APK, run the unit tests and run Android lint.
 
 ## The member experience
 
