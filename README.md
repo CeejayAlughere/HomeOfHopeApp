@@ -1,4 +1,4 @@
-# Home of Hope Android
+# Home of Hope
 
 [![Android CI](https://github.com/CeejayAlughere/HomeOfHopeApp/actions/workflows/android-ci.yml/badge.svg?branch=main)](https://github.com/CeejayAlughere/HomeOfHopeApp/actions/workflows/android-ci.yml)
 
@@ -8,7 +8,7 @@ Members of **Home of Hope NGO (Siyazigabisa)** can use this Kotlin Android app t
 
 ## My contribution
 
-I built most of the Home of Hope Android app for our XISD6329 team project. I wrote the member screens in Kotlin with Jetpack Compose and connected them to the PHP and MySQL backend we shared with the website.
+I wrote the member screens in Kotlin with Jetpack Compose and connected them to the PHP and MySQL backend we shared with the website.
 
 - **Member accounts.** I used Retrofit to connect registration and login to the website’s PHP API, so someone who registered on the website could sign in to the app with the same credentials. I used DataStore to save the member’s session on their device and added Google sign-in with Android Credential Manager and Firebase Authentication.
 
